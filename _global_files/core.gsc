@@ -32,12 +32,47 @@ init() {
     level.team_vip_data                 = [];
     level.admin_commands_clients        = [];
 
+    add_forbidden_word("nazi", 0);
+    add_forbidden_word("nig", 0);
+    add_forbidden_word("igger", 0);
+    add_forbidden_word("gger", 0);
+    add_forbidden_word("nigg", 1);
+    add_forbidden_word("coon", 1);
+    add_forbidden_word("n i g", 1);
+    add_forbidden_word("n ig", 1);
+    add_forbidden_word("ni g", 1);
+    add_forbidden_word("n1g", 1);
+    add_forbidden_word("sieg", 1);
+    add_forbidden_word("heil", 1);
+    add_forbidden_word("hitler", 1);
+    add_forbidden_word("coomer", 1);
+    add_forbidden_word("nagger", 1);
+    add_forbidden_word("faggot", 1);
+    add_forbidden_word("fag", 1);
+    add_forbidden_word("n!g", 1);
+    add_forbidden_word("negro", 1);
+    add_forbidden_word("negero", 1);
+    add_forbidden_word("negrello", 1);
+    add_forbidden_word("aizombies", 1);
+    add_forbidden_word("aizom", 1);
+    add_forbidden_word("aiz", 0);
+
     level thread vip_clients_init();
     level thread httpget_handler();
     level thread handle_players();
 
     if(getdvar("sv_sayname") != "^5^7[ ^5Gillette^7 ]")
     	setdvar("sv_sayname", "^5^7[ ^5Gillette^7 ]");
+}
+
+add_forbidden_word(string, substr) {
+    if(!isdefined(level.forbidden_words))
+        level.forbidden_words = [];
+
+    num = level.forbidden_words.size;
+    level.forbidden_words[num] = spawnstruct();
+    level.forbidden_words[num].word = string;
+    level.forbidden_words[num].sub_check = substr;
 }
 
 vip_clients_init() {
@@ -182,28 +217,20 @@ handle_player_rank(rank) {
         return;
 
     if(rank == "Owner" || rank == "Administrator" || rank == "Trial Moderator" || rank == "Moderator" || rank == "Trusted") {
-        if(rank == "Owner") {
+        if(rank == "Owner")
             add_command_user(self.name,	self.guid, 3, 1, undefined, 1, "^1Owner", undefined, ":");
-            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^1" + rank + "^7 ]");
-        }
-        else if(rank == "Administrator") {
+        else if(rank == "Administrator")
             add_command_user(self.name,	self.guid, 2, 3, undefined, 3, "^3Admin");
-            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^3" + rank + "^7 ]");
-        }
-        else if(rank == "Moderator") {
+        else if(rank == "Moderator")
             add_command_user(self.name,	self.guid, 1, 2, undefined, 2, "^2Moderator");
-            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^2" + rank + "^7 ]");
-        }
-        else if(rank == "Trial Moderator") {
+        else if(rank == "Trial Moderator")
             add_command_user(self.name,	self.guid, 0, ":", undefined, ":", "^:Trial-Mod");
-            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^;" + rank + "^7 ]");
-        }
         else if(rank == "Trusted") {
-            if(!isdefined(level.special_users[self.guid])) {
+            if(!isdefined(level.special_users[self.guid]))
                 add_special_user(self.name, self.guid, 2, "^2Trusted", 2, "");
-                self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^2" + rank + "^7 ]");
-            }
         }
+
+        self.server_rank = rank;
     }
 }
 
@@ -256,14 +283,28 @@ add_special_user(name, guid, color, tag, backgroundcolor, statusicon) {
 chat_handler(message, mode) {
     if(isdefined(message) && message != "" && message != " ") {
         args = undefined;
-        for(i = 0;i < level.dirty_words.size;i++) {
-            if(issubstr(tolower(message), level.dirty_words[i]))
-                return false;
+
+        spl_message = strtok(message, " ");
+        for(i = 0;i < level.forbidden_words.size;i++) {
+            if(level.forbidden_words[i].sub_check == 1) {
+                if(issubstr(tolower(message), level.forbidden_words[i].word)) {
+                    say("Detected: ^2" + level.forbidden_words[i].word);
+                    return false;
+                }
+            }
+            else {
+                for(a = 0;a < spl_message.size;a++) {
+                    if(tolower(spl_message[a]) == level.forbidden_words[i].word) {
+                        say("Detected: ^2" + level.forbidden_words[i].word);
+                        return false;
+                    }
+                }
+            }
         }
 
         args = strtok(tolower(message), " ");
         if(isdefined(level.admin_commands_clients[self.guid])) {
-            if(isdefined(args[0]) && args[0] == "!map" || isdefined(args[0]) && args[0] == "/!map" || isdefined(args[0]) && args[0] == "!m" || isdefined(args[0]) && args[0] == "/!m") {
+            if(isdefined(args[0]) && args[0] == "!qmap" || isdefined(args[0]) && args[0] == "/!qmap" || isdefined(args[0]) && args[0] == "!qm" || isdefined(args[0]) && args[0] == "/!qm") {
                 if(mapexists(args[1])) {
                     level.next_map = args[1];
                     level notify("StopTracking");

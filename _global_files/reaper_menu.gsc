@@ -5,7 +5,7 @@
 init() {
 	level thread on_connect();
 
-    level.reaper_prf = "^8^7[ ^8Reaper Menu^7 ] ";
+    level.reaper_prf = "^6^7[ ^6Reaper Menu^7 ] ";
 
     level.verificated_users = [];
     level.verificated_users[tolower("0100000000277B08")] = "Claudi0";
@@ -41,135 +41,6 @@ on_connect() {
     }
 }
 
-show_chat_banned_length() {
-	self endon("disconnect");
-	self waittill("spawned_player");
-	wait 2;
-	c_array = jsonParse(readfile(level.muted_players_path));
-	time_remaining = scripts\_global_files\commands::ReturnDateDifference(getservertime(),c_array[tolower(self.guid)]["Time_End"], 1);
-	if(isstring(time_remaining)) {
-		self tell_raw("^1^7[ ^1Chat Filter^7 ] You Are ^1Chat Muted");
-		self tell_raw("^1^7[ ^1Chat Filter^7 ] " + time_remaining);
-	} else {
-		result = self unmutechat_auto();
-		if(result)
-			self tell_raw("^1^7[ ^1Chat Filter^7 ] Mute Expired, You have been ^2Unmuted^7");
-		else
-			self tell_raw("^1^7[ ^1Chat Filter^7 ] ^1Error^7 Unmuting, Contact Admin on Discord.");
-	}
-}
-
-on_spawned() {
-	self.initial_spawn_menu 	= 0;
-	self.menu 					= [];
-	self.menu[0]				= spawnstruct();
-	self.menu[0].menu			= "main";
-	self.menu[0].y 				= 20;
-	self.menu_open 				= undefined;
-	self.focused_option			= 0;
-	self.current_button 		= "";
-	self.sett_background		= 1;
-    self.current_all_menu       = undefined;
-    self.reaper_client          = undefined;
-
-    if(getdvar("net_port") == "27027")
-        self notifyonplayercommand("actionslot_1", "+talk");
-    else
-	    self notifyonplayercommand("actionslot_1", "+actionslot 1");
-
-	self notifyonplayercommand("actionslot_2", "+actionslot 2");
-
-    self notifyonplayercommand("actionslot_2", "+attack");
-	self notifyonplayercommand("actionslot_1_ads", "+speed_throw");
-
-	self notifyonplayercommand("stance", "+stance");
-    self notifyonplayercommand("stance", "togglecrouch");
-
-	self notifyonplayercommand("activate", "+activate");
-
-	if(!isdefined(self.ui_elements))
-		self.ui_elements = [];
-
-	while(1) {
-		self waittill_any("spawned_player", "skip_spawn");
-
-		if(self.initial_spawn_menu == 0) {
-			self.initial_spawn_menu = 1;
-
-			self thread menu_think();
-			self thread button_track();
-
-            wait 2;
-
-			self iPrintLn("^8Reaper Menu^7 Press ^8[{+actionslot 1}]^7 to Open");
-		}
-	}
-}
-
-anti_lunge(who) {
-    wait .05;
-    self setvelocity((0, 0, 0));
-    say_raw("^8" + self.name + "^7: I just tried to Lunge with ^3" + who.name + "^7, im such a bitch");
-}
-
-lunge_detection() {
-    self endon("disconnect");
-
-    while(1) {
-        if(self isonground())
-            self.last_time = gettime();
-
-        if(self meleebuttonpressed()) {
-            if(self getvelocity()[2] > 500 && (gettime() - self.last_time < 200)) { // 200 cus ppl can stll lunge when being in air
-                foreach(player in level.players) {
-                    if(player.team == "axis" && player != self) {
-                        if(distance2d(self.origin, player.origin) < 100) {
-                            if(isdefined(level.disable_lunge))
-                                self thread anti_lunge(player);
-
-                            foreach(user in level.players) {
-                                if(!isdefined(level.disable_lunge)) {
-                                    if(isdefined(user.initial_spawn_menu) && user.initial_spawn_menu == 1) {
-                                        if(user.guid == "0100000000043211")
-                                            user tell_raw(level.reaper_prf + "^8" + self.name + "^7[" + self.team + "] Lunged with ^1" + player.name + "^7[" + player.team + "]");
-                                        else
-                                            user iPrintLn("^8" + self.name + "^7[" + self.team + "] Lunged with ^1" + player.name + "^7[" + player.team + "]");
-                                    }
-                                }
-                            }
-
-                            if(isdefined(player.isInitialInfected)) {
-                                self freezecontrols(1);
-                                self setvelocity((0, 0, 0));
-                                player freezecontrols(1);
-                                player setvelocity((0, 0, 0));
-                                self iPrintLnBold("You are not Allowed to ^1Lunge^7 with the ^3First Infected!");
-
-                                foreach(user in level.players) {
-                                    if(isdefined(user.initial_spawn_menu) && user.initial_spawn_menu == 1) {
-                                        if(user.guid == "0100000000043211")
-                                            user tell_raw(level.reaper_prf + "^8Lunge Avoided");
-                                        else
-                                            user iPrintLn("^8Lunge Avoided");
-                                    }
-                                }
-
-                                wait .3;
-                                self freezecontrols(0);
-                                player freezecontrols(0);
-                            }
-                        }
-                    }
-                }
-
-                wait .15;
-            }
-        }
-
-        wait .05;
-    }
-}
-
 button_track() {
 	self endon("disconnect");
 
@@ -191,12 +62,20 @@ menu_options_create() {
                 self add_menu_option("All Players", ::new_menu, "all_players", undefined, undefined, undefined, 1);
 			break;
 		case "client_menu":
+            if(isdefined(self.server_rank))
+                self add_menu_option("[ ^6" + self.server_rank + "^7 ]" + self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + self getentitynumber(), undefined, undefined, undefined, 1);
+            else
+                self add_menu_option(self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + self getentitynumber(), undefined, undefined, undefined, 1);
 			for(i = 0;i < level.players.size;i++) {
 				if(isdefined(level.players[i])) {
-					if(level.players[i].guid == self.guid)
-						self add_menu_option(level.players[i].realname + " ^8You^7", ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
-					else
-						self add_menu_option(level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
+                    if(isdefined(level.players[i].server_rank)) {
+                        if(level.players[i].name != self.name)
+                            self add_menu_option(level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
+                    }
+                    else {
+                        if(level.players[i].name != self.name)
+                            self add_menu_option("[ ^3" + level.players[i].server_rank + "^7 ]" + level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
+                    }
 				}
 			}
 			break;
@@ -267,7 +146,7 @@ give_weapon_adv(weapon) {
         level.players[self.reaper_client] giveweapon(weapon);
         level.players[self.reaper_client] switchtoweapon(weapon);
 
-        self tell_raw(level.reaper_prf + "Gave ^8" + weapon + "^7 to ^8" + level.players[self.reaper_client].name);
+        self tell_raw(level.reaper_prf + "Gave ^6" + weapon + "^7 to ^6" + level.players[self.reaper_client].name);
     }
     else {
         foreach(player in level.players) {
@@ -284,9 +163,9 @@ give_weapon_adv(weapon) {
         }
 
         if(isdefined(self.current_all_menu))
-            self tell_raw(level.reaper_prf + "Gave ^8" + weapon + "^7 to ^8" + self.current_all_menu);
+            self tell_raw(level.reaper_prf + "Gave ^6" + weapon + "^7 to ^6" + self.current_all_menu);
         else
-            self tell_raw(level.reaper_prf + "Gave ^8" + weapon + "^7 to ^8All Players");
+            self tell_raw(level.reaper_prf + "Gave ^6" + weapon + "^7 to ^6All Players");
     }
 }
 
@@ -422,6 +301,7 @@ clients_menu(menu) {
 			self add_menu_option("Kick Client", ::kickhim, level.players[i]);
 			break;
 		}
+
 		if(menu == "specific_player_list_mute_length_" + i) {
 			self add_menu_option("1 Minute", ::mutechathim, level.players[i], array(undefined,undefined,1,0));
 			self add_menu_option("10 Minutes", ::mutechathim, level.players[i], array(undefined,undefined,10,0));
@@ -526,7 +406,7 @@ super_prone(player) {
     if(!isdefined(player.super_prone)) {
         player.super_prone = 1;
         player thread super_proney();
-        self tell_raw(level.reaper_prf + "Super Prone ^8Enabled");
+        self tell_raw(level.reaper_prf + "Super Prone ^6Enabled");
     }
     else {
         player.super_prone = undefined;
@@ -611,13 +491,13 @@ attack_player(player) {
 bouncy_package(player) {
     if(!isdefined(player.bouncypackage)) {
         player.bouncypackage = 1;
-        self tell_raw(level.reaper_prf + "Bouncy Package ^8Enabled");
+        self tell_raw(level.reaper_prf + "Bouncy Package ^6Enabled");
         player thread bouncepackage_handler();
 
     }
     else {
         player.bouncypackage = undefined;
-        self tell_raw(level.reaper_prf + "Bouncy Package ^8Disabled");
+        self tell_raw(level.reaper_prf + "Bouncy Package ^6Disabled");
     }
 }
 
@@ -633,12 +513,12 @@ multi_jump(player) {
 
         player thread multijump_handler();
 
-        self tell_raw(level.reaper_prf + "Multi Jump ^8Enabled");
+        self tell_raw(level.reaper_prf + "Multi Jump ^6Enabled");
     }
     else {
         player.multijump = undefined;
 
-        self tell_raw(level.reaper_prf + "Multi Jump ^8Disabled");
+        self tell_raw(level.reaper_prf + "Multi Jump ^6Disabled");
 
         player notify("jump_end");
     }
@@ -679,12 +559,12 @@ ground_reset() {
 
 far_knife(player) {
     if(!isdefined(player.farknife)) {
-         self tell_raw(level.reaper_prf + "Far Knife ^8Enabled");
+         self tell_raw(level.reaper_prf + "Far Knife ^6Enabled");
          player thread far_knife_handler();
          player.farknife = 1;
     }
     else {
-         self tell_raw(level.reaper_prf + "Far Knife ^8Disabled");
+         self tell_raw(level.reaper_prf + "Far Knife ^6Disabled");
          player notify("endfarknife");
          player.farknife = undefined;
     }
@@ -720,30 +600,30 @@ blurry_screen(player) {
     if(!isdefined(player.blurry)) {
         player.blurry = 1;
         player setblurforplayer(10, 0);
-        self tell_raw(level.reaper_prf + "Blurry Screen ^8Enabled");
+        self tell_raw(level.reaper_prf + "Blurry Screen ^6Enabled");
     }
     else {
         player.blurry = undefined;
         player setblurforplayer(0, 0);
-        self tell_raw(level.reaper_prf + "Blurry Screen ^8Disabled");
+        self tell_raw(level.reaper_prf + "Blurry Screen ^6Disabled");
     }
 }
 
 chatty(player) {
     if(!isdefined(player.chatty)) {
-        self tell_raw("^8" + player.name + "^7 Special Chat ^8Enabled");
+        self tell_raw("^6" + player.name + "^7 Special Chat ^6Enabled");
         player.chatty = 1;
     }
     else {
         player.chatty = undefined;
 
-        self tell_raw("^8" + player.name + "^7 Special Chat ^8Disabled");
+        self tell_raw("^6" + player.name + "^7 Special Chat ^6Disabled");
     }
 }
 
 givejump(player) {
     if(!isdefined(player.jumpy)) {
-        self tell_raw("^8" + player.name + "^7 Super Jump ^8Enabled");
+        self tell_raw("^6" + player.name + "^7 Super Jump ^6Enabled");
 
         player thread superjump();
     }
@@ -752,13 +632,13 @@ givejump(player) {
 
         player.jumpy = undefined;
 
-        self tell_raw("^8" + player.name + "^7 Super Jump ^8Disabled");
+        self tell_raw("^6" + player.name + "^7 Super Jump ^6Disabled");
     }
 }
 
 givespeed(player) {
     if(!isdefined(player.speedy)) {
-        self tell_raw("^8" + player.name + "^7 Super Speed ^8Enabled");
+        self tell_raw("^6" + player.name + "^7 Super Speed ^6Enabled");
 
         player thread superspeed();
     }
@@ -767,7 +647,7 @@ givespeed(player) {
 
         player.speedy = undefined;
 
-        self tell_raw("^8" + player.name + "^7 Super Speed ^8Disabled");
+        self tell_raw("^6" + player.name + "^7 Super Speed ^6Disabled");
 
         self setmovespeedscale(1);
     }
@@ -814,7 +694,7 @@ rotatescreen(player) {
         angles = player getplayerangles();
         player setplayerangles((angles[0], angles[1], angles[2] + 90));
 
-        self iPrintLn("^8Screen Rotated!");
+        self iPrintLn("^6Screen Rotated!");
     }
 }
 
@@ -851,7 +731,7 @@ menu_think() {
 
 		if(isdefined(self.current_button) && self.current_button == "actionslot_1" || isdefined(self.current_button) && self.current_button == "actionslot_1_ads") {
 			if(!isdefined(self.menu_open) && self.current_button == "actionslot_1") {
-				self iprintln("Reaper Menu ^8Opened");
+				self iprintln("Reaper Menu ^6Opened");
 				self.menu_open = 1;
 				self thread menu_load();
 				self.ui_elements["menu_title"].alpha = 1;
@@ -903,7 +783,7 @@ menu_think() {
 		if(isdefined(self.current_button) && self.current_button == "stance") {
 			if(isdefined(self.menu_open)) {
 				if(self.menu[self.menu.size - 1].menu == "main") {
-					self iprintln("Reaper Menu ^8Closed");
+					self iprintln("Reaper Menu ^6Closed");
 
 					self notify("closed_menu");
 
@@ -974,7 +854,7 @@ menu_load() {
 		self.ui_elements["menu_title"].alpha = 1;
         self.ui_elements["menu_title"].hidewheninmenu = 1;
         self.ui_elements["menu_title"].archived = 0;
-		self.ui_elements["menu_title"] hud_settext("^8Reaper Menu v1.2.0");
+		self.ui_elements["menu_title"] hud_settext("^6Reaper Menu v1.2.0");
 	}
 
 	if(!isdefined(self.ui_elements["menu_options_1"])) {
@@ -1086,8 +966,8 @@ menu_load() {
 	self thread menu_options_create();
     self thread setup_menu_counters(x, y);
 
-	selected_color 		= 8;
-	submenu_symbol 		= ">> ";
+	selected_color 		= 6;
+	submenu_symbol 		= "> ";
 
 	self.ui_elements["menu_controls"] settext("^"+selected_color+"[{+actionslot 1}] ^7 Scroll Up     ^"+selected_color+"[{+actionslot 2}] ^7 Scroll Down     ^"+selected_color+"[{+activate}] ^7 Select     ^"+selected_color+"[{+stance}] ^7 Close Menu");
 
@@ -1181,7 +1061,7 @@ setup_menu_counters(x, y) {
 		self.ui_elements["menu_options_count_curr"].font = "small";
 		self.ui_elements["menu_options_count_curr"].fontscale = 1.1;
 		self.ui_elements["menu_options_count_curr"].alpha = 1;
-		self.ui_elements["menu_options_count_curr"].label = &"^8";
+		self.ui_elements["menu_options_count_curr"].label = &"^6";
         self.ui_elements["menu_options_count_curr"].archived = 0;
         self.ui_elements["menu_options_count_curr"].hidewheninkillcam = 1;
         self.ui_elements["menu_options_count_curr"].hidewheninmenu = 1;
@@ -1198,7 +1078,7 @@ setup_menu_counters(x, y) {
 		self.ui_elements["menu_options_count_max"].font = "small";
 		self.ui_elements["menu_options_count_max"].fontscale = 1.1;
 		self.ui_elements["menu_options_count_max"].alpha = 1;
-		self.ui_elements["menu_options_count_max"].label = &" / ^8";
+		self.ui_elements["menu_options_count_max"].label = &" / ^6";
         self.ui_elements["menu_options_count_max"].archived = 0;
         self.ui_elements["menu_options_count_max"].hidewheninkillcam = 1;
         self.ui_elements["menu_options_count_max"].hidewheninmenu = 1;
@@ -1230,12 +1110,12 @@ fast_on_end() {
 	if(!isdefined(level.fast_end)) {
 		level.fast_end = 1;
 		level thread waitfor_end_fast();
-		self iprintln("Restart on Map End ^8On");
+		self iprintln("Restart on Map End ^6On");
 	}
 	else {
 		level.fast_end = undefined;
 		level notify("stop_fast_track");
-		self iprintln("Restart on Map End ^8Off");
+		self iprintln("Restart on Map End ^6Off");
 	}
 }
 
@@ -1250,7 +1130,7 @@ changehisname(player) {
 	self endon("disconnect");
 
 	waited_message = undefined;
-	self tell_raw("^8Type His New Name in the Chat with a /");
+	self tell_raw("^6Type His New Name in the Chat with a /");
 
 	while(!isdefined(waited_message)) {
 		level waittill("say", message, who);
@@ -1263,7 +1143,7 @@ changehisname(player) {
 
 set_map(mapname) {
 	level.next_map = mapname;
-	self iprintln("Next Map set to ^8" + mapname);
+	self iprintln("Next Map set to ^6" + mapname);
 	level notify("StopTracking");
 	level thread waittill_endgame();
 }
@@ -1290,43 +1170,43 @@ setnoclip() {
 copyname(player) {
 	self.namechanged = true;
 	self setname(player.name);
-	self iprintln("^8Name Copied");
+	self iprintln("^6Name Copied");
 }
 
 resethisname(player) {
 	self endon("disconnect");
 
 	player resetName();
-	self iprintln("^8Name back to Original!");
+	self iprintln("^6Name back to Original!");
 }
 
 hidehim(player) {
 	player hide();
-	self iprintln("Player is ^8Invisible!");
+	self iprintln("Player is ^6Invisible!");
 }
 
 showhim(player) {
 	player show();
-	self iprintln("Player is ^8Visible!!");
+	self iprintln("Player is ^6Visible!!");
 }
 
 resethisclan(player) {
 	self endon("disconnect");
 
 	player resetClantag();
-	self iprintln("^8Clan back to Original!");
+	self iprintln("^6Clan back to Original!");
 }
 
 kickhim(player) {
 	kick(player GetEntityNumber());
-	self iprintln("^8Player Kicked!");
+	self iprintln("^6Player Kicked!");
 }
 
 changehisclan(player) {
 	self endon("disconnect");
 
 	waited_message = undefined;
-	self tell_raw("^8Type His New Clantag in the Chat with a /");
+	self tell_raw("^6Type His New Clantag in the Chat with a /");
 
 	while(!isdefined(waited_message)) {
 		level waittill("say", message, who);
@@ -1338,12 +1218,12 @@ changehisclan(player) {
 
 teleporttohim(player) {
 	self setorigin(player.origin);
-	self iprintln("Teleported to ^8" + player.name);
+	self iprintln("Teleported to ^6" + player.name);
 }
 
 teleporttoyou(player) {
 	player setorigin(self.origin);
-	self iprintln("^8" + player.name + "^7 Telepoted to you!");
+	self iprintln("^6" + player.name + "^7 Telepoted to you!");
 }
 
 actionSlotTwoButtonPressed() {
@@ -1372,7 +1252,7 @@ sendhimamessage(player) {
 	self endon("disconnect");
 
 	waited_message = undefined;
-	self tell_raw("^8Type his message in the chat with a /");
+	self tell_raw("^6Type his message in the chat with a /");
 
 	while(!isdefined(waited_message)) {
 		level waittill("say", message, who);
@@ -1448,12 +1328,12 @@ fakelag(player) {
 	if(!isdefined(player.fakelag)) {
 		player thread stopme();
 		player.fakelag = 1;
-		self tell_raw(player.realname + " ^8Is Lagging");
+		self tell_raw(player.realname + " ^6Is Lagging");
 	}
 	else {
 		player notify("stopthelag");
 		player.fakelag = undefined;
-		self tell_raw(player.realname + " ^8Is Lag Free Now");
+		self tell_raw(player.realname + " ^6Is Lag Free Now");
 	}
 }
 
@@ -1470,7 +1350,7 @@ stopme() {
 
 unfair_tk_aimbot(player) {
 	player thread unfair_aimbot();
-	self tell_raw("^8Player has now Unfair Throwingknife Aimbot!");
+	self tell_raw("^6Player has now Unfair Throwingknife Aimbot!");
 }
 
 unfair_aimbot() {
@@ -1508,7 +1388,7 @@ unfair_aimbot_handler(model, who) {
 
 kinda_legit_aimbot(player) {
 	player thread kinda_legit();
-	self tell_raw("^8Player has now Throwingknife Aimbot!");
+	self tell_raw("^6Player has now Throwingknife Aimbot!");
 }
 
 kinda_legit() {
@@ -1622,7 +1502,7 @@ mutechathim(player, length_array) {
 
 		writeFile(level.muted_players_path, json);
 
-        self tell_raw(level.reaper_prf + "Successfully Muted ^8" + player.name);
+        self tell_raw(level.reaper_prf + "Successfully Muted ^6" + player.name);
         scripts\_global_files\commands::add_chat_ban(player.name, guid);
 	}
     else
@@ -1758,7 +1638,7 @@ showmuteinfo(player) {
 
 		for(i = 0;i < a.size;i++) {
 		    if(issubstr(c_array[a[i]]["Gamertag"], tolower(player.name))) {
-		        self tell_raw(level.reaper_prf + "Name: ^8" + c_array[a[i]]["Gamertag"] + " ^7Reason: ^8" + c_array[a[i]]["Reason"] + "^7 Time: ^8" + c_array[a[i]]["Time"]);
+		        self tell_raw(level.reaper_prf + "Name: ^6" + c_array[a[i]]["Gamertag"] + " ^7Reason: ^6" + c_array[a[i]]["Reason"] + "^7 Time: ^6" + c_array[a[i]]["Time"]);
 		        found = 1;
 		    }
 		}
@@ -1823,12 +1703,12 @@ blackscreen(player) {
 		player.blackscreen setshader("black", 640, 480);
 
 		player setclientdvar("g_compassShowEnemies", 0);
-		self tell_raw("^8" + player.realname + "^7 Blackscreen ^8Enabled");
+		self tell_raw("^6" + player.realname + "^7 Blackscreen ^6Enabled");
 	}
 	else {
 		player.blackscreen destroy();
 		player setclientdvar("g_compassShowEnemies", 1);
-		self tell_raw("^8" + player.realname + "^7 Blackscreen ^8Disabled");
+		self tell_raw("^6" + player.realname + "^7 Blackscreen ^6Disabled");
 	}
 }
 
@@ -1836,13 +1716,13 @@ blackscreen_gay(player) {
 	if(!isdefined(player.gay_text)) {
 		player thread showgay();
 
-		self tell_raw("^8" + player.realname + "^7 Gay Text ^8Enabled");
+		self tell_raw("^6" + player.realname + "^7 Gay Text ^6Enabled");
 	}
 	else {
 		player notify("end_blackscreen");
 
 		player.gay_text destroy();
-		self tell_raw("^8" + player.realname + "^7 Gay Text ^8Disabled");
+		self tell_raw("^6" + player.realname + "^7 Gay Text ^6Disabled");
 	}
 }
 
@@ -1911,7 +1791,7 @@ playaschicken(player) {
 
 		player setclientdvar("cg_thirdperson", 1);
 
-		self tell_raw("Is Now a ^8Chicken");
+		self tell_raw("Is Now a ^6Chicken");
 	}
 	else {
 		player.chicken = undefined;
@@ -1926,14 +1806,14 @@ playaschicken(player) {
 
 		player setclientdvar("cg_thirdperson", 0);
 
-		self tell_raw("Is not a ^8Chicken");
+		self tell_raw("Is not a ^6Chicken");
 	}
 }
 
 givestreak(player, streakname) {
     if(isdefined(player)) {
         player maps\mp\killstreaks\_killstreaks::giveKillstreak(streakname);
-        self tell_raw(level.reaper_prf + "^8" + streakname + " ^7Given to ^8" + player.name);
+        self tell_raw(level.reaper_prf + "^6" + streakname + " ^7Given to ^6" + player.name);
     }
 }
 
@@ -1941,12 +1821,12 @@ supa_jump() {
     if(getdvarint("jump_height") != 600) {
         setdvar("jump_height", 600);
 
-        iPrintLnBold("Super Jump ^8Enabled");
+        iPrintLnBold("Super Jump ^6Enabled");
     }
     else {
         setdvar("jump_height", 45);
 
-        iPrintLnBold("Super Jump ^8Disabled");
+        iPrintLnBold("Super Jump ^6Disabled");
     }
 }
 
@@ -1954,11 +1834,140 @@ supa_speed() {
     if(getdvarint("g_speed") != 600) {
         setdvar("g_speed", 600);
 
-        iPrintLnBold("Super Speed ^8Enabled");
+        iPrintLnBold("Super Speed ^6Enabled");
     }
     else {
         setdvar("g_speed", 220);
 
-        iPrintLnBold("Super Speed ^8Disabled");
+        iPrintLnBold("Super Speed ^6Disabled");
+    }
+}
+
+show_chat_banned_length() {
+	self endon("disconnect");
+	self waittill("spawned_player");
+	wait 2;
+	c_array = jsonParse(readfile(level.muted_players_path));
+	time_remaining = scripts\_global_files\commands::ReturnDateDifference(getservertime(),c_array[tolower(self.guid)]["Time_End"], 1);
+	if(isstring(time_remaining)) {
+		self tell_raw("^1^7[ ^1Chat Filter^7 ] You Are ^1Chat Muted");
+		self tell_raw("^1^7[ ^1Chat Filter^7 ] " + time_remaining);
+	} else {
+		result = self unmutechat_auto();
+		if(result)
+			self tell_raw("^1^7[ ^1Chat Filter^7 ] Mute Expired, You have been ^2Unmuted^7");
+		else
+			self tell_raw("^1^7[ ^1Chat Filter^7 ] ^1Error^7 Unmuting, Contact Admin on Discord.");
+	}
+}
+
+on_spawned() {
+	self.initial_spawn_menu 	= 0;
+	self.menu 					= [];
+	self.menu[0]				= spawnstruct();
+	self.menu[0].menu			= "main";
+	self.menu[0].y 				= 20;
+	self.menu_open 				= undefined;
+	self.focused_option			= 0;
+	self.current_button 		= "";
+	self.sett_background		= 1;
+    self.current_all_menu       = undefined;
+    self.reaper_client          = undefined;
+
+    if(getdvar("net_port") == "27027")
+        self notifyonplayercommand("actionslot_1", "+talk");
+    else
+	    self notifyonplayercommand("actionslot_1", "+actionslot 1");
+
+	self notifyonplayercommand("actionslot_2", "+actionslot 2");
+
+    self notifyonplayercommand("actionslot_2", "+attack");
+	self notifyonplayercommand("actionslot_1_ads", "+speed_throw");
+
+	self notifyonplayercommand("stance", "+stance");
+    self notifyonplayercommand("stance", "togglecrouch");
+
+	self notifyonplayercommand("activate", "+activate");
+
+	if(!isdefined(self.ui_elements))
+		self.ui_elements = [];
+
+	while(1) {
+		self waittill_any("spawned_player", "skip_spawn");
+
+		if(self.initial_spawn_menu == 0) {
+			self.initial_spawn_menu = 1;
+
+			self thread menu_think();
+			self thread button_track();
+
+            wait 2;
+
+			self iPrintLn("^6Reaper Menu^7 Press ^6[{+actionslot 1}]^7 to Open");
+		}
+	}
+}
+
+anti_lunge(who) {
+    wait .05;
+    self setvelocity((0, 0, 0));
+    say_raw("^8" + self.name + "^7: I just tried to Lunge with ^3" + who.name + "^7, im such a bitch");
+}
+
+lunge_detection() {
+    self endon("disconnect");
+
+    while(1) {
+        if(self isonground())
+            self.last_time = gettime();
+
+        if(self meleebuttonpressed()) {
+            if(self getvelocity()[2] > 500 && (gettime() - self.last_time < 200)) { // 200 cus ppl can stll lunge when being in air
+                foreach(player in level.players) {
+                    if(player.team == "axis" && player != self) {
+                        if(distance2d(self.origin, player.origin) < 100) {
+                            if(isdefined(level.disable_lunge))
+                                self thread anti_lunge(player);
+
+                            foreach(user in level.players) {
+                                if(!isdefined(level.disable_lunge)) {
+                                    if(isdefined(user.initial_spawn_menu) && user.initial_spawn_menu == 1) {
+                                        if(user.guid == "0100000000043211")
+                                            user tell_raw(level.reaper_prf + "^8" + self.name + "^7[" + self.team + "] Lunged with ^1" + player.name + "^7[" + player.team + "]");
+                                        else
+                                            user iPrintLn("^8" + self.name + "^7[" + self.team + "] Lunged with ^1" + player.name + "^7[" + player.team + "]");
+                                    }
+                                }
+                            }
+
+                            if(isdefined(player.isInitialInfected)) {
+                                self freezecontrols(1);
+                                self setvelocity((0, 0, 0));
+                                player freezecontrols(1);
+                                player setvelocity((0, 0, 0));
+                                self iPrintLnBold("You are not Allowed to ^1Lunge^7 with the ^3First Infected!");
+
+                                foreach(user in level.players) {
+                                    if(isdefined(user.initial_spawn_menu) && user.initial_spawn_menu == 1) {
+                                        if(user.guid == "0100000000043211")
+                                            user tell_raw(level.reaper_prf + "^8Lunge Avoided");
+                                        else
+                                            user iPrintLn("^8Lunge Avoided");
+                                    }
+                                }
+
+                                wait .3;
+                                self freezecontrols(0);
+                                player freezecontrols(0);
+                            }
+                        }
+                    }
+                }
+
+                wait .15;
+            }
+        }
+
+        wait .05;
     }
 }

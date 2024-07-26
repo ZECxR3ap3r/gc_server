@@ -17,24 +17,6 @@ init() {
     //"C:/Users/Sam/AppData/Local/Plutonium/storage/iw5/server_data/muted_players.json"
     level.muted_players_path            = "C:/Servers/IW4mAdmin/Configuration/muted_players.json";
 
-    level.dirty_words = [];
-    level.dirty_words[level.dirty_words.size] = "nazi";
-    level.dirty_words[level.dirty_words.size] = "nig";
-    level.dirty_words[level.dirty_words.size] = "coon";
-    level.dirty_words[level.dirty_words.size] = "n i g";
-    level.dirty_words[level.dirty_words.size] = "n1g";
-    level.dirty_words[level.dirty_words.size] = "sieg";
-    level.dirty_words[level.dirty_words.size] = "heil";
-    level.dirty_words[level.dirty_words.size] = "hitler";
-    level.dirty_words[level.dirty_words.size] = "coomer";
-    level.dirty_words[level.dirty_words.size] = "nagger";
-    level.dirty_words[level.dirty_words.size] = "faggot";
-    level.dirty_words[level.dirty_words.size] = "fag";
-    level.dirty_words[level.dirty_words.size] = "n!g";
-    level.dirty_words[level.dirty_words.size] = "negro";
-    level.dirty_words[level.dirty_words.size] = "negero";
-    level.dirty_words[level.dirty_words.size] = "negrello";
-
     level.forcestancemodeon 					= false;
     level.leftgun 								= false;
     level.tinygun 								= false;
