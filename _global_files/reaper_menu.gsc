@@ -62,21 +62,28 @@ menu_options_create() {
                 self add_menu_option("All Players", ::new_menu, "all_players", undefined, undefined, undefined, 1);
 			break;
 		case "client_menu":
+            which = 0;
+            for(i = 0;i < level.players.size;i++) {
+                if(level.players[i].guid == self.guid) {
+                    which = i;
+                    break;
+                }
+            }
+
             if(isdefined(self.server_rank))
-                self add_menu_option("[ ^6" + self.server_rank + "^7 ]" + self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + self getentitynumber(), undefined, undefined, undefined, 1);
+                self add_menu_option("[ ^6" + self.server_rank + "^7 ]" + self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + which, undefined, undefined, undefined, 1);
             else
-                self add_menu_option(self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + self getentitynumber(), undefined, undefined, undefined, 1);
+                self add_menu_option(self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + which, undefined, undefined, undefined, 1);
+
 			for(i = 0;i < level.players.size;i++) {
-				if(isdefined(level.players[i])) {
-                    if(isdefined(level.players[i].server_rank)) {
-                        if(level.players[i].name != self.name)
-                            self add_menu_option(level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
-                    }
-                    else {
-                        if(level.players[i].name != self.name)
-                            self add_menu_option("[ ^3" + level.players[i].server_rank + "^7 ]" + level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
-                    }
-				}
+                if(isdefined(level.players[i].server_rank)) {
+                    if(level.players[i].realname != self.realname)
+                        self add_menu_option(level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
+                }
+                else {
+                    if(level.players[i].realname != self.realname)
+                        self add_menu_option("[ ^3" + level.players[i].server_rank + "^7 ]" + level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
+                }
 			}
 			break;
 		case "game_options":
