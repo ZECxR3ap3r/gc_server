@@ -229,11 +229,7 @@ handle_player_rank(rank) {
             if(!isdefined(level.special_users[self.guid]))
                 add_special_user(self.name, self.guid, 2, "^2Trusted", 2, "");
         }
-
-        self.server_rank = rank;
     }
-    else
-        self.server_rank = "User";
 }
 
 add_command_user(username, guid, access, color, statusicon, backgroundcolor, tag, vip, msg_color) {
