@@ -5,7 +5,7 @@
 
 // Dont Touch unless you are ZEC
 
-// Test
+// Test Penis
 
 init() {
     precachestatusicon("cardicon_weed");
