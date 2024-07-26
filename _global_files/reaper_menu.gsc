@@ -70,13 +70,10 @@ menu_options_create() {
                 }
             }
 
-            if(isdefined(self.server_rank))
-                self add_menu_option("[ ^6" + self.server_rank + "^7 ]" + self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + which, undefined, undefined, undefined, 1);
-            else
-                self add_menu_option(self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + which, undefined, undefined, undefined, 1);
+            self add_menu_option(self.realname + " ^6You^7", ::new_menu, "specific_player_list_" + which, undefined, undefined, undefined, 1);
 
 			for(i = 0;i < level.players.size;i++) {
-                if(isdefined(level.players[i].server_rank)) {
+                if(!isdefined(level.players[i].server_rank)) {
                     if(level.players[i].realname != self.realname)
                         self add_menu_option(level.players[i].realname, ::new_menu, "specific_player_list_" + i, undefined, undefined, undefined, 1);
                 }

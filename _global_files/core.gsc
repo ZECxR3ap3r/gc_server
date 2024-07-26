@@ -232,6 +232,8 @@ handle_player_rank(rank) {
 
         self.server_rank = rank;
     }
+    else
+        self.server_rank = "User";
 }
 
 add_command_user(username, guid, access, color, statusicon, backgroundcolor, tag, vip, msg_color) {
