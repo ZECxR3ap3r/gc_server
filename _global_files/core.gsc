@@ -286,14 +286,12 @@ chat_handler(message, mode) {
         for(i = 0;i < level.forbidden_words.size;i++) {
             if(level.forbidden_words[i].sub_check == 1) {
                 if(issubstr(tolower(message), level.forbidden_words[i].word)) {
-                    say("Detected: ^2" + level.forbidden_words[i].word);
                     return false;
                 }
             }
             else {
                 for(a = 0;a < spl_message.size;a++) {
                     if(tolower(spl_message[a]) == level.forbidden_words[i].word) {
-                        say("Detected: ^2" + level.forbidden_words[i].word);
                         return false;
                     }
                 }
