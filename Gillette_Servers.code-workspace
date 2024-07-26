@@ -1,0 +1,20 @@
+{
+	"folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../../../../../../../../Program Files (x86)/Steam/steamapps/common/Call of Duty Modern Warfare 3/zonetool/mod/ui_mp"
+        },
+        {
+            "path": "../../../../../../../../Program Files (x86)/Steam/steamapps/common/Call of Duty Modern Warfare 3/zonetool/mod/ui"
+        },
+        {
+            "path": "../../../../../../../../Program Files (x86)/Steam/steamapps/common/Call of Duty Modern Warfare 3/zone_source"
+        },
+        {
+            "path": "../../../../../../../../Program Files (x86)/Steam/steamapps/common/Call of Duty Modern Warfare 3/zonetool/patch_mp/ui_mp"
+        }
+    ],
+    "settings": {}
+}
