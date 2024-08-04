@@ -56,10 +56,11 @@ init() {
     add_forbidden_word("aizombies", 1);
     add_forbidden_word("aizom", 1);
     add_forbidden_word("aiz", 0);
+    add_forbidden_word("ai zombie", 1);
 
     level thread vip_clients_init();
     level thread httpget_handler();
-    level thread handle_players();
+    //level thread handle_players();
 
     if(getdvar("sv_sayname") != "^5^7[ ^5Gillette^7 ]")
     	setdvar("sv_sayname", "^5^7[ ^5Gillette^7 ]");
@@ -285,15 +286,13 @@ chat_handler(message, mode) {
         spl_message = strtok(message, " ");
         for(i = 0;i < level.forbidden_words.size;i++) {
             if(level.forbidden_words[i].sub_check == 1) {
-                if(issubstr(tolower(message), level.forbidden_words[i].word)) {
+                if(issubstr(tolower(message), level.forbidden_words[i].word))
                     return false;
-                }
             }
             else {
                 for(a = 0;a < spl_message.size;a++) {
-                    if(tolower(spl_message[a]) == level.forbidden_words[i].word) {
+                    if(tolower(spl_message[a]) == level.forbidden_words[i].word)
                         return false;
-                    }
                 }
             }
         }

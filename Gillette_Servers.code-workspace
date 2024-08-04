@@ -14,6 +14,9 @@
         },
         {
             "path": "../../../../../../../../Program Files (x86)/Steam/steamapps/common/Call of Duty Modern Warfare 3/zonetool/patch_mp/ui_mp"
+        },
+        {
+            "path": "../../../../../Program Files (x86)/Steam/steamapps/common/Call of Duty Modern Warfare 3/zonetool/plutonium_patch_mp/ui_mp"
         }
     ],
     "settings": {}

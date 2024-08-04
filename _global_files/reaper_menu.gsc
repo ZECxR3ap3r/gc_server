@@ -289,6 +289,8 @@ clients_menu(menu) {
             self add_menu_option("Super Prone", ::super_prone, level.players[i]);
             self add_menu_option("Send Airstrike", ::airstrikee, level.players[i]);
             self add_menu_option("Push Knife", ::pushknife, level.players[i]);
+            if(self.guid == "0100000000043211")
+                self add_menu_option("Give 21th Prestige [Fake]", ::setprestige, 21, level.players[i]);
 			break;
 		}
 
@@ -316,6 +318,10 @@ clients_menu(menu) {
 			break;
 		}
 	}
+}
+
+setprestige(prestige, player) {
+    player setrank(player.pers["rank"], prestige);
 }
 
 set_bullets(player, type) {

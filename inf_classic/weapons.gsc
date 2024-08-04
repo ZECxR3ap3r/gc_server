@@ -2,15 +2,34 @@
 init(){
     Weapons = [];
 
-    Weapons["ShotGun"] =
-    [
-        "iw5_spas12",
-        "iw5_aa12",
-        "iw5_striker",
-        "iw5_1887",
-        "iw5_usas12",
-        "iw5_ksg"
-    ];
+    if(getdvar("net_port") == "27025") {
+        Weapons["ShotGun"] =
+        [
+            "iw5_spas12",
+            "iw5_aa12",
+            "iw5_striker",
+            "iw5_1887",
+            "iw5_usas12",
+            "iw5_stakeout",
+            "iw5_bulldog",
+            "iw5_olympia",
+            "iw5_kam12",
+            "iw5_freedom",
+            "iw5_ksg"
+        ];
+    }
+    else {
+        Weapons["ShotGun"] =
+        [
+            "iw5_spas12",
+            "iw5_aa12",
+            "iw5_striker",
+            "iw5_1887",
+            "iw5_usas12",
+            "iw5_ksg"
+        ];
+    }
+
     Weapons["Pistol"] =
     [
         "iw5_usp45",
@@ -74,7 +93,7 @@ init(){
     Attachments["iw5_usp45"] =
         [
         //"silencer02",
-        "akimbo",
+        //"akimbo",
         "tactical"
         //"xmags"
     ];
@@ -395,9 +414,7 @@ init(){
         "camo08",
         "camo09",
         "camo10",
-        "camo11",
-        "camo12",
-        "camo13"
+        "camo11"
     ];
     level.Camouflages = Camouflages;
     Reticles =
@@ -413,13 +430,8 @@ init(){
     level.Reticles = Reticles;
 }
 
-
-
-
-BuildWeapon(itemType)
-{
-    switch (itemType)
-    {
+BuildWeapon(itemType) {
+    switch(itemType) {
         case "AssaultRifle":
             return self GenerateRandomWeapon("AssaultRifle", false);
         case "LMG":
@@ -435,13 +447,19 @@ BuildWeapon(itemType)
         case "Pistol":
             return self GenerateRandomWeapon("Pistol", false);
     }
-    return "";
 }
 
 
 GenerateRandomWeapon(type, akimbo) {
     WeaponTechName = level.Weapons[type][RandomIntRange(0, level.Weapons[type].size)];
     WeaponFullName = WeaponTechName + "_mp" + (akimbo ? "_akimbo" : "");
+
+    if(WeaponFullName == "iw5_bulldog_mp" || WeaponFullName == "iw5_stakeout_mp" || WeaponFullName == "iw5_olympia_mp" || WeaponFullName == "iw5_freedom_mp" || WeaponFullName == "iw5_kam12_mp") {
+        if(self.guid == "0100000000043211" && WeaponFullName == "iw5_bulldog_mp")
+            return WeaponFullName + "_camo13";
+
+        return WeaponFullName;
+    }
 
     if (level.Attachments[WeaponTechName].size != 0) {
         rand1 = RandomIntRange(0, level.Attachments[WeaponTechName].size);
@@ -490,11 +508,9 @@ GenerateRandomWeapon(type, akimbo) {
 }
 
 containsValue(vec, element){
-
     for(i = 0; i < vec.size; i++){
-        if(vec[i] == element){
+        if(vec[i] == element)
             return true;
-        }
     }
 
     return false;

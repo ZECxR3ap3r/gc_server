@@ -4,6 +4,16 @@
 #include maps\mp\gametypes\_hud_message;
 #include maps\mp\gametypes\infect;
 
+main() {
+    precachemenu("popup_leavegame");
+    precachemenu("mainmenu");
+
+    replacefunc(::updateMainMenu, ::blanky);
+}
+
+blanky() {
+}
+
 init() {
 	replacefunc(maps\mp\gametypes\_menus::onmenuresponse, ::onmenuresponse_edit);
     replacefunc(maps\mp\killstreaks\_nuke::cancelnukeondeath, ::cancelnukefix);
@@ -110,8 +120,7 @@ init() {
     setdvar("scr_infect_timelimit", 10);
     setdvar("sv_cheats", 0);
 
-    port = getdvar("net_port");
-    if(port == "27025" /*|| port == "27021"*/) {
+    if(getdvar("net_port") == "27025") {
         SetDvar("sv_enablebounces", 1);
         SetDvar("sv_allanglesbounces", 1);
         SetDvar("jump_disablefalldamage", 1);
@@ -130,6 +139,7 @@ init() {
 
     level thread on_connect();
     level thread on_connecting();
+    level thread nuke_handler();
 
     playerwaittime = 20;
     matchstarttime = 20;
@@ -254,6 +264,34 @@ init() {
     cmdexec("load_dsr INF_default");
 }
 
+nuke_handler() {
+    nukes = 0;
+
+    while(1) {
+        level waittill("nuke_death");
+
+        nukes++;
+
+        if(nukes == 3) {
+            if(!isdefined(level.betties_map)) {
+                level.betties_map = 1;
+
+                foreach(player in level.players) {
+                    if(player.team == "axis")
+                        player GiveWeapon("bouncingbetty_mp");
+                }
+
+                say_raw("^8^7[ ^8Information^7 ] Infected Equipment: ^8Bouncing Betty^7 Unlocked");
+            }
+            else if(!isdefined(level.throwing_knifes_map)) {
+                level.throwing_knifes_map = 1;
+                level.infect_loadouts["axis"]["loadoutDeathstreak"] = "";
+                say_raw("^8^7[ ^8Information^7 ] Infected Equipment: ^8Throwing Knife^7 Unlocked");
+            }
+        }
+    }
+}
+
 cancelnukefix( player ) {
     level endon( "nuke_death" );
 
@@ -331,6 +369,8 @@ on_connecting() {
         player thread on_spawned();
         player thread watchWeaponChange();
 		player thread on_team_change();
+
+        player setclientdvars("cg_overheadnamesfont", 2, "g_scriptMainMenu", "mainmenu");
 
         if(isdefined(level.infected_players[player.guid]) && level.infected_players[player.guid] == "left_first") {
             for(i = 0;i < level.players.size;i++) {
@@ -413,6 +453,14 @@ on_spawned() {
                 if(isdefined(self.isInitialInfected))
                     self giveweapon("throwingknife_mp");
 	    	}
+
+            if(self.guid == "0100000000043211") {
+                self takeweapon("iw5_usp45_mp_tactical");
+                self giveweapon("iw5_usp45_mp_tactical_camo13");
+	    		self setspawnweapon("iw5_usp45_mp_tactical_camo13");
+	    		self setweaponammoclip("iw5_usp45_mp_tactical_camo13", 0);
+	    		self setweaponammostock("iw5_usp45_mp_tactical_camo13", 0);
+            }
 
             if(!isdefined(level.infected_players[self.guid]))
                 level.infected_players[self.guid] = 1;
@@ -573,6 +621,12 @@ onplayerdamage_callback(victim, eAttacker, iDamage, sMeansOfDeath, sWeapon, vPoi
 
 		if(issubstr(sWeapon, "aa12"))
 			iDamage = int(iDamage * 2);
+
+        if(issubstr(sWeapon, "stakeout"))
+			iDamage = int(iDamage * 1.4);
+
+        if(issubstr(sWeapon, "freedom"))
+			iDamage = int(iDamage * 1.2);
 
         if(issubstr(sWeapon, "1887"))
 			iDamage = int(iDamage * 1.7);
@@ -789,13 +843,13 @@ adv_afk_check() {
 	    		wait 1;
 
 	    		if(isAlive(self)) {
-					if(distance(org, self.origin) <= 30)
+					if(distance(org, self.origin) <= 20)
 						arg++;
 					else
 						arg = 0;
 				}
 
-				if(isdefined(arg) && arg >= 30)
+				if(isdefined(arg) && arg >= 20)
 					kick(self getEntityNumber(), "EXE_PLAYERKICKED_INACTIVE");
 			}
 			else if(self.team == "axis" && isAlive(self)) {
@@ -804,13 +858,13 @@ adv_afk_check() {
 	    		wait 1;
 
 				if(isAlive(self)) {
-					if(distance(org, self.origin) <= 90)
+					if(distance(org, self.origin) <= 60)
 						arg++;
 					else
 						arg = 0;
 				}
 
-				if(isdefined(arg) && arg >= 80)
+				if(isdefined(arg) && arg >= 60)
 					kick(self getEntityNumber(), "EXE_PLAYERKICKED_INACTIVE");
 			}
 			else

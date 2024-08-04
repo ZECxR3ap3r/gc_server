@@ -21,14 +21,14 @@ main() {
     add_map_to_pool("mp_aground_ss", 1, 1);
     add_map_to_pool("mp_courtyard_ss", 1, 1);
     add_map_to_pool("mp_rust", 1, 0);
-    add_map_to_pool("mp_terminal_cls", 1, 0);
+    add_map_to_pool("mp_terminal_cls", 0, 0);
     add_map_to_pool("mp_nuked", 1, 0);
-    add_map_to_pool("mp_favela", 1, 0);
+    add_map_to_pool("mp_favela", 0, 1);
 
     // Custom
 
     add_map_to_pool("mp_test", 0, 0);
-    add_map_to_pool("mp_highrise", 0, 1);
+    add_map_to_pool("mp_highrise", 1, 1);
     add_map_to_pool("mp_nightshift", 0, 1);
     add_map_to_pool("mp_asylum", 0, 0);
     add_map_to_pool("mp_morningwood", 0, 1);
@@ -48,7 +48,7 @@ main() {
     add_map_to_pool("mp_pipeline", 0, 1);
     add_map_to_pool("mp_complex", 0, 0);
     add_map_to_pool("mp_derail", 0, 0);
-    add_map_to_pool("mp_fav_tropical", 0, 1);
+    //add_map_to_pool("mp_fav_tropical", 0, 1);
     add_map_to_pool("mp_checkpoint", 0, 1);
     add_map_to_pool("mp_quarry", 0, 1);
     add_map_to_pool("mp_compact", 0, 0);
@@ -101,10 +101,10 @@ main() {
     //add_map_to_pool("mp_base", 0, 1);
     add_map_to_pool("mp_marketcenter", 0, 0);
 
-    if(!fileexists(file))
+    /*if(!fileexists(file))
 		writefile(file, "69");
 
-	if(getdvar("net_port") == "27025") {
+	if(getdvar("net_port") == "27015") {
 		if(fileexists(file2)) {
 			rotation = readfile(file2);
 			if(getdvar("sv_maprotation") != rotation) {
@@ -115,6 +115,8 @@ main() {
 	}
 	else {
         last_day = readfile(file);
+
+        print("^5" + last_day);
 
 		if(day != last_day) {
 			writefile(file, day);
@@ -138,8 +140,6 @@ main() {
                 for(i = 1;i < old_rotation_strip.size;i += 2) {
                     if(isdefined(old_rotation_strip[i]))
                         old_rotation_conv += old_rotation_strip[i] + " ";
-
-                    print(old_rotation_conv);
                 }
 
                 old_rotation_strip = strtok(old_rotation_conv, " ");
@@ -204,9 +204,48 @@ main() {
         else {
             if(getdvar("sv_maprotation") != readfile(file2)) {
                 setdvar("sv_maprotation", readfile(file2));
+                setdvar("sv_maprotationcurrent", readfile(file2));
                 print("\r[ ^1Map Rotation^7 ] Rotation Successfully Updated!");
             }
         }
+    }*/
+
+    map = getdvar("mapname");
+    writeclipdata(file2, map, 1, 15);
+    data = undefined;
+
+    for(i = 0;i < level.sv_maps.size;i++) {
+        if(level.sv_maps[i].map == map)
+            data = level.sv_maps[i];
+    }
+
+    file_data = readfile(file2);
+    not_picking = strtok(file_data, "\n");
+    nextmapfound = undefined;
+
+    while(!isdefined(nextmapfound)) {
+        continue_checking = 1;
+        random = randomintrange(0, level.sv_maps.size - 1);
+
+        if(data.aids == 1 && level.sv_maps[random].aids == 1 || data.stock == 0 && level.sv_maps[random].stock == 0)
+            continue_checking = 0;
+
+        for(i = 0;i < not_picking.size;i++) {
+            if(issubstr(not_picking[i], level.sv_maps[random].map)) {
+                continue_checking = 0;
+                break;
+            }
+        }
+
+        if(continue_checking == 1) {
+            map = level.sv_maps[random].map;
+            print("\rPicked: ^5" + map);
+            setdvar("sv_maprotationcurrent", "map " + map);
+            nextmapfound = 1;
+            break;
+        }
+
+        wait .05;
     }
 }
 
