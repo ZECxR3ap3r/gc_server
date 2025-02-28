@@ -5,89 +5,90 @@
 init() {
     replacefunc(maps\mp\gametypes\_weapons::mayDropWeapon, ::mayDropWeaponReplace);
 
-    if (GetDvar("g_gametype") == "infect") {
+    // if (GetDvar("g_gametype") == "infect") {
         level.ChangeInterval = 30;
-        level.Secondary = "iw5_p99_mp_akimbo";
-        level.NextPrimary = "";
-        level.PrimaryFullName = "";
-        level.GlobalCurrentGun = "";
+
+        level.starting_weapon = [];
+        level.starting_weapon[level.starting_weapon.size] = "iw5_iw3ak74u_mp_xmags";
+        level.starting_weapon[level.starting_weapon.size] = "iw5_mp7_mp_silencer";
+        level.starting_weapon[level.starting_weapon.size] = "iw5_pp90m1_mp_silencer";
+        level.starting_weapon[level.starting_weapon.size] = "iw5_ump45_mp_silencer";
+        level.starting_weapon[level.starting_weapon.size] = "iw5_mp5_mp_xmags";
+        level.starting_weapon[level.starting_weapon.size] = "iw5_p90_mp_rof";
+        level.starting_weapon[level.starting_weapon.size] = "iw4_krissxmags_mp";
+
+        level.selected_starting_weapon = level.starting_weapon[randomint(level.starting_weapon.size)];
+
+        level.weapons_list          = [];
+        level.wpn_class_list        = [];
+        level.wpn_display_list      = [];
+        level.wpn_forced_list       = [];
+        level.wpn_forced_camo_list  = [];
+
+        level.current_weapon = [];
+
+        level.GlobalCurrentGun = "defaultweapon_mp";
+        level.GlobalCurrentGun_base = "defaultweapon";
+
+        level.gun_errors = 0;
 
         init_Weapons();
 
         level thread rotateGuns();
-    }
+    // }
 }
 
 
 rotateGuns() {
     level endon("game_ended");
-    level waittill("prematch_over");
+    // level waittill("prematch_over");
+
+    // level.current_weapon["base_weapon"]          //   
+    // level.current_weapon["give_weapon"]          //   
+    // level.current_weapon["displayname"]          //   
+    // level.current_weapon["iw4_akimbo"]           //    
+    // level.current_weapon["iw4_camo"]             //    
+    // level.current_weapon["underbarrel_launcher"] //    
 
     x = 4;
     y = 110;
 
-    level.PrimaryFullName = level.Weapons[randomInt(level.Weapons.size)];
-    passedTime = 30;
+    get_random_weapon();
+    passedTime = level.ChangeInterval;
 
     while(1) {
         passedTime -= 1;
 
         if(passedTime == 0) {
-            passedTime = 30;
+            passedTime = level.ChangeInterval;
 
             foreach(player in level.players) {
             	if(player.team == "allies") {
-                	player giveWeapon(level.PrimaryFullName);
-                    player giveStartAmmo(level.PrimaryFullName);
-                    if(IsSubStr(level.PrimaryFullName, "aa12") )
-                        player setweaponammostock(level.PrimaryFullName, 32);
+                    player give_global_weapon();
                         
-                    if(!player isUsingRemote() && player getcurrentweapon() != "none" && (player getcurrentweapon() == level.GlobalCurrentGun || player getcurrentweapon() == "alt_"+level.GlobalCurrentGun) || player.hadgunsrotated == 0)
-                        player switchtoweapon(level.PrimaryFullName);
+                    if(!player isUsingRemote() && player getcurrentweapon() != "none" && (player getcurrentweapon() == level.GlobalCurrentGun || player getcurrentweapon() == "alt_"+level.GlobalCurrentGun) || !isDefined(player.hadgunsrotated))
+                        player switchtoweaponimmediate(level.current_weapon["give_weapon"]);
                     else if(player isusingremote() || player getcurrentweapon() == "none")
-                        player.saved_lastWeapon = "iw5_mp7_mp_silencer";
+                        player.saved_lastWeapon = level.selected_starting_weapon;
 
-                    if(isDefined(player.hadgunsrotated) && player.hadgunsrotated == 0) {
-                        player TakeWeapon(player.primaryWeapon);
-                        player TakeWeapon(player.secondaryWeapon);
+                    if(!isDefined(player.hadgunsrotated)) {
                         player SetPerk("specialty_fastreload", 1, 0);
                         player SetPerk("specialty_quickswap", 1, 0);
-                    }
-                    else {
-                    	player TakeWeapon(level.GlobalCurrentGun);
-                        player TakeWeapon(level.Secondary);
-
-                        if(player.primaryWeapon == "iw5_usp45jugg_mp" && player.primaryWeapon == "iw5_riotshieldjugg_mp") {
-                        	player TakeWeapon("iw5_usp45jugg_mp");
-                            player TakeWeapon("iw5_riotshieldjugg_mp");
-                            player SetPerk("specialty_fastreload", 1, 0);
-                            player SetPerk("specialty_quickswap", 1, 0);
-                        }
-                        if(player.primaryWeapon ==  "iw5_m60jugg_mp" && player.primaryWeapon == "iw5_mp412jugg_mp") {
-                            player TakeWeapon("iw5_m60jugg_mp");
-                            player TakeWeapon("iw5_mp412jugg_mp");
-                            player SetPerk("specialty_fastreload", 1, 0);
-                            player SetPerk("specialty_quickswap", 1, 0);
-                        }
-                        if(player.primaryWeapon == "iw5_g36c_mp_m320_reflex" && player.primaryWeapon == "iw5_pp90m1_mp") {
-                            player TakeWeapon("iw5_g36c_mp_m320_reflex");
-                            player TakeWeapon("iw5_pp90m1_mp");
-                            player SetPerk("specialty_fastreload", 1, 0);
-                            player SetPerk("specialty_quickswap", 1, 0);
-                        }
+                    } else {
+                        player takeweapon(level.GlobalCurrentGun);
                     }
 
                     player.hadgunsrotated = 1;
                 }
             }
 
-            level.GlobalCurrentGun = level.PrimaryFullName;
+            level.GlobalCurrentGun = level.current_weapon["give_weapon"];
+            level.GlobalCurrentGun_base = level.current_weapon["base_weapon"];
 
-            while(1) {
-                level.PrimaryFullName = level.Weapons[randomInt(level.Weapons.size)];
-
-                if(get_weapon_name_conv(level.GlobalCurrentGun) != get_weapon_name_conv(level.PrimaryFullName) && level.PrimaryFullName != level.Secondary)
-                	break;
+            while(true) {
+                get_random_weapon();
+                if(level.GlobalCurrentGun_base != level.current_weapon["base_weapon"] && level.GlobalCurrentGun != level.selected_starting_weapon)
+                    break;
 
                 wait .05;
             }
@@ -96,7 +97,7 @@ rotateGuns() {
             if(passedtime < 4) {
                 foreach(player in level.players) {
             	    if(player.team == "allies")
-                        player iPrintLnBold("Next Gun ^8" + get_weapon_name_conv(level.PrimaryFullName) + "^7 in ^8" + passedtime);
+                        player iPrintLnBold("Next Gun ^8" + level.current_weapon["displayname"] + "^7 in ^8" + passedtime);
                 }
             }
         }
@@ -105,408 +106,377 @@ rotateGuns() {
     }
 }
 
-HadGunsRotated(player) {
-    if (isDefined(player.hadgunsrotated) && player.hadgunsrotated != 0)
-        return 1;
-    else
-        return 0;
-}
-
-inArray(array, text) {
-    for(i=0; i<array.size; i++) {
-        if(array[i] == text)
-          return 1;
-    }
-    return 0;
-}
-
 init_Weapons() {
-    level.Weapons= [];
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_44magnum_mp" , "Magnum" , "pistol" , undefined , undefined , ["akimbo","tactical","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_usp45_mp" , "USP-45" , "pistol" , undefined , undefined , ["silencer02","akimbo","tactical","xmags","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_deserteagle_mp" , "Desert Eagle" , "pistol" , undefined , undefined , ["akimbo","tactical","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_mp412_mp" , "MP412" , "pistol", undefined , undefined , ["akimbo","tactical","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_mp412jugg_mp" , "displayname" , "pistol", undefined , undefined , ["tactical","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_p99_mp" , "P99" , "pistol", undefined , undefined , ["silencer02","akimbo","tactical","xmags","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_fnfiveseven_mp" , "Five-Seven" , "pistol", undefined , undefined , ["silencer02","akimbo","tactical","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_fmg9_mp" , "FMG-9" , "machine_pistol", undefined , ["reflex","eotech"] , ["silencer02","akimbo","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_skorpion_mp" , "Skorpion" , "machine_pistol", undefined , ["reflex","eotech"] , ["silencer02","akimbo","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_mp9_mp" , "MP-9" , "machine_pistol", undefined , ["reflex","eotech"] , ["silencer02","akimbo","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_g18_mp" , "G18" , "machine_pistol", undefined , ["reflex","eotech"] , ["silencer02","akimbo","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_mp5_mp" , "MP5" , "machine_pistol", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_m9_mp" , "PM9" , "submachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_p90_mp" , "P90" , "submachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_pp90m1_mp" , "PP90M1" , "submachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer", "akimbo","rof","xmags","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_ump45_mp" , "UMP-45" , "submachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","rof","xmags","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_ump45aki_mp" , "UMP-45" , "submachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer", "akimbo","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_mp7_mp" , "MP7" , "submachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_ak47_mp" , "AK-47" , "machine_gun", ["gp25","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_m16_mp" , "M16A4" , "machine_gun", ["gl","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","rof","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_m4_mp" , "M4A1" , "machine_gun" , ["gl","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_fad_mp" , "FAD" , "machine_gun" , ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] ); 
+    manual_add_to_weapons_list( 0 , 0 , "iw5_acr_mp" , "ACR 6.8" , "machine_gun", ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_type95_mp" , "TYPE 95" , "machine_gun", ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","rof","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_mk14_mp" , "MK14" , "machine_gun", ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","rof","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_scar_mp" , "Scar-L" , "machine_gun", ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_g36c_mp" , "G36C" , "machine_gun", ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_cm901_mp" , "CM901" , "machine_gun", ["m320","shotgun"] , ["reflex","acog","eotech","thermal"] , ["silencer","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "m320_mp" , "M320" , "launcher", undefined , undefined , undefined );
+    manual_add_to_weapons_list( 0 , 0 , "rpg_mp" , "RPG-7" , "launcher", undefined , undefined , undefined );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_smaw_mp" , "SMAW" , "launcher", undefined , undefined , undefined );
+    // manual_add_to_weapons_list( 0 , 0 , "stinger_mp" , "Stinger" , "launcher", undefined , undefined , undefined );
+    manual_add_to_weapons_list( 0 , 0 , "javelin_mp" , "Javelin" , "launcher", undefined , undefined , undefined );
+    // manual_add_to_weapons_list( 0 , 0 , "xm25_mp" , "XM25" , "launcher", undefined , undefined , undefined );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_dragunov_mp" , "Dragunov" , "sniper", undefined , ["acog","thermal","vzscope"] , ["silencer03","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_msr_mp" , "MSR" , "sniper", undefined , ["acog","thermal","vzscope"] , ["silencer03","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_barrett_mp" , "Barret .50Cal" , "sniper", undefined , ["acog","thermal","vzscope"] , ["silencer03","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_rsass_mp" , "RSASS" , "sniper", undefined , ["acog","thermal","vzscope"] , ["silencer03","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_as50_mp" , "AS50" , "sniper", undefined , ["acog","thermal","vzscope"] , ["silencer03","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_l96a1_mp" , "L118A" , "sniper", undefined , ["acog","thermal","vzscope"] , ["silencer03","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_ksg_mp" , "KSG-12" , "shotgun", undefined , ["reflex","eotech"] , ["grip","silencer03","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_1887_mp" , "Model 1887" , "shotgun", undefined , undefined ,  ["akimbo","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_striker_mp" , "Striker" , "shotgun", undefined , ["reflex","eotech"] , ["grip","silencer03","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_aa12_mp" , "AA-12" , "shotgun", undefined , ["reflex","eotech"] , ["grip","silencer03","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_usas12_mp" , "USAS-12" , "shotgun", undefined , ["reflex","eotech"] , ["grip","silencer03","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_spas12_mp" , "Spas-12" , "shotgun", undefined , ["reflex","eotech"] , ["grip","silencer03","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_m60_mp" , "M60E4" , "lightmachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","grip","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_mk46_mp" , "MK46" , "lightmachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","grip","rof","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_pecheneg_mp" , "PKP Pecheneg" , "lightmachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","grip","rof","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_sa80_mp" , "L86 LSW" , "lightmachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","grip","rof","heartbeat","xmags","none"] );
+    manual_add_to_weapons_list( 0 , 0 , "iw5_mg36_mp" , "MG36" , "lightmachine_gun", undefined , ["reflex","acog","eotech","thermal"] , ["silencer","grip","rof","heartbeat","xmags","none"] );
+    
+    manual_add_to_weapons_list( 1 , 0 , "iw4_kriss_mp" , "MW2 - Vector", "submachine_gun" , undefined , undefined, ["iw4_krissacog_mp", "iw4_krisseotech_mp", "iw4_krissreflex_mp", "iw4_krisssilencer_mp", "iw4_krissthermal_mp", "iw4_krissrof_mp", "iw4_krissaki_mp"]);
+    manual_add_to_weapons_list( 0 , 0 , "iw5_iw3ak74u_mp" , "CoD4 - AK-74u", "submachine_gun" , undefined , ["reflexsmg","acogsmg","eotechsmg","thermalsmg"], ["rof", "xmags", "none"]);
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_ballista_mp" , "BO2 - Ballista", "sniper" , undefined , ["acog","thermal"] , ["silencer03","xmags","none"] );
+    // manual_add_to_weapons_list( 0 , 0 , "iw5_ballistascope_mp" , "BO2 - Ballista", "sniper" , undefined , undefined , ["silencer03","xmags","none"] );
 
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_reflex_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_silencer_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_m320_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_acog_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_heartbeat_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_eotech_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_shotgun_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_hybrid_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_xmags_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_acr_mp_thermal_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_reflex_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_silencer_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_m320_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_acog_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_heartbeat_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_eotech_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_shotgun_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_hybrid_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_xmags_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_type95_mp_thermal_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_reflex_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_silencer_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_gl_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_acog_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_heartbeat_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_eotech_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_shotgun_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_hybrid_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_xmags_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_m4_mp_thermal_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_reflex_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_silencer_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_gp25_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_acog_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_heartbeat_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_eotech_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_shotgun_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_hybrid_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_xmags_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_ak47_mp_thermal_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_reflex_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_silencer_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_gl_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_acog_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_heartbeat_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_eotech_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_shotgun_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_hybrid_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_xmags_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_m16_mp_thermal_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_reflex_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_silencer_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_m320_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_acog_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_heartbeat_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_eotech_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_shotgun_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_hybrid_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_xmags_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_mk14_mp_thermal_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_reflex_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_silencer_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_m320_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_acog_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_heartbeat_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_eotech_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_shotgun_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_hybrid_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_xmags_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_g36c_mp_thermal_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_reflex_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_silencer_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_m320_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_acog_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_heartbeat_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_eotech_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_shotgun_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_hybrid_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_xmags_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_scar_mp_thermal_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_reflex_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_silencer_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_m320_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_acog_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_heartbeat_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_eotech_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_shotgun_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_hybrid_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_xmags_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_fad_mp_thermal_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_reflex_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_silencer_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_m320_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_acog_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_heartbeat_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_eotech_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_shotgun_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_hybrid_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_xmags_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_cm901_mp_thermal_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_reflexsmg_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_silencer_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_rof_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_acogsmg_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_eotechsmg_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_hamrhybrid_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_xmags_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_mp5_mp_thermalsmg_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_reflexsmg_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_silencer_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_rof_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_acogsmg_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_eotechsmg_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_hamrhybrid_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_xmags_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_p90_mp_thermalsmg_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_reflexsmg_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_silencer_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_rof_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_acogsmg_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_eotechsmg_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_hamrhybrid_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_xmags_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_m9_mp_thermalsmg_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_reflexsmg_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_silencer_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_rof_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_acogsmg_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_eotechsmg_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_hamrhybrid_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_xmags_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_pp90m1_mp_thermalsmg_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_reflexsmg_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_silencer_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_rof_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_acogsmg_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_eotechsmg_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_hamrhybrid_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_xmags_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_ump45_mp_thermalsmg_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_reflexsmg_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_silencer_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_rof_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_acogsmg_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_eotechsmg_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_hamrhybrid_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_xmags_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_mp7_mp_thermalsmg_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_reflexsmg_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_silencer_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_rof_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_acogsmg_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_eotechsmg_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_xmags_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_ak74u_mp_thermalsmg_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_spas12_mp_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_spas12_mp_grip_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_spas12_mp_reflex_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_spas12_mp_eotech_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_spas12_mp_xmags_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_aa12_mp_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_aa12_mp_grip_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_aa12_mp_reflex_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_aa12_mp_eotech_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_aa12_mp_xmags_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_striker_mp_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_striker_mp_grip_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_striker_mp_reflex_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_striker_mp_eotech_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_striker_mp_xmags_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_1887_mp_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_usas12_mp_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_usas12_mp_grip_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_usas12_mp_reflex_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_usas12_mp_eotech_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_usas12_mp_xmags_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_ksg_mp_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_ksg_mp_grip_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_ksg_mp_reflex_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_ksg_mp_eotech_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_ksg_mp_xmags_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_reflexlmg_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_silencer_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_grip_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_acog_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_rof_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_eotechlmg_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_xmags_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_m60_mp_thermal_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_reflexlmg_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_silencer_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_grip_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_acog_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_rof_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_eotechlmg_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_xmags_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_pecheneg_mp_thermal_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_reflexlmg_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_silencer_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_grip_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_acog_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_rof_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_heartbeat_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_eotechlmg_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_xmags_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_mk46_mp_thermal_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_reflexlmg_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_silencer_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_grip_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_acog_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_rof_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_heartbeat_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_eotechlmg_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_xmags_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_sa80_mp_thermal_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_reflexlmg_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_silencer_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_grip_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_acog_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_rof_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_heartbeat_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_eotechlmg_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_xmags_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_mg36_mp_thermal_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_barrett_mp_barrettscope_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_barrett_mp_acog_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_barrett_mp_barrettscope_heartbeat_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_barrett_mp_barrettscope_xmags_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_barrett_mp_thermal_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_barrett_mp_barrettscopevz_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_msr_mp_msrscope_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_msr_mp_acog_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_msr_mp_heartbeat_msrscope_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_msr_mp_msrscope_xmags_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_msr_mp_thermal_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_msr_mp_msrscopevz_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_rsass_mp_rsassscope_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_rsass_mp_acog_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_rsass_mp_heartbeat_rsassscope_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_rsass_mp_rsassscope_xmags_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_rsass_mp_thermal_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_rsass_mp_rsassscopevz_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_dragunov_mp_dragunovscope_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_dragunov_mp_acog_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_dragunov_mp_dragunovscope_heartbeat_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_dragunov_mp_dragunovscope_xmags_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_dragunov_mp_thermal_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_dragunov_mp_dragunovscopevz_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_cheytac_mp_cheytacscope_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_cheytac_mp_acog_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_cheytac_mp_cheytacscope_heartbeat_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_cheytac_mp_cheytacscope_xmags_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_cheytac_mp_thermal_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_cheytac_mp_cheytacscopevz_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_as50_mp_as50scope_camo13";
-    level.Weapons[level.Weapons.size] = "iw5_as50_mp_acog_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_as50_mp_as50scope_heartbeat_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_as50_mp_as50scope_xmags_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_as50_mp_thermal_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_as50_mp_as50scopevz_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_l96a1_mp_l96a1scope_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_l96a1_mp_acog_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_l96a1_mp_heartbeat_l96a1scope_camo09";
-    level.Weapons[level.Weapons.size] = "iw5_l96a1_mp_l96a1scope_xmags_camo10";
-    level.Weapons[level.Weapons.size] = "iw5_l96a1_mp_thermal_camo11";
-    level.Weapons[level.Weapons.size] = "iw5_l96a1_mp_l96a1scopevz_camo12";
-    level.Weapons[level.Weapons.size] = "iw5_fmg9_mp";
-    level.Weapons[level.Weapons.size] = "iw5_fmg9_mp_silencer02";
-    level.Weapons[level.Weapons.size] = "iw5_fmg9_mp_akimbo";
-    level.Weapons[level.Weapons.size] = "iw5_fmg9_mp_xmags";
-    level.Weapons[level.Weapons.size] = "iw5_g18_mp";
-    level.Weapons[level.Weapons.size] = "iw5_g18_mp_silencer02";
-    level.Weapons[level.Weapons.size] = "iw5_g18_mp_akimbo";
-    level.Weapons[level.Weapons.size] = "iw5_g18_mp_xmags";
-    level.Weapons[level.Weapons.size] = "iw5_mp9_mp";
-    level.Weapons[level.Weapons.size] = "iw5_mp9_mp_silencer02";
-    level.Weapons[level.Weapons.size] = "iw5_mp9_mp_akimbo";
-    level.Weapons[level.Weapons.size] = "iw5_mp9_mp_xmags";
-    level.Weapons[level.Weapons.size] = "iw5_skorpion_mp";
-    level.Weapons[level.Weapons.size] = "iw5_skorpion_mp_silencer02";
-    level.Weapons[level.Weapons.size] = "iw5_skorpion_mp_akimbo";
-    level.Weapons[level.Weapons.size] = "iw5_skorpion_mp_xmags";
-    level.Weapons[level.Weapons.size] = "rpg_mp";
-    level.Weapons[level.Weapons.size] = "iw5_smaw_mp";
-    level.Weapons[level.Weapons.size] = "javelin_mp";
-    level.Weapons[level.Weapons.size] = "m320_mp";
-    level.Weapons[level.Weapons.size] = "defaultweapon_mp";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo01";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo02";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo03";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo04";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo05";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo06";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo07";
-    level.Weapons[level.Weapons.size] = "iw5_m60jugg_mp_silencer_thermal_camo08";
-    level.Weapons[level.Weapons.size] = "iw5_mk12spr_mp_thermal";
+    // build_dynamic_weapons_list();
+    // manual_add_to_weapons_list("iw5_m60jugg_mp_rof_silencer_thermal", ["forced"]);
+    // manual_add_to_weapons_list("iw5_mp412jugg_mp", ["tactical","none"]);
+    // manual_add_to_weapons_list("iw5_usp45jugg_mp", ["tactical","xmags","silencer02","none"]);
+    // manual_add_to_weapons_list("iw5_iw3ak74u_mp", ["reflex","silencer","rof","acog","eotech","xmags","thermal","none"]);
+
+    
+    level.weapons_list_keys = GetArrayKeys(level.weapons_list);
 }
 
-get_weapon_name_conv(weapon) {
-	weapon = getbaseweaponname(weapon);
-  	switch (weapon) {
-        case "iw5_m60jugg": return "AUG-HBAR";
-        case "iw5_mk12spr": return "MK12-SPR";
-	    case "iw5_44magnum": return ".44 Magnum";
-	    case "iw5_usp45": return "USP .45";
-	    case "iw5_deserteagle": return "Desert Eagle";
-	    case "iw5_mp412": return "MP412";
-	    case "iw5_g18": return "G18";
-	    case "iw5_fmg9": return "FMG9";
-	    case "iw5_mp9": return "MP9";
-	    case "iw5_skorpion": return "Skorpion";
-	    case "iw5_p99": return "P99";
-	    case "iw5_fnfiveseven": return "Five Seven";
-	    case "iw5_m320": return "M320 GLM";
-	    case "rpg": return "RPG";
-	    case "iw5_smaw": return "SMAW";
-	    case "iw5_stinger": return "Stinger";
-	    case "javelin": return "Javelin";
-	    case "iw5_m4": return "M4A1";
-	    case "iw5_riotshield": return "Riot Shield";
-	    case "iw5_ak47": return "AK-47";
-	    case "iw5_m16": return "M16";
-	    case "iw5_fad": return "FAD";
-	    case "iw5_mk46": return "MK46";
-	    case "iw5_acr": return "ACR 6.8";
-	    case "xm25": return "XM25";
-	    case "iw5_type95": return "Type 95";
-	    case "iw5_mk14": return "MK14";
-	    case "iw5_g36c": return "G36C";
-	    case "iw5_scar": return "SCAR-L";
-	    case "iw5_cm901": return "CM901";
-	    case "iw5_mp5": return "MP5";
-	    case "iw5_mp7": return "MP7";
-	    case "iw5_m9": return "PM-9";
-	    case "iw5_pp90m1": return "PP90M1";
-	    case "iw5_p90": return "P90";
-	    case "iw5_ump45": return "UMP45";
-	    case "iw5_l86lsw": return "L86 LSW";
-	    case "iw5_mg36": return "MG36";
-	    case "iw5_pecheneg": return "Pecheneg";
-	    case "iw5_sa80": return "L86 LSW";
-	    case "iw5_m60e4": return "M60E4";
-	    case "iw5_barrett": return "Barrett .50cal";
-	    case "iw5_rsass": return "RSASS";
-	    case "iw5_dragunov": return "Dragunov";
-	    case "iw5_as50": return "AS50";
-	    case "iw5_msr": return "MSR";
-	    case "iw5_l96a1": return "L118A";
-	    case "iw5_usas12": return "USAS12";
-	    case "iw5_ksg": return "KSG";
-	    case "iw5_spas12": return "SPAS-12";
-	    case "iw5_striker": return "Striker";
-	    case "iw5_aa12": return "AA-12";
-	    case "iw5_1887": return "Model 1887";
-	    case "iw5_glock18": return "G18";
-	    case "iw5_cheytac": return "Intervention";
-	    case "iw5_m60": return "M60";
-	    case "iw5_ak74u": return "AK74u";
-	    default: return weapon;
-	}
+manual_add_to_weapons_list(forced, camo, weapon_name, display_name, weapon_class, underbarrel_array, scope_array, attach_array) {
+    level.weapons_list[weapon_name] = [];
+    level.wpn_class_list[weapon_name] = weapon_class;
+    level.wpn_display_list[weapon_name] = display_name;
+
+    if(isdefined(attach_array)) {
+        foreach(attach in attach_array) {
+            level.weapons_list[weapon_name][attach] = true;
+        }
+    }
+
+    if(forced == 1) {
+        level.wpn_forced_list[weapon_name] = true;
+    }
+    if(camo > 0) {
+        level.wpn_forced_camo_list[weapon_name] = camo;
+    }
+
+    if(isdefined(underbarrel_array)) {
+        level.weapons_list[weapon_name]["underbarrel"] = [];
+        foreach(item in underbarrel_array)
+            level.weapons_list[weapon_name]["underbarrel"][item] = true;
+    }
+
+    if(isdefined(scope_array)) {
+        level.weapons_list[weapon_name]["scope"] = [];
+        foreach(item in scope_array)
+            level.weapons_list[weapon_name]["scope"][item] = true;
+    }
+}
+
+temp_dev_print(string) {
+    // print(string);
+}
+
+get_random_weapon() {
+    rand_wep = level.weapons_list_keys[randomint(level.weapons_list_keys.size)];
+    
+    rand_wep_attach_keys = GetArrayKeys(level.weapons_list[rand_wep]);
+
+    reticle = undefined;
+    camo = undefined;
+    attach1 = undefined;
+    attach2 = undefined;
+    selected_weapon = undefined;
+    temp1 = "nibba";
+    temp2 = "nibba";
+
+    if(level.weapons_list[rand_wep].size > 1 && !isdefined(level.wpn_forced_list[rand_wep])) {
+        temp1 = rand_wep_attach_keys[randomint(rand_wep_attach_keys.size)];
+        temp2 = rand_wep_attach_keys[randomint(rand_wep_attach_keys.size)];
+
+        cock = false;
+        if(temp1 == temp2)
+            cock = true;
+        if( temp1 == "underbarrel" && temp2 == "underbarrel")
+            cock = true;
+        if( temp1 == "scope" && temp2 == "scope" )
+            cock = true;
+        
+        while(cock) {
+            temp2 = rand_wep_attach_keys[randomint(rand_wep_attach_keys.size)];
+            if(temp1 == temp2)
+                continue;
+            if( temp1 == "underbarrel" && temp2 == "underbarrel")
+                continue;
+            if( temp1 == "scope" && temp2 == "scope" )
+                continue;
+
+            break;
+        }
+
+        attach1 = get_underbarrel_scope_attach(rand_wep, temp1);
+        attach2 = get_underbarrel_scope_attach(rand_wep, temp2);
+
+        if(attach1 == "none" && attach2 != "none") {
+            attach1 = attach2;
+            attach2 = "none";
+        }
+
+        return_array = check_class_camo_akimbo(rand_wep, attach1, attach2);
+
+        if(isdefined(return_array["camo"]))
+            camo = return_array["camo"];
+        
+
+        attach1 = return_array["attach1"];
+        attach2 = return_array["attach2"];
+
+        reticle = randomint(7);
+    } else {
+        attach1 = "none";
+        attach2 = "none";
+        camo = undefined;
+        reticle = 0;
+    }
+
+    level.current_weapon["base_weapon"] = rand_wep;
+    level.current_weapon["give_weapon"] = rand_wep;
+    level.current_weapon["displayname"] = level.wpn_display_list[rand_wep];
+    level.current_weapon["iw4_akimbo"] = false;
+    level.current_weapon["iw4_camo"] = 0;
+    level.current_weapon["underbarrel_launcher"] = false;
+    
+    selected_weapon = undefined;
+
+    if(isdefined(level.wpn_forced_list[rand_wep]) && !isdefined(level.wpn_forced_camo_list[rand_wep])) {
+        selected_weapon = rand_wep_attach_keys[randomint(rand_wep_attach_keys.size)];
+        if(issubstr(selected_weapon, "aki_mp"))
+            level.current_weapon["iw4_akimbo"] = true;
+    }
+    else if(isdefined(level.wpn_forced_camo_list[rand_wep])) { // broken sys for now i think
+        selected_weapon = rand_wep_attach_keys[randomint(rand_wep_attach_keys.size)]; 
+        camo = randomint(level.wpn_forced_camo_list[rand_wep]);
+        level.current_weapon["iw4_camo"] = camo;
+        if(issubstr(selected_weapon, "aki_mp"))
+            level.current_weapon["iw4_akimbo"] = true;
+    }
+    else {
+        selected_weapon = maps\mp\gametypes\_class::buildWeaponName( getbaseweaponname(rand_wep), attach1, attach2, camo, reticle );
+    }
+
+    level.current_weapon["give_weapon"] = selected_weapon;
+
+    if(level.wpn_class_list[rand_wep] == "launcher" || temp1 == "underbarrel" || temp2 == "underbarrel") {
+        level.current_weapon["underbarrel_launcher"] = true;
+    }
+
+    
+
+    // debug
+
+    // self setspawnweapon(selected_weapon);
+    // wait 0.05;
+    // if(self getcurrentweapon() != selected_weapon) {
+    //     print("^1" + selected_weapon + " ^3- Didn't Work");
+    //     level.gun_errors++;
+    //     print("^1GUN ERRORS: " + level.gun_errors);
+    //     foreach(attachment_item in rand_wep_attach_keys) {
+    //         str = attachment_item;
+    //         if(IsArray(attachment_item)) {
+    //             tmpkeys = GetArrayKeys(level.weapons_list[rand_wep][attachment_item]);
+    //             str = str + "    ^6";
+    //             foreach(attachment_item_sub in tmpkeys) {
+    //                 str = str + attachment_item_sub + "\n    ^6";
+    //             }
+    //         }
+    //     }
+    // }
+}
+
+give_global_weapon() {
+    if(!level.current_weapon["iw4_akimbo"] && level.current_weapon["iw4_camo"] == 0) {
+        self giveweapon(level.current_weapon["give_weapon"]);
+    } else if(level.current_weapon["iw4_akimbo"]) {
+        if(level.current_weapon["iw4_camo"] > 0)
+            self giveweapon(level.current_weapon["give_weapon"], level.current_weapon["iw4_camo"], 1);
+        else
+            self giveweapon(level.current_weapon["give_weapon"], 0, 1);
+    } else if(level.current_weapon["iw4_camo"] > 0) {
+        self giveweapon(level.current_weapon["give_weapon"], level.current_weapon["iw4_camo"]);
+    }
+
+    if(!level.current_weapon["underbarrel_launcher"]) {
+        stock = self GetWeaponAmmoStock(level.current_weapon["give_weapon"]);
+        frac = self GetFractionMaxAmmo(level.current_weapon["give_weapon"]);
+        val = (stock / frac) * 0.85;
+        self SetWeaponAmmoStock(level.current_weapon["give_weapon"], int(val));
+    } else {
+        self SetWeaponAmmoStock(level.current_weapon["give_weapon"], 2000);
+    }
+}
+
+
+
+
+
+
+
+get_underbarrel_scope_attach(weapon_name, attach) {
+    if( attach == "underbarrel" || attach == "scope" ) {
+        tempkey = GetArrayKeys(level.weapons_list[weapon_name][attach]);
+        return tempkey[randomint(tempkey.size)];
+    } else
+        return attach;
+}
+
+check_class_camo_akimbo(weapon_name, attach1, attach2) {
+    return_array = [];
+    return_array["attach1"] = attach1;
+    return_array["attach2"] = attach2;
+    if(level.wpn_class_list[weapon_name] == "pistol" || level.wpn_class_list[weapon_name] == "machine_pistol") {
+        if((attach1 == "akimbo" && attach2 == "tactical") || (attach1 == "tactical" && attach2 == "akimbo")) {
+            return_array["attach1"] = "akimbo";
+            return_array["attach2"] = "none";
+        }
+    } /* else {
+        camo_tmp = randomint(12);
+        if(camo_tmp == 0)
+            camo = undefined;
+        else
+            camo = camo_tmp;
+        
+        return_array["camo"] = camo;
+    } */
+    return return_array;
 }
 
 mayDropWeaponReplace(weapon) {
     return 0;
 }
+/*
+build_dynamic_weapons_list() {
+    level.weapons_list = [];
+	max_weapon_num = 61;
+	for( weaponId = 2; weaponId <= max_weapon_num; weaponId++ )
+	{
+        temp_dev_print("^1=======================");
+		weapon_name = Tablelookup( "mp/statstable.csv", 0, weaponId, 4 );
+        temp_dev_print(weapon_name);
+		if( weapon_name == "" )
+			continue;
+        if( weapon_name == "gl" || weapon_name == "iw5_m60jugg" || weapon_name == "iw5_usp45jugg")
+            continue;
+
+        weapon_name = weapon_name + "_mp";
+        temp_dev_print("^1=======================");
+
+        level.weapons_list[weapon_name] = [];
+        for(i=11;i<=21;i++) {
+            attach = tablelookup( "mp/statstable.csv", 0, weaponId, i );
+            if( attach == "hybrid" )
+			    continue;
+            if( attach == "" )
+			    break;
+            temp_dev_print(attach);
+            if(attach == "m320" || attach == "shotgun" || attach == "gp25" || attach == "gl") {
+                if(!isdefined(level.weapons_list[weapon_name]["underbarrel"]))
+                    level.weapons_list[weapon_name]["underbarrel"] = [];
+                level.weapons_list[weapon_name]["underbarrel"][attach] = true;
+            }else if(IsSubStr(attach , "reflex") || IsSubStr(attach , "acog") || IsSubStr(attach , "thermal") || IsSubStr(attach , "reflex") || IsSubStr(attach , "eotech") || IsSubStr(attach , "hybrid") || IsSubStr(attach , "scope")) {
+                if(!isdefined(level.weapons_list[weapon_name]["scope"]))
+                    level.weapons_list[weapon_name]["scope"] = [];
+                level.weapons_list[weapon_name]["scope"][attach] = true;
+            } else 
+                level.weapons_list[weapon_name][attach] = true;
+        }
+        level.weapons_list[weapon_name]["none"] = true;
+		temp_dev_print("^1=======================");
+        
+        attachment_string = "undefined_cock";
+        scope_string = "undefined_cock";
+        underbarrel_string = "undefined_cock";
+
+        if(isdefined(level.weapons_list[weapon_name]["underbarrel"])) {
+            keys = GetArrayKeys(level.weapons_list[weapon_name]["underbarrel"]);
+
+            for(i=0;i<keys.size;i++) {
+                if(underbarrel_string == "undefined_cock")
+                    underbarrel_string = "[";
+
+                if(i == keys.size - 1)
+                    underbarrel_string = underbarrel_string + keys[i] + "]";
+                else
+                    underbarrel_string = underbarrel_string + keys[i] + ",";
+            }
+        }
+
+        if(isdefined(level.weapons_list[weapon_name]["scope"])) {
+            keys = GetArrayKeys(level.weapons_list[weapon_name]["scope"]);
+
+            for(i=0;i<keys.size;i++) {
+                if(scope_string == "undefined")
+                    scope_string = "[";
+
+                if(i == keys.size - 1)
+                    scope_string = scope_string + keys[i] + "]";
+                else
+                    scope_string = scope_string + keys[i] + ",";
+            }
+        }
+
+        if(isdefined(level.weapons_list[weapon_name])) {
+            keys = GetArrayKeys(level.weapons_list[weapon_name]);
+
+            for(i=0;i<keys.size;i++) {
+                if(keys[i] == "underbarrel" || keys[i] == "scope")
+                    continue;
+
+                if(attachment_string == "undefined")
+                    attachment_string = "[";
+
+                if(i == keys.size - 1)
+                    attachment_string = attachment_string + keys[i] + "]";
+                else
+                    attachment_string = attachment_string + keys[i] + ",";
+            }
+        }
+
+        // temp_dev_print(underbarrel_string);
+        // temp_dev_print(scope_string);
+        // temp_dev_print(attachment_string);
+
+        // writefile(level.gun_filepath,  "manual_add_to_weapons_list( \"" + weapon_name + "\" , \"" + underbarrel_string + "\" , \"" + scope_string + "\" , \"" + attachment_string + "\" );\n", 1);
+	}
+}*/

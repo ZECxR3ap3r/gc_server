@@ -156,6 +156,52 @@ map_vote() {
 		map = 2;
 	}
 
+	nomap = [];
+	map1 = [];
+	map2 = [];
+	map3 = [];
+
+	foreach(player in level.players) {
+		if(!isdefined(player.selected_map)) {
+			continue;
+
+		}
+		if(player.selected_map == -1) {
+			nomap[nomap.size] = player.name;
+			player tell_raw("^8^7[ ^8Information ^7]: Remember to ^3Vote^7 for a map");
+		}
+		else if(player.selected_map == 0) {
+			map1[map1.size] = player.name;
+		} else if(player.selected_map == 1) {
+			map2[map2.size] = player.name;
+		} else if(player.selected_map == 2) {
+			map3[map3.size] = player.name;
+		}
+	}
+
+	foreach(player in level.players) {
+		if(!isdefined(str))
+			str = player.name;
+		else
+			str = str + "->" + player.name;
+	}
+	setdvar("connectionlist", str);
+
+	iprintln("^3===================");
+	iprintln("^1Didnt Vote");
+	foreach(name in nomap)
+		iprintln("^7   " + name);
+	iprintln("^2Voted For ^3" + level.tpjugg_maplist_display_name[level.map_vote_selected_maps_keys[0]] + "^7 - ^3"+ level.map_vote_selected_maps[level.map_vote_selected_maps_keys[0]].selected_edit);
+	foreach(name in map1)
+		iprintln("^7   " + name);
+	iprintln("^2Voted For ^3" + level.tpjugg_maplist_display_name[level.map_vote_selected_maps_keys[1]] + "^7 - ^3"+ level.map_vote_selected_maps[level.map_vote_selected_maps_keys[1]].selected_edit);
+	foreach(name in map2)
+		iprintln("^7   " + name);
+	iprintln("^2Voted For ^3" + level.tpjugg_maplist_display_name[level.map_vote_selected_maps_keys[2]] + "^7 - ^3"+ level.map_vote_selected_maps[level.map_vote_selected_maps_keys[2]].selected_edit);
+	foreach(name in map3)
+		iprintln("^7   " + name);
+	iprintln("^3===================");
+
 	foreach(player in level.players) {
 		if(isdefined(player.map_vote_hud["map_0"])) {
 			player.map_vote_hud["map_0_count"] setvalue(level.map_vote_best_maps[0]);
@@ -538,6 +584,13 @@ map_mapvote_selecting() {
 			self.map_vote_hud["map_" + self.selected + "_shader"].color = level.selected_color;
 			self.map_vote_hud["map_" + self.selected + "_shader2"].color = level.selected_color;
 			self playLocalSound( "new_emblem_unlocks" );
+
+			if(self.selected_map != self.selected) {
+				self.selected_map = self.selected;
+				self playLocalSound( "new_weapon_unlocks" );
+				level notify("recalculate_map");
+			}
+
 			wait 0.15;
 		}
 		else if(self.back && !self.forward) {
@@ -563,6 +616,13 @@ map_mapvote_selecting() {
 			self.map_vote_hud["map_" + self.selected + "_shader"].color = level.selected_color;
 			self.map_vote_hud["map_" + self.selected + "_shader2"].color = level.selected_color;
 			self playLocalSound( "new_emblem_unlocks" );
+
+			if(self.selected_map != self.selected) {
+				self.selected_map = self.selected;
+				self playLocalSound( "new_weapon_unlocks" );
+				level notify("recalculate_map");
+			}
+			
 			wait 0.15;
 		}
 	}

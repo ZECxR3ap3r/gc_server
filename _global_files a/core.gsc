@@ -30,48 +30,12 @@ init() {
     level.team_vip_data                 = [];
     level.admin_commands_clients        = [];
 
-    add_forbidden_word("nazi", 0);
-    add_forbidden_word("nig", 0);
-    add_forbidden_word("nigaa", 0);
-    add_forbidden_word("neger", 0);
-    add_forbidden_word("nigas", 0);
-    add_forbidden_word("igger", 0);
-    add_forbidden_word("gger", 0);
-    add_forbidden_word("nigg", 1);
-    add_forbidden_word("coon", 1);
-    add_forbidden_word("n i g", 1);
-    add_forbidden_word("n ig", 1);
-    add_forbidden_word("ni g", 1);
-    add_forbidden_word("n1g", 1);
-    add_forbidden_word("sieg", 1);
-    add_forbidden_word("heil", 1);
-    add_forbidden_word("hitler", 1);
-    add_forbidden_word("coomer", 1);
-    add_forbidden_word("nagger", 1);
-    add_forbidden_word("faggot", 1);
-    add_forbidden_word("fag", 1);
-    add_forbidden_word("n!g", 1);
-    add_forbidden_word("negro", 1);
-    add_forbidden_word("negero", 1);
-    add_forbidden_word("negrello", 1);
-    add_forbidden_word("nignog", 1);
-
     level thread vip_clients_init();
     level thread httpget_handler();
     level thread handle_players();
 
-    if(getdvar("sv_sayname") != "^8^7[ ^8Gillette^7 ]")
-    	setdvar("sv_sayname", "^8^7[ ^8Gillette^7 ]");
-}
-
-add_forbidden_word(string, substr) {
-    if(!isdefined(level.forbidden_words))
-        level.forbidden_words = [];
-
-    num = level.forbidden_words.size;
-    level.forbidden_words[num] = spawnstruct();
-    level.forbidden_words[num].word = string;
-    level.forbidden_words[num].sub_check = substr;
+    if(getdvar("sv_sayname") != "^5^7[ ^5Gillette^7 ]")
+    	setdvar("sv_sayname", "^5^7[ ^5Gillette^7 ]");
 }
 
 vip_clients_init() {
@@ -167,7 +131,7 @@ vip_clients_init() {
 
 httpget_handler() {
     port = getdvar("net_port");
-    id = "45143196162" + port;
+    id = "185206151251" + port;
 
     while(1) {
         level waittill("send_http_request");
@@ -177,7 +141,7 @@ httpget_handler() {
         req = httpGet("https://cod.gilletteclan.com/api/status/" + id + "?rng" + randomintrange(0, 999999999));
         req waittill("done", result);
 
-        if(isdefined(result) && result != "") {
+        if(isdefined(result)) {
             level.api_data = jsonparse(result);
             level notify("http_data_recieved");
         }
@@ -201,13 +165,11 @@ handle_http_data() {
     level waittill("http_data_recieved");
 
     if(isdefined(level.api_data)) {
-        if(isdefined(level.api_data[0]["players"])) {
-            for(i = 0;i < level.api_data[0]["players"].size;i++) {
-                if(self.name == level.api_data[0]["players"][i]["name"]) {
+        for(i = 0;i < level.api_data[0]["players"].size;i++) {
+            if(self.name == level.api_data[0]["players"][i]["name"]) {
 
-                    if(level.api_data[0]["players"][i]["level"] != "User")
-                        self thread handle_player_rank(level.api_data[0]["players"][i]["level"]);
-                }
+                if(level.api_data[0]["players"][i]["level"] != "User")
+                    self thread handle_player_rank(level.api_data[0]["players"][i]["level"]);
             }
         }
     }
@@ -220,30 +182,27 @@ handle_player_rank(rank) {
     if(rank == "Owner" || rank == "Administrator" || rank == "Trial Moderator" || rank == "Moderator" || rank == "Trusted") {
         if(rank == "Owner") {
             add_command_user(self.name,	self.guid, 3, 1, undefined, 1, "^1Owner", undefined, ":");
-            self thread add_menu_access(3);
+            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^1" + rank + "^7 ]");
         }
         else if(rank == "Administrator") {
             add_command_user(self.name,	self.guid, 2, 3, undefined, 3, "^3Admin");
-            self thread add_menu_access(2);
+            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^3" + rank + "^7 ]");
         }
         else if(rank == "Moderator") {
-            self thread add_menu_access(1);
             add_command_user(self.name,	self.guid, 1, 2, undefined, 2, "^2Moderator");
+            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^2" + rank + "^7 ]");
         }
         else if(rank == "Trial Moderator") {
             add_command_user(self.name,	self.guid, 0, ":", undefined, ":", "^:Trial-Mod");
-            self thread add_menu_access(0);
+            self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^;" + rank + "^7 ]");
         }
         else if(rank == "Trusted") {
-            if(!isdefined(level.special_users[self.guid]))
-                add_special_user(self.name, self.guid, 6, "^6Trusted", 6, "");
+            if(!isdefined(level.special_users[self.guid])) {
+                add_special_user(self.name, self.guid, 2, "^2Trusted", 2, "");
+                self tell_raw(level.commands_prf + "^7Logged in as ^5" + self.name + "^7 [ ^2" + rank + "^7 ]");
+            }
         }
     }
-}
-
-add_menu_access(access) {
-    self.menu_access = access;
-    self setclientdvar("menu_access", access);
 }
 
 add_command_user(username, guid, access, color, statusicon, backgroundcolor, tag, vip, msg_color) {
@@ -295,28 +254,9 @@ add_special_user(name, guid, color, tag, backgroundcolor, statusicon) {
 chat_handler(message, mode) {
     if(isdefined(message) && message != "" && message != " ") {
         args = undefined;
-
-        if(isdefined(self.has_private_chat) && self.has_private_chat == 1) {
-            self.has_private_chat = undefined;
-            return false;
-        }
-
-        spl_message = strtok(message, " ");
-        for(i = 0;i < level.forbidden_words.size;i++) {
-            if(level.forbidden_words[i].sub_check == 1) {
-                if(issubstr(tolower(message), level.forbidden_words[i].word)) {
-                    LogPrint("say;" + self.guid + ";" + self getentitynumber() + ";" + self.realname + ";" + "Chat Filtered" + "\n");
-                    return false;
-                }
-            }
-            else {
-                for(a = 0;a < spl_message.size;a++) {
-                    if(tolower(spl_message[a]) == level.forbidden_words[i].word) {
-                        LogPrint("say;" + self.guid + ";" + self getentitynumber() + ";" + self.realname + ";" + "Chat Filtered" + "\n");
-                        return false;
-                    }
-                }
-            }
+        for(i = 0;i < level.dirty_words.size;i++) {
+            if(issubstr(tolower(message), level.dirty_words[i]))
+                return false;
         }
 
         args = strtok(tolower(message), " ");
@@ -327,48 +267,41 @@ chat_handler(message, mode) {
                     level notify("StopTracking");
                     level thread waittill_endgame();
 
-                    self tell_raw(level.commands_prf + "Map Will Change to ^5" + args[1] + "^7 on Game End!");
+                    self tell(level.commands_prf + "Map Will Change to ^5" + args[1] + "^7 on Game End!");
                 }
                 else
-                    self tell_raw(level.commands_prf + "Map ^5" + args[1] + "^7 Not Found!");
+                    self tell(level.commands_prf + "Map ^5" + args[1] + "^7 Not Found!");
+
+                admin_ntf = self.name + " Executed " + args[0] + " " + args[1];
+                writefile(level.file_commands, admin_ntf + "|" + getdvar("sv_hostname"));
 
                 return false;
             }
         }
 
-        if(tolower(message) == "@moabs")
-            thread delay_say("^8^7[ ^8Information^7 ] ^8" + self.name + "^7 called in ^8" + self.player_settings["called_in_moabs"] + "^7 M.O.A.Bs");
-
-        if(isdefined(args[0]) && args[0] == "!moab"  || isdefined(args[0]) && args[0] == "!moabs" ) {
-            if(isdefined(args[1])){
-                p = playerexits(args[1]);
-                if(isdefined(p))
-                    self tell_raw("^8^7[ ^8Information^7 ] ^8" + p.name + "^7 called in ^8" + p.player_settings["called_in_moabs"] + "^7 M.O.A.Bs");
-            }
-            else
-                self tell_raw("^8^7[ ^8Information^7 ] ^8" + self.name + "^7 called in ^8" + self.player_settings["called_in_moabs"] + "^7 M.O.A.Bs");
+        if(tolower(message) == "!prestige" && isdefined(level.global_leveling_enabled)) {
+            self thread Prestige_Logic();
             return false;
         }
 
-        if(tolower(message) == "!prestige") {
-            self thread scripts\_global_files\player_stats::prestige_logic();
+        if(isdefined(args[0]) && args[0] == "!moab" && isdefined(level.global_leveling_enabled) || isdefined(args[0]) && args[0] == "!moabs" && isdefined(level.global_leveling_enabled)) {
+            if(isdefined(args[1])){
+                p = playerexits(args[1]);
+                if(isdefined(p))
+                    self thread Moab_Checking(p);
+            }
+            else
+                self thread Moab_Checking(self);
             return false;
         }
 
         if(isdefined(self.chatbanned)) {
             self tell_raw("^1^7[ ^1Chat Filter^7 ] You have been ^1Banned^7 from using the text chat.");
-            LogPrint("say;" + self.guid + ";" + self getentitynumber() + ";" + self.realname + ";" + "Chat Muted" + "\n");
             return false;
         }
 
         if(isdefined(level.chat_bans[tolower(self.guid)])) {
             self tell_raw("^1^7[ ^1Chat Filter^7 ] You have been ^1Banned^7 from using the text chat.");
-            LogPrint("say;" + self.guid + ";" + self getentitynumber() + ";" + self.realname + ";" + "Chat Muted" + "\n");
-
-            for(i = 0;i < level.players.size;i++) {
-                if(isdefined(level.admin_commands_clients[level.players[i].guid]) && level.admin_commands_clients[level.players[i].guid]["access"]== 3 && level.players[i] != self)
-                    level.players[i] tell_raw("^1^7[ ^1Muted^7 ]: ^1" + self.name + "^7: " + message);
-            }
             return false;
         }
 
@@ -429,12 +362,8 @@ chat_handler(message, mode) {
                     if(level.admin_commands_clients[self.guid]["backgroundcolor"] == "0" && !isstring(level.admin_commands_clients[self.guid]["namecolor"]))
                         say_raw("^7^" + level.admin_commands_clients[self.guid]["backgroundcolor"] + "^7[ " + level.admin_commands_clients[self.guid]["prefix"] + "^7 ] ^" + level.admin_commands_clients[self.guid]["namecolor"] + self.name + "^7: " + message);
                     else {
-                        if(isdefined(level.admin_commands_clients[self.guid]["msg_color"])) {
-                            if(self.name == "ZECxR3ap3r")
-                                say_raw("^" + level.admin_commands_clients[self.guid]["backgroundcolor"] + "" + getsubstr( self.classname, 8 ) + "^7[ " + level.admin_commands_clients[self.guid]["prefix"] + "^7 ] ^" + level.admin_commands_clients[self.guid]["namecolor"] + self.name + "^7: ^" + level.admin_commands_clients[self.guid]["msg_color"] + message);
-                            else
-                                say_raw("^" + level.admin_commands_clients[self.guid]["backgroundcolor"] + "^7[ " + level.admin_commands_clients[self.guid]["prefix"] + "^7 ] ^" + level.admin_commands_clients[self.guid]["namecolor"] + self.name + "^7: ^" + level.admin_commands_clients[self.guid]["msg_color"] + message);
-                        }
+                        if(isdefined(level.admin_commands_clients[self.guid]["msg_color"]))
+                            say_raw("^" + level.admin_commands_clients[self.guid]["backgroundcolor"] + "^7[ " + level.admin_commands_clients[self.guid]["prefix"] + "^7 ] ^" + level.admin_commands_clients[self.guid]["namecolor"] + self.name + "^7: ^" + level.admin_commands_clients[self.guid]["msg_color"] + message);
                         else
                             say_raw("^" + level.admin_commands_clients[self.guid]["backgroundcolor"] + "^7[ " + level.admin_commands_clients[self.guid]["prefix"] + "^7 ] ^" + level.admin_commands_clients[self.guid]["namecolor"] + self.name + "^7: " + message);
                     }
@@ -454,66 +383,4 @@ chat_handler(message, mode) {
             }
         }
     }
-}
-
-delay_say(message) {
-    wait 1;
-    say_raw(message);
-}
-
-csv_decode(string) {
-    if(!isdefined(string))
-        return;
-
-	result = [];
-
-	rows = strToK(string, "\r\n");
-	columns = strToK(rows[0], ",");
-
-	for (x = 1; x < rows.size; x++) {
-		row = strToK(rows[x], ",");
-
-		for (y = 0; y < columns.size; y++) {
-			r_index = (x - 1);
-			c_index = columns[y];
-
-			result[r_index][c_index] = row[y];
-		}
-	}
-
-	return result;
-}
-
-csv_encode(array) {
-	if (!isDefined(array[0])) {
-		temp_array = array;
-		array = [];
-		array[0] = temp_array;
-	}
-
-	columns = GetArrayKeys(array[0]);
-	csv_result = "";
-
-	for (x = -1; x < array.size; x++) {
-		c_i = 0;
-
-		foreach(column in columns) {
-			seperator = ",";
-			c_i++;
-
-			if (c_i == columns.size) {
-				row_id = int(x + 1);
-				seperator = (row_id == int(array.size)) ? "" : "\n";
-				c_i = 0;
-			}
-
-			if (x == -1)
-				csv_result += column + seperator;
-
-			else
-				csv_result += array[x][column] + seperator;
-		}
-	}
-
-	return csv_result;
 }

@@ -6,11 +6,792 @@
 #include scripts\inf_tpjugg\zombie;
 #include maps\mp\killstreaks\_airdrop;
 
+// vector killstreakweaponreplacething
+// helicopter move down or increase range some shit like that
+// maybe door health on firingrange edit
+
+
+
 main() {
+
+	replacefunc(::updateMainMenu, ::blanky);
+	replacefunc(maps\mp\gametypes\_gamelogic::prematchPeriod, ::blanky);
+	replacefunc(maps\mp\gametypes\_gamelogic::fixranktable, ::blanky);
+	
+	replacefunc(maps\mp\gametypes\_damage::doFinalKillcam, ::doFinalKillcam_edit);
+    replacefunc(maps\mp\gametypes\_damage::handleNormalDeath, ::handleNormalDeath_edit);
+	replacefunc(maps\mp\gametypes\_damage::handleSuicideDeath, ::handleSuicideDeath_edit);
+	replacefunc(maps\mp\gametypes\_rank::init, ::_rank_init_edit);
+	replacefunc(maps\mp\gametypes\_playerlogic::spawnplayer, ::spawnplayer_edit);
+
+
     replacefunc(maps\mp\killstreaks\_airdrop::init, ::_airdrop_init);
     replacefunc(maps\mp\gametypes\infect::chooseFirstInfected, ::_chooseFirstInfected);
     replacefunc(maps\mp\killstreaks\_remotemissile::MissileEyes, ::_MissileEyes);
+
+    precachemenu("mainmenu");
+    precachemenu("main_mod_settings");
+	precachemenu("popup_leavegame");
+
+    precachemenu("getclientdvar");
+    precachemenu("youkilled_card_display");
+    precachemenu("killedby_card_display");
+    precachemenu("enter_prestige");
+    precachemenu("sendclientdvar");
+	precachemenu("ingame_controls");
+	precacheMenu("scoreboard");
+	precacheMenu("endgameupdate");
+
+	precachemenu("quickmessage");
+	precachemenu("quickcommands");
+	precachemenu("quicksounds");
+	// precachemenu("vipmenu");
 }
+
+///////////////////////////////// for zec mod stuff vvvvvvvvvvvvvvvvvvvvvvvvv /////////////////////////////////////////////////
+
+spawnplayer_edit(cancer) {
+	self endon( "disconnect" );
+	self endon( "joined_spectators" );
+	self notify( "spawned" );
+	self notify( "end_respawn" );
+
+    if(isDefined(self.setSpawnPoint) && self maps\mp\gametypes\_playerlogic::tiValidationCheck()) {
+		spawnPoint = self.setSpawnPoint;
+
+		self playLocalSound( "tactical_spawn" );
+
+		if ( level.teamBased )
+			self playSoundToTeam( "tactical_spawn", level.otherTeam[self.team] );
+		else
+			self playSound( "tactical_spawn" );
+
+		spawnOrigin = self.setSpawnPoint.playerSpawnPos;
+		spawnAngles = self.setSpawnPoint.angles;
+
+        self.last_ti_spawn = gettime();
+
+		if ( isDefined( self.setSpawnPoint.enemyTrigger ) )
+			 self.setSpawnPoint.enemyTrigger Delete();
+
+		self.setSpawnPoint delete();
+
+		spawnPoint = undefined;
+	}
+	else {
+		spawnPoint = self [[level.getSpawnPoint]]();
+		spawnOrigin = spawnpoint.origin;
+		spawnAngles = spawnpoint.angles;
+	}
+
+	self maps\mp\gametypes\_playerlogic::setSpawnVariables();
+
+	hadSpawned = self.hasSpawned;
+	self.fauxDead = undefined;
+	self.killsThisLife = [];
+	self maps\mp\gametypes\_playerlogic::updateSessionState( "playing", "" );
+	self ClearKillcamState();
+	self.cancelkillcam = 1;
+	self.maxhealth = maps\mp\gametypes\_tweakables::getTweakableValue( "player", "maxhealth" );
+	self.health = self.maxhealth;
+	self.friendlydamage = undefined;
+	self.hasSpawned = true;
+	self.spawnTime = getTime();
+	self.wasTI = !isDefined( spawnPoint );
+	self.afk = false;
+	self.lastStand = undefined;
+	self.infinalStand = undefined;
+	self.inC4Death = undefined;
+	self.damagedPlayers = [];
+	self.moveSpeedScaler = 1;
+	self.killStreakScaler = 1;
+	self.xpScaler = 1;
+	self.objectiveScaler = 1;
+	self.inLastStand = false;
+	self.clampedHealth = undefined;
+	self.shieldDamage = 0;
+	self.shieldBulletHits = 0;
+	self.recentShieldXP = 0;
+	self.disabledWeapon = 0;
+	self.disabledWeaponSwitch = 0;
+	self.disabledOffhandWeapons = 0;
+	self resetUsability();
+	self.avoidKillstreakOnSpawnTimer = 5.0;
+
+	self maps\mp\gametypes\_playerlogic::addToAliveCount();
+
+	if(!self.wasAliveAtMatchStart) {
+		acceptablePassedTime = 20;
+		if ( getTimeLimit() > 0 && acceptablePassedTime < getTimeLimit() * 60 / 4 )
+			acceptablePassedTime = getTimeLimit() * 60 / 4;
+
+		if ( level.inGracePeriod || getTimePassed() < acceptablePassedTime * 1000 )
+			self.wasAliveAtMatchStart = true;
+	}
+
+	if(!isdefined(self.thirdperson))
+		self setClientDvar( "cg_thirdPerson", "0" );
+
+	self setDepthOfField( 0, 0, 512, 512, 4, 0 );
+	// self setClientDvar( "cg_fov", "65" );
+
+	if(isDefined(spawnPoint)) {
+		self maps\mp\gametypes\_spawnlogic::finalizeSpawnpointChoice( spawnpoint );
+		spawnOrigin = maps\mp\gametypes\_playerlogic::getSpawnOrigin( spawnpoint );
+		spawnAngles = spawnpoint.angles;
+	}
+	else
+		self.lastSpawnTime = getTime();
+
+	self.spawnPos = spawnOrigin;
+
+	self spawn( spawnOrigin, spawnAngles );
+	[[level.onSpawnPlayer]]();
+
+	if ( isDefined( spawnPoint ) )
+		self maps\mp\gametypes\_playerlogic::checkPredictedSpawnpointCorrectness( spawnPoint.origin );
+
+	self maps\mp\gametypes\_missions::playerSpawned();
+
+	prof_begin( "spawnPlayer_postUTS" );
+
+	self maps\mp\gametypes\_class::setClass(self.class);
+	self maps\mp\gametypes\_class::giveLoadout(self.team, self.class);
+
+	if ( !gameFlag( "prematch_done" ) )
+		self freezeControlsWrapper( true );
+	else
+		self freezeControlsWrapper( false );
+
+	if ( !gameFlag( "prematch_done" ) || !hadSpawned && game["state"] == "playing" )
+	{
+		self setClientDvar( "scr_objectiveText", getObjectiveHintText( self.pers["team"] ) );
+
+		team = self.pers["team"];
+
+		if ( game["status"] == "overtime" )
+			thread maps\mp\gametypes\_hud_message::oldNotifyMessage( game["strings"]["overtime"], game["strings"]["overtime_hint"], undefined, (1, 0, 0), "mp_last_stand" );
+		else if ( getIntProperty( "useRelativeTeamColors", 0 ) )
+			thread maps\mp\gametypes\_hud_message::oldNotifyMessage( game["strings"][team + "_name"], undefined, game["icons"][team] + "_blue", game["colors"]["blue"] );
+		else
+			thread maps\mp\gametypes\_hud_message::oldNotifyMessage( game["strings"][team + "_name"], undefined, game["icons"][team], game["colors"][team] );
+
+		thread maps\mp\gametypes\_playerlogic::showSpawnNotifies();
+	}
+
+	// if ( !level.splitscreen && getIntProperty( "scr_showperksonspawn", 1 ) == 1 && game["state"] != "postgame" ) { // disabling cause fuck u
+	// 	self openMenu( "perk_display" );
+	// 	self thread maps\mp\gametypes\_playerlogic::hidePerksAfterTime( 4.0 );
+	// 	self thread maps\mp\gametypes\_playerlogic::hidePerksOnDeath();
+	// }
+
+	prof_end( "spawnPlayer_postUTS" );
+	waittillframeend;
+	self.spawningAfterRemoteDeath = undefined;
+
+	self notify( "spawned_player" );
+	level notify ( "player_spawned", self );
+
+	if(game["state"] == "postgame") {
+		assert( !level.intermission );
+		self maps\mp\gametypes\_gamelogic::freezePlayerForRoundEnd();
+	}
+}
+
+doFinalKillcam_edit() {
+	level waittill ( "round_end_finished" );
+
+	level.showingFinalKillcam = true;
+
+	winner = "none";
+	if( IsDefined( level.finalKillCam_winner ) )
+		winner = level.finalKillCam_winner;
+
+	delay = level.finalKillCam_delay[ winner ];
+	victim = level.finalKillCam_victim[ winner ];
+	attacker = level.finalKillCam_attacker[ winner ];
+	attackerNum = level.finalKillCam_attackerNum[ winner ];
+	killCamEntityIndex = level.finalKillCam_killCamEntityIndex[ winner ];
+	killCamEntityStartTime = level.finalKillCam_killCamEntityStartTime[ winner ];
+	sWeapon = level.finalKillCam_sWeapon[ winner ];
+	deathTimeOffset = level.finalKillCam_deathTimeOffset[ winner ];
+	psOffsetTime = level.finalKillCam_psOffsetTime[ winner ];
+	timeRecorded = level.finalKillCam_timeRecorded[ winner ];
+	timeGameEnded = level.finalKillCam_timeGameEnded[ winner ];
+
+	if( !isDefined( victim ) ||
+		!isDefined( attacker ) )
+	{
+		level.showingFinalKillcam = false;
+		level notify( "final_killcam_done" );
+		return;
+	}
+
+	// if the killcam happened longer than 15 seconds ago, don't show it
+	killCamBufferTime = 15;
+	killCamOffsetTime = timeGameEnded - timeRecorded;
+	if( killCamOffsetTime > killCamBufferTime )
+	{
+		level.showingFinalKillcam = false;
+		level notify( "final_killcam_done" );
+		return;
+	}
+
+	if ( isDefined( attacker ) )
+		attacker.finalKill = true;
+
+	postDeathDelay = (( getTime() - victim.deathTime ) / 1000);
+
+	foreach(player in level.players){
+		player closePopupMenu();
+		player closeInGameMenu();
+		if( IsDefined( level.nukeDetonated ) && player.player_settings["render_skybox"] == 1 )
+			player VisionSetNakedForPlayer( level.nukeVisionSet, 0 );
+		else
+			player VisionSetNakedForPlayer( "", 0 ); // go to default visionset
+
+        player setclientdvars("ui_playercard_prestige", attacker.player_settings["prestige"], "playercard_type", attacker.player_settings["conv_card"]);
+
+		player.killcamentitylookat = victim getEntityNumber();
+
+		if ( (player != victim || (!isRoundBased() || isLastRound())) && player _hasPerk( "specialty_copycat" ) )
+			player _unsetPerk( "specialty_copycat" );
+
+		player thread maps\mp\gametypes\_killcam::killcam( attackerNum, killcamentityindex, killcamentitystarttime, sWeapon, postDeathDelay + deathTimeOffset, psOffsetTime, 0, 10000, attacker, victim );
+	}
+
+	wait .1;
+
+	while ( maps\mp\gametypes\_damage::anyPlayersInKillcam() )
+		wait .05;
+
+	level notify( "final_killcam_done" );
+	level.showingFinalKillcam = false;
+}
+
+registerScoreInfo( type, value )
+{ level.scoreInfo[type]["value"] = value; }
+
+_rank_init_edit() {
+	level.scoreInfo = [];
+	level.xpScale = getDvarInt( "scr_xpscale" );
+
+	if ( level.xpScale > 4 || level.xpScale < 0)
+		exitLevel( false );
+
+    registerScoreInfo( "kill", 50 );
+	registerScoreInfo( "headshot", 50 );
+	registerScoreInfo( "assist", 10 );
+	registerScoreInfo( "suicide", 0 );
+	registerScoreInfo( "teamkill", 0 );
+    registerScoreInfo( "final_rogue", 200 );
+	registerScoreInfo( "draft_rogue", 100 );
+	registerScoreInfo( "survivor", 100 );
+	registerScoreInfo( "win", 1 );
+	registerScoreInfo( "loss", 0.5 );
+	registerScoreInfo( "tie", 0.75 );
+	registerScoreInfo( "capture", 300 );
+	registerScoreInfo( "defend", 300 );
+
+	level.xpScale = min( level.xpScale, 4 );
+	level.xpScale = max( level.xpScale, 0 );
+
+	level.rankTable = [];
+	level.weaponRankTable = [];
+
+	precacheShader("white");
+
+	precacheString( &"RANK_PLAYER_WAS_PROMOTED_N" );
+	precacheString( &"RANK_PLAYER_WAS_PROMOTED" );
+	precacheString( &"RANK_WEAPON_WAS_PROMOTED" );
+	precacheString( &"RANK_PROMOTED" );
+	precacheString( &"RANK_PROMOTED_WEAPON" );
+	precacheString( &"MP_PLUS" );
+	precacheString( &"RANK_ROMANI" );
+	precacheString( &"RANK_ROMANII" );
+	precacheString( &"RANK_ROMANIII" );
+
+	precacheString( &"SPLASHES_LONGSHOT" );
+	precacheString( &"SPLASHES_PROXIMITYASSIST" );
+	precacheString( &"SPLASHES_PROXIMITYKILL" );
+	precacheString( &"SPLASHES_EXECUTION" );
+	precacheString( &"SPLASHES_AVENGER" );
+	precacheString( &"SPLASHES_ASSISTEDSUICIDE" );
+	precacheString( &"SPLASHES_DEFENDER" );
+	precacheString( &"SPLASHES_POSTHUMOUS" );
+	precacheString( &"SPLASHES_REVENGE" );
+	precacheString( &"SPLASHES_DOUBLEKILL" );
+	precacheString( &"SPLASHES_TRIPLEKILL" );
+	precacheString( &"SPLASHES_MULTIKILL" );
+	precacheString( &"SPLASHES_BUZZKILL" );
+	precacheString( &"SPLASHES_COMEBACK" );
+	precacheString( &"SPLASHES_KNIFETHROW" );
+	precacheString( &"SPLASHES_ONE_SHOT_KILL" );
+
+	level.maxRank = int(tableLookup( "mp/rankTable.csv", 0, "maxrank", 1 ));
+	level.maxPrestige = int(tableLookup( "mp/rankIconTable.csv", 0, "maxprestige", 1 ));
+
+	rankId = 0;
+	rankName = tableLookup( "mp/ranktable.csv", 0, rankId, 1 );
+
+	while ( isDefined( rankName ) && rankName != "" )
+	{
+		level.rankTable[rankId][1] = tableLookup( "mp/ranktable.csv", 0, rankId, 1 );
+		level.rankTable[rankId][2] = tableLookup( "mp/ranktable.csv", 0, rankId, 2 );
+		level.rankTable[rankId][3] = tableLookup( "mp/ranktable.csv", 0, rankId, 3 );
+		level.rankTable[rankId][7] = tableLookup( "mp/ranktable.csv", 0, rankId, 7 );
+
+		precacheString( tableLookupIString( "mp/ranktable.csv", 0, rankId, 16 ) );
+
+		rankId++;
+		rankName = tableLookup( "mp/ranktable.csv", 0, rankId, 1 );
+	}
+
+	weaponMaxRank = int(tableLookup( "mp/weaponRankTable.csv", 0, "maxrank", 1 ));
+	for( i = 0; i < weaponMaxRank + 1; i++ )
+	{
+		level.weaponRankTable[i][1] = tableLookup( "mp/weaponRankTable.csv", 0, i, 1 );
+		level.weaponRankTable[i][2] = tableLookup( "mp/weaponRankTable.csv", 0, i, 2 );
+		level.weaponRankTable[i][3] = tableLookup( "mp/weaponRankTable.csv", 0, i, 3 );
+	}
+
+	level thread maps\mp\gametypes\_rank::patientZeroWaiter();
+	level thread maps\mp\gametypes\_rank::onPlayerConnect();
+}
+
+handleNormalDeath_edit( lifeId, attacker, eInflictor, sWeapon, sMeansOfDeath ) {
+	attacker thread maps\mp\_events::killedPlayer( lifeId, self, sWeapon, sMeansOfDeath );
+
+    self setclientdvars("ui_playercard_prestige", attacker.player_settings["prestige"], "playercard_type", attacker.player_settings["conv_card"]);
+    attacker setclientdvars("ui_playercard_prestige", self.player_settings["prestige"], "playercard_type", self.player_settings["conv_card"]);
+
+	attacker SetCardDisplaySlot( self, 8 );
+	attacker openMenu( "youkilled_card_display" );
+
+	self SetCardDisplaySlot( attacker, 7 );
+	self openMenu( "killedby_card_display" );
+
+	if ( sMeansOfDeath == "MOD_HEAD_SHOT" ) {
+		attacker incPersStat( "headshots", 1 );
+		attacker.headshots = attacker getPersStat( "headshots" );
+		attacker incPlayerStat( "headshots", 1 );
+
+		if ( isDefined( attacker.lastStand ) )
+			value = maps\mp\gametypes\_rank::getScoreInfoValue( "kill" ) * 2;
+		else
+			value = undefined;
+
+		attacker playLocalSound( "bullet_impact_headshot_2" );
+	}
+	else {
+		if ( isDefined( attacker.lastStand ) )
+			value = maps\mp\gametypes\_rank::getScoreInfoValue( "kill" ) * 2;
+		else
+			value = undefined;
+	}
+
+	attacker thread maps\mp\gametypes\_rank::giveRankXP( "kill", value, sWeapon, sMeansOfDeath );
+
+	attacker incPersStat( "kills", 1 );
+	attacker.kills = attacker getPersStat( "kills" );
+	attacker updatePersRatio( "kdRatio", "kills", "deaths" );
+	attacker maps\mp\gametypes\_persistence::statSetChild( "round", "kills", attacker.kills );
+	attacker incPlayerStat( "kills", 1 );
+
+	lastKillStreak = attacker.pers["cur_kill_streak"];
+
+	if ( isAlive( attacker ) || attacker.streakType == "support" ) {
+		if ( attacker killShouldAddToKillstreak( sWeapon ) ) {
+			attacker thread maps\mp\killstreaks\_killstreaks::giveAdrenaline( "kill" );
+			attacker.pers["cur_kill_streak"]++;
+
+			if( !isKillstreakWeapon( sWeapon ) )
+				attacker.pers["cur_kill_streak_for_nuke"]++;
+
+			numKills = 25;
+			if( attacker _hasPerk( "specialty_hardline" ) )
+				numKills--;
+
+			if( !isKillstreakWeapon( sWeapon ) && attacker.pers["cur_kill_streak_for_nuke"] == numKills && !isdefined(attacker.hasnuke)) {
+                attacker.hasnuke = 1;
+				attacker thread maps\mp\killstreaks\_killstreaks::giveKillstreak( "nuke", false, true, attacker, true );
+				attacker thread maps\mp\gametypes\_hud_message::killstreakSplashNotify( "nuke", numKills );
+			}
+		}
+
+		attacker setPlayerStatIfGreater( "killstreak", attacker.pers["cur_kill_streak"] );
+
+		if ( attacker.pers["cur_kill_streak"] > attacker getPersStat( "longestStreak" ) )
+			attacker setPersStat( "longestStreak", attacker.pers["cur_kill_streak"] );
+	}
+
+	attacker.pers["cur_death_streak"] = 0;
+
+	if(attacker.pers["cur_kill_streak"] > attacker maps\mp\gametypes\_persistence::statGetChild( "round", "killStreak") )
+		attacker maps\mp\gametypes\_persistence::statSetChild( "round", "killStreak", attacker.pers["cur_kill_streak"] );
+
+	if(attacker.pers["cur_kill_streak"] > attacker.kill_streak) {
+		attacker maps\mp\gametypes\_persistence::statSet( "killStreak", attacker.pers["cur_kill_streak"] );
+		attacker.kill_streak = attacker.pers["cur_kill_streak"];
+	}
+
+	maps\mp\gametypes\_gamescore::givePlayerScore( "kill", attacker, self );
+	maps\mp\_skill::processKill( attacker, self );
+
+	if ( isDefined( level.ac130player ) && level.ac130player == attacker )
+		level notify( "ai_killed", self );
+
+	//if ( lastKillStreak != attacker.pers["cur_kill_streak"] )
+	level notify ( "player_got_killstreak_" + attacker.pers["cur_kill_streak"], attacker );
+	attacker notify( "got_killstreak" , attacker.pers["cur_kill_streak"] );
+
+	attacker notify ( "killed_enemy" );
+
+	if(isDefined(self.UAVRemoteMarkedBy)) {
+		if ( self.UAVRemoteMarkedBy != attacker )
+			self.UAVRemoteMarkedBy thread maps\mp\killstreaks\_remoteuav::remoteUAV_processTaggedAssist( self );
+		self.UAVRemoteMarkedBy = undefined;
+	}
+
+	if ( isDefined( level.onNormalDeath ) && attacker.pers[ "team" ] != "spectator" )
+		[[ level.onNormalDeath ]]( self, attacker, lifeId );
+
+	if ( !level.teamBased ) {
+		self.attackers = [];
+		return;
+	}
+
+	level thread maps\mp\gametypes\_battlechatter_mp::sayLocalSoundDelayed( attacker, "kill", 0.75 );
+
+	if ( isDefined( self.lastAttackedShieldPlayer ) && isDefined( self.lastAttackedShieldTime ) && self.lastAttackedShieldPlayer != attacker )
+	{
+		if ( getTime() - self.lastAttackedShieldTime < 2500 )
+		{
+			self.lastAttackedShieldPlayer thread maps\mp\gametypes\_gamescore::processShieldAssist( self );
+
+			// if you are using the assists perk, then every assist is a kill towards a killstreak
+			if( self.lastAttackedShieldPlayer _hasPerk( "specialty_assists" ) )
+			{
+				self.lastAttackedShieldPlayer.pers["assistsToKill"]++;
+
+				if( !( self.lastAttackedShieldPlayer.pers["assistsToKill"] % 2 ) )
+				{
+					self.lastAttackedShieldPlayer maps\mp\gametypes\_missions::processChallenge( "ch_hardlineassists" );
+					self.lastAttackedShieldPlayer maps\mp\killstreaks\_killstreaks::giveAdrenaline( "kill" );
+					self.lastAttackedShieldPlayer.pers["cur_kill_streak"]++;
+				}
+			}
+			else
+			{
+				self.lastAttackedShieldPlayer.pers["assistsToKill"] = 0;
+			}
+		}
+		else if ( isAlive( self.lastAttackedShieldPlayer ) && getTime() - self.lastAttackedShieldTime < 5000 )
+		{
+			forwardVec = vectorNormalize( anglesToForward( self.angles ) );
+			shieldVec = vectorNormalize( self.lastAttackedShieldPlayer.origin - self.origin );
+
+			if ( vectorDot( shieldVec, forwardVec ) > 0.925 )
+			{
+				self.lastAttackedShieldPlayer thread maps\mp\gametypes\_gamescore::processShieldAssist( self );
+
+				if( self.lastAttackedShieldPlayer _hasPerk( "specialty_assists" ) )
+				{
+					self.lastAttackedShieldPlayer.pers["assistsToKill"]++;
+
+					if( !( self.lastAttackedShieldPlayer.pers["assistsToKill"] % 2 ) )
+					{
+						self.lastAttackedShieldPlayer maps\mp\gametypes\_missions::processChallenge( "ch_hardlineassists" );
+						self.lastAttackedShieldPlayer maps\mp\killstreaks\_killstreaks::giveAdrenaline( "kill" );
+						self.lastAttackedShieldPlayer.pers["cur_kill_streak"]++;
+					}
+				}
+				else
+				{
+					self.lastAttackedShieldPlayer.pers["assistsToKill"] = 0;
+				}
+			}
+		}
+	}
+
+	if ( isDefined( self.attackers )) {
+		foreach ( player in self.attackers ) {
+			if ( !isDefined( player ) )
+				continue;
+
+			if ( player == attacker )
+				continue;
+
+			player thread maps\mp\gametypes\_gamescore::processAssist( self );
+
+			if( player _hasPerk( "specialty_assists" ) ) {
+				player.pers["assistsToKill"]++;
+
+				if( !( player.pers["assistsToKill"] % 2 ) ) {
+					player maps\mp\gametypes\_missions::processChallenge( "ch_hardlineassists" );
+					player maps\mp\killstreaks\_killstreaks::giveAdrenaline( "kill" );
+					player.pers["cur_kill_streak"]++;
+
+					numKills = 25;
+					if( player _hasPerk( "specialty_hardline" ) )
+						numKills--;
+
+					if( player.pers["cur_kill_streak"] == numKills && !isdefined(player.hasnuke)) {
+                        player.hasnuke = 1;
+						player thread maps\mp\killstreaks\_killstreaks::giveKillstreak( "nuke", false, true, player, true );
+						player thread maps\mp\gametypes\_hud_message::killstreakSplashNotify( "nuke", numKills );
+					}
+				}
+			}
+			else
+				player.pers["assistsToKill"] = 0;
+		}
+		self.attackers = [];
+	}
+}
+
+handleSuicideDeath_edit( sMeansOfDeath, sHitLoc ) {
+    self setclientdvars("ui_playercard_prestige", self.player_settings["prestige"], "playercard_type", self.player_settings["conv_card"]);
+
+	self SetCardDisplaySlot( self, 7 );
+	self openMenu( "killedby_card_display" );
+
+	self thread [[ level.onXPEvent ]]( "suicide" );
+	self incPersStat( "suicides", 1 );
+	self.suicides = self getPersStat( "suicides" );
+
+	if ( sMeansOfDeath == "MOD_SUICIDE" && sHitLoc == "none" && isDefined( self.throwingGrenade ) )
+		self.lastGrenadeSuicideTime = gettime();
+}
+
+enter_prestige() {
+    if(self.player_settings["xp"] == 1746199 && self.player_settings["prestige"] < level.maxPrestige) {
+		var_1 = self maps\mp\gametypes\_rank::getRankForXp(0);
+		self.player_settings["xp"] = 0;
+
+		var_2 = self.player_settings["prestige"] + 1;
+        self.player_settings["prestige"] = var_2;
+
+		self setRank( var_1, var_2 );
+
+		self tell_raw("^8^7[ ^8Information ^7]: You Are Now Prestige ^8" + var_2);
+        iprintln("^8" + self.name + "^7 is now Prestige: ^8" + var_2);
+
+        self setclientdvar("inf_prestige", self.player_settings["prestige"]);
+
+        self notify("player_stats_updated");
+	}
+}
+
+menu_handler() {
+    self endon("disconnect");
+
+    base_keys = getarraykeys(level.base_values);
+
+    while(1) {
+        self waittill("menuresponse", menu, response);
+
+		// print(menu, response);
+
+		if ( response == "back" )
+		{
+			self closepopupMenu();
+			self closeInGameMenu();
+			continue;
+		}
+
+        self setclientdvars("inf_prestige", self.player_settings["prestige"], "inf_moabs", self.player_settings["called_in_moabs"], "inf_cancel_moabs", self.player_settings["cancelled_moabs"]);
+
+        if(response == "enter_prestige")
+            self thread enter_prestige();
+
+        if(menu == "main_mod_settings") {
+            if(issubstr(response, "prestige_selected")) {
+                for(i = 0;i < level.maxPrestige + 1;i++) {
+                    if(response == "prestige_selected_" + i) {
+                        if(self.player_settings["prestige"] >= i) {
+                            self.player_settings["choosen_pres"] = i;
+                            self setrank(self.rank, self.player_settings["choosen_pres"]);
+                            self notify("player_stats_updated");
+                            self tell_raw("^8^7[ ^8Information ^7]: Prestige Icon Successfully Updated!");
+                        }
+                    }
+                }
+            }
+            else if(issubstr(response, "calling_cards/")) {
+                card = self scripts\_global_files\player_stats::convert_callingcard_data(response);
+
+                if(isdefined(card)) {
+                    self.player_settings["conv_card"] = card;
+                    self tell_raw("^8^7[ ^8Information ^7]: Callingcard Successfully Updated!");
+                    self notify("player_stats_updated");
+                }
+            }
+            else if(issubstr(response, "inf_settings_")) {
+                for(i = 0;i < base_keys.size;i++) {
+                    if(response == "inf_settings_" + base_keys[i]) {
+                        if(self.player_settings[base_keys[i]] == 0)
+                            self.player_settings[base_keys[i]] = 1;
+                        else if(self.player_settings[base_keys[i]] == 1)
+                            self.player_settings[base_keys[i]] = 0;
+
+                        if(response == "inf_settings_ui_scorelimit") {
+                            if(self.player_settings["ui_scorelimit"] == 1)
+                                self setclientdvar("inf_scorelimit", 18);
+                            else
+                                self setclientdvar("inf_scorelimit", 0);
+                        }
+
+                        self notify("player_stats_updated");
+                    }
+                }
+            }
+            else if(issubstr(response, "teamcolor_surv_")) {
+                if(response == "teamcolor_surv_1") {
+                    self.player_settings["inf_teamcolor_surv"] = 1;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Blue");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", ".15 .15 .85 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_2") {
+                    self.player_settings["inf_teamcolor_surv"] = 2;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Pink");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", "1 0.41 0.71 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_3") {
+                    self.player_settings["inf_teamcolor_surv"] = 3;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Green");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", ".15 .85 .15 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_4") {
+                    self.player_settings["inf_teamcolor_surv"] = 4;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Red");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", ".85 .15 .15 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_5") {
+                    self.player_settings["inf_teamcolor_surv"] = 5;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Yellow");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", ".85 .85 .15 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_6") {
+                    self.player_settings["inf_teamcolor_surv"] = 6;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Orange");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", "1 0.5 0 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_7") {
+                    self.player_settings["inf_teamcolor_surv"] = 7;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Cyan");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", ".15 .85 .85 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_8") {
+                    self.player_settings["inf_teamcolor_surv"] = 8;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Purple");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", "0.5 0 0.5 1");
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_surv_0") {
+                    self.player_settings["inf_teamcolor_surv"] = 0;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Survivors^7 Changed to ^8Default");
+                    self SetClientDvars("inf_teamcolor_surv", self.player_settings["inf_teamcolor_surv"], "cg_teamcolor_allies", "0 .7 1 1");
+                    self notify("player_stats_updated");
+                }
+            }
+            else if(issubstr(response, "teamcolor_inf_")) {
+                if(response == "teamcolor_inf_1") {
+                    self.player_settings["inf_teamcolor_inf"] = 1;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Blue");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", ".15 .15 .85 1");  // Blue
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_2") {
+                    self.player_settings["inf_teamcolor_inf"] = 2;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Pink");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", "1 0.41 0.71 1");  // Pink
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_3") {
+                    self.player_settings["inf_teamcolor_inf"] = 3;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Green");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", ".15 .85 .15 1");  // Green
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_4") {
+                    self.player_settings["inf_teamcolor_inf"] = 4;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Red");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", ".85 .15 .15 1");  // Red
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_5") {
+                    self.player_settings["inf_teamcolor_inf"] = 5;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Yellow");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", ".85 .85 .15 1");  // Yellow
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_6") {
+                    self.player_settings["inf_teamcolor_inf"] = 6;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Orange");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", "1 0.5 0 1");  // Orange
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_7") {
+                    self.player_settings["inf_teamcolor_inf"] = 7;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Cyan");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", ".15 .85 .85 1");  // Cyan
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_8") {
+                    self.player_settings["inf_teamcolor_inf"] = 8;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Purple");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", "0.5 0 0.5 1");  // Purple
+                    self notify("player_stats_updated");
+                }
+                else if(response == "teamcolor_inf_0") {
+                    self.player_settings["inf_teamcolor_inf"] = 0;
+                    self tell_raw("^8^7[ ^8Information ^7]: Teamcolor for ^:Infected^7 Changed to ^8Default");
+                    self SetClientDvars("inf_teamcolor_inf", self.player_settings["inf_teamcolor_inf"], "cg_teamcolor_axis", "0 .7 1 1");  // Default
+                    self notify("player_stats_updated");
+                }
+            }
+
+            if(response == "inf_settings_render_skybox") {
+                self tell_raw("^8^7[ ^8Information ^7]: Custom Skybox unavailable on ^5TP ^7Jugg");
+                // if(self.player_settings["render_skybox"] == 0 && isdefined(self.skybox_model)) {
+                //     self.skybox_model delete();
+                //     self notify("skybox_change");
+                // }
+                // else if(self.player_settings["render_skybox"] == 1 && !isdefined(self.skybox_model) && level.skybox != 0)
+                //     self thread scripts\inf_classic\main::change_skybox();
+            }
+        }
+    }
+}
+
+getclientdvar(dvar) {
+    wait 5;
+
+    self setclientdvar("getting_dvar", "clantag");
+    self openmenu("getclientdvar");
+
+    while(1) {
+        self waittill("menuresponse", menu, response);
+
+        if(menu == "getclientdvar") {
+            if(dvar == "clantag") {
+                self.clantag = response;
+                print("^5" + self.clantag);
+                break;
+            }
+        }
+    }
+}
+
+///////////////////////////////// for zec mod stuff ^^^^^^^^^^^^^^^^ /////////////////////////////////////////////////
 
 init() {
     replacefunc(maps\mp\gametypes\infect::setinfectedmsg, ::setinfectedmsg_edit);
@@ -27,7 +808,15 @@ init() {
 
     setdvar("prefix", "\r[ ^5TP JUGG^7 ] ");
 
+    precacheshader("xp");
+    precacheshader("hudcolorbar");
+
 	SetDvar("scr_nukecancelmode", 1);
+	// SetDvar("sv_cheats", 0);
+	SetDvar("g_speed", 190);
+	SetDvar("g_gravity", 800);
+	SetDvar("jump_height", 39);
+	SetDvar("player_sustainAmmo", 0);
 
 	setdvar("g_scorescolor_allies", "0 .7 1 1");
 	setdvar("g_scorescolor_axis", ".75 .25 .25 1");
@@ -61,13 +850,24 @@ init() {
 	level.sentrySettings["sentry_minigun"].maxHealth              = 400;
     level.turretSettings[ "mg_turret" ].maxHealth                 =	400;
     level.ospreySettings["escort_airdrop"].timeOut                = 40;
-    level.ospreySettings["osprey_gunner"].timeOut                 = 30;
+    level.ospreySettings["osprey_gunner"].timeOut                 = 50;
     level.turretSettings["mg_turret"].timeOut                     = 45;
-    level.tankSettings["remote_tank"].timeOut                     = 40;
+    level.tankSettings["remote_tank"].timeOut                     = 90;
+	level.tankSettings[ "remote_tank" ].maxHealth =				500;
+	level.imsSettings[ "ims" ].lifeSpan =				180.0;
+	level.imsSettings[ "ims" ].gracePeriod =			0.4; // time once triggered when it'll fire
+
+	level.players_num_list = [];
+
+	level.enable_debug_mode = getdvarint("sv_cheats");
 
     level thread on_connecting();
 	level thread on_connect();
     level thread level_hud_handler();
+
+	if(!level.enable_debug_mode)
+		level thread check_players_in_map();
+
 
     level.map_name                      = getdvar("mapname");
     level.SpawnedPlayersCheck 			= [];
@@ -103,7 +903,17 @@ init() {
 	level.infect_loadouts["allies"]["loadoutPerk3"] = "specialty_bulletaccuracy";
 
     level.infect_loadouts["axis"]["loadoutDeathstreak"] = "specialty_null";
+
+	// Challenges 
+	ents = getentarray();
+    foreach(ent in ents) {
+        if(isdefined(ent.targetname) && ent.targetname == "destructible_toy") {
+            if(isdefined(ent.model) && issubstr(ent.model, "chicken"))
+                ent thread track_chicken_damage();
+        }
+    }
 }
+
 
 _chooseFirstInfected() {
     level endon("game_ended");
@@ -147,9 +957,7 @@ _chooseFirstInfected() {
 				level.players[i] setfirstinfected(1);
 				break;
 			}
-			
 		}
-
 	}
 	else {
 		setdvar("suicide_final", "undefined");
@@ -170,9 +978,46 @@ on_connecting() {
     }
 }
 
+basegame_threads() {
+	// self thread maps\mp\gametypes\_menus::onMenuResponse();
+	self thread maps\mp\gametypes\_hud_message::hintMessageDeathThink();
+	self thread maps\mp\gametypes\_hud_message::lowerMessageThink();
+	self thread maps\mp\gametypes\_hud_message::initNotifyMessage();
+}
+
+soundtest() {
+	for(;;) {
+		wait 3;
+		self PlaySound("quick_sound1");
+		wait 3;
+		self PlaySound("quick_sound2");
+		wait 3;
+		self PlaySound("quick_sound3");
+		wait 3;
+		self PlaySound("quick_sound4");
+		wait 3;
+		self PlaySound("quick_sound5");
+		wait 3;
+		self PlaySound("quick_sound6");
+	}
+}
+
 on_connect() {
 	while(1) {
 		level waittill("connected", player);
+
+		player thread basegame_threads();
+		player.thirdperson = 0;
+		player thread menuresponse_quickmenu();
+
+		if(level.enable_debug_mode && getdvar("g_gametype") != "infect") {
+			player maps\mp\gametypes\_menus::addToTeam( "allies" );
+			player.pers["class"] = "CLASS_CUSTOM1";
+			player.class = "CLASS_CUSTOM1";
+			player notify("end_respawn");
+			player iprintlnbold("Switch To INFECT Gametype");
+		}
+
 		print("^2" + player.name + "^7 - Connected");
 		player SetClientDvar("lowAmmoWarningColor1", "0 0 0 0");
 		player SetClientDvar("lowAmmoWarningColor2", "0 0 0 0");
@@ -183,6 +1028,8 @@ on_connect() {
 
         player SetClientDvar("cg_teamcolor_allies", "0 .7 1 1");
         player SetClientDvar("cg_teamcolor_axis", ".75 .25 .25 1");
+
+		player setclientdvar("g_scriptMainMenu", "mainmenu");
 
         if(!isdefined(level.SpawnedPlayersCheck[player.guid]) && !isdefined(player.spawnasinf))
 			level.SpawnedPlayersCheck[player.guid] = 1;
@@ -203,7 +1050,6 @@ on_connect() {
 		}
 
         player.rtd_canroll          = 1;
-        player.hadgunsrotated       = 0;
         player.initial_spawn        = 0;
         player.hud_elements         = [];
 
@@ -219,7 +1065,95 @@ on_connect() {
         player.attackeddoor = 0;
 
         player thread scripts\inf_tpjugg\map_funcs::oomzonehud();
+
+		// player thread player_joined_msg();
 	}
+}
+
+menuresponse_quickmenu() {
+	self endon("disconnect");
+	for(;;) {
+		self waittill("menuresponse", menu, response);
+		// print("^3Menu: ^7" + menu + " ^3Response: ^7" + response);
+		// self iprintln("^3Menu: ^7" + menu + " ^3Response: ^7" + response);
+		
+		if(menu == "quickcommands") {
+			if(response == "thirdperson") {
+				self.thirdperson = !self.thirdperson;
+				self setclientdvar("cg_thirdperson", self.thirdperson);
+			} else if(response == "suicide") {
+				self suicide();
+			}
+		} else if(menu == "quicksounds") {
+			if(self quicksound_allowed(response)) {
+				can_sound = false;
+				if(int(response) >= 3) {
+					if(self isvipuser())
+						can_sound = true;
+					else
+						self iprintln("^3VIP^7 Only");
+				} else {
+					can_sound = true;
+				}
+
+				if(can_sound) {
+					self thread quicksound_cooldown(5);
+					sound = "quick_sound" + response;
+					self playsound(sound);
+				}
+			}
+		}
+	}
+}
+
+quicksound_cooldown(time) {
+	self notify("quicksound_cooldownfunc");
+	self endon("quicksound_cooldownfunc");
+
+	self.quicksound_cooldown = time;
+	for(i=time;i>0;i--) {
+		self.quicksound_cooldown = i;
+		wait 1;
+	}
+	self.quicksound_cooldown = undefined;
+}
+
+quicksound_allowed(response) {
+	if(isdefined(level.admin_commands_clients[self.guid]) && level.admin_commands_clients[self.guid]["access"] >= 2) {
+		return true;
+	} else if(isdefined(self.quicksound_cooldown)) {
+		self iprintln("^3Sound ^7Cooldown: ^5" + self.quicksound_cooldown);
+		return false;
+	} else
+		return true;
+}
+
+player_joined_msg() {
+
+	tok = StrTok(getdvar("connectionlist"), "->");
+	cock = false;
+	foreach(name in tok) {
+		if(name == self.name)
+			cock = true;
+	}
+	
+	if(cock)
+		return;
+	
+	setdvar("connectionlist", getdvar("connectionlist") + "->" + self.name);
+	wait 0.5;
+		
+	foreach(player in level.players) {
+		player tell_raw(getdvar("sv_sayname") + "^7: ^3" + self.name + "^7 Connected");
+	}
+}
+
+setkickgraceover(time) {
+	level endon("game_ended");
+	self endon("disconnect");
+	self endon("death");
+	wait time;
+	self.inmap_kick_graceperiod_over = true;
 }
 
 on_spawned() {
@@ -227,11 +1161,17 @@ on_spawned() {
 
     for(;;) {
         self waittill("spawned_player");
-		print("^2" + self.name + "^7 - Has Class - ^3" + self.pers["class"] + " / " + self.class);
+
+
+		//print("^2" + self.name + "^7 - Has Class - ^3" + self.pers["class"] + " / " + self.class);
         self SetClientDvar("cg_objectiveText", "visit us at ^8Gillette^7Clan.com\nJoin us on Discord ^8discord.gg/GilletteClan");
+
+		self.flag_protection = undefined;
 
         if(self.initial_spawn == 0) {
         	self.initial_spawn = 1;
+
+			self thread setkickgraceover(15);
 
 			self notifyOnPlayerCommand("FpsFix_action", "vote no");
 			self notifyOnPlayerCommand("Fullbright_action", "vote yes");
@@ -242,7 +1182,12 @@ on_spawned() {
 			self thread suicidePlayer();
 			self thread var_resetter();
             self thread hud_create();
-        	//self thread adv_afk_check();
+			self thread menu_handler();
+			self thread track_insertions();
+
+            self thread Create_Xp_Bar();
+        	if(!level.enable_debug_mode)
+        		self thread adv_afk_check();
         }
 
         if(isDefined(self.laststatus) && isdefined(self.goodspawn)) {
@@ -261,16 +1206,17 @@ on_spawned() {
             self GiveWeapon("throwingknife_mp");
 
             self givePerk("specialty_tacticalinsertion", 1);
+			self setViewKickScale( 0.5 );
 
             if(!isdefined(self.isInitialInfected)) {
                 self GiveWeapon("iw5_usp45_mp_tactical");
                 self SetWeaponAmmoClip("iw5_usp45_mp_tactical", 0);
                 self SetWeaponAmmoStock("iw5_usp45_mp_tactical", 0);
                 self setspawnweapon("iw5_usp45_mp_tactical");
-
+				self notify("force_end_exp_tk");
                 self maps\mp\killstreaks\_killstreaks::clearKillstreaks();
 
-                if(self.rtd_canroll == 1) {
+                if(self.rtd_canroll == 1 || level.enable_debug_mode) {
                     self ResetPlayer();
                     self thread roll_random_effect();
                 }
@@ -282,6 +1228,8 @@ on_spawned() {
 				self SetWeaponAmmoClip("at4_mp", 1);
                 self SetWeaponAmmoStock("at4_mp", 1);
                 self setspawnweapon("at4_mp");
+				self thread [[level.roll_items["exp_tk"].function]]();
+				self setperk("specialty_fastreload", 1, 1);
             }
 
             if(!isdefined(self.initial_axis)) {
@@ -296,9 +1244,12 @@ on_spawned() {
 
             self giveperk("trophy_mp", 0);
             self giveperk("claymore_mp", 0);
-            self GiveWeapon("iw5_mp7_mp_silencer");
-            self GiveMaxAmmo("iw5_mp7_mp_silencer");
-            self setspawnweapon("iw5_mp7_mp_silencer");
+            self GiveWeapon(level.selected_starting_weapon);
+            self GiveMaxAmmo(level.selected_starting_weapon);
+			if(issubstr(level.selected_starting_weapon, "kriss"))
+            	self switchtoweapon(level.selected_starting_weapon);
+			else
+            	self setspawnweapon(level.selected_starting_weapon);
 
             if(!isdefined(self.initial_allies)) {
                 self.hud_elements["door_bind"] settext("^2Open ^7/ ^1Close");
@@ -308,7 +1259,154 @@ on_spawned() {
         }
 
         self setperk("specialty_fastoffhand", 1, 1);
+
+		if(self.team == "allies") {
+			if(self.name == "Clippy" || self.name == "Sloth" || self.name == "QueasyNurples") {
+				self detachall();
+				self setmodel("mp_body_codo_cyberfemale");
+				self setviewmodel("codo_vh_cyberfemale_iw5");
+				self Attach("weapon_radar", "j_helmet", true);
+			} 
+			else {
+				self detachall();
+				self setmodel("mp_fb_t6_seal_assault_iw5");
+				self setviewmodel("vh_t6_seal_longsleeve");
+			}
+		}
     }
+}
+
+Create_Xp_Bar()
+{
+	self endon("disconnect");
+
+	waitframe();
+
+    if(!isdefined(self.hud_element_xp))
+        self.hud_element_xp = [];
+
+    if(!isdefined(self.hud_element_xp["xp_bar"])) {
+        self.hud_element_xp["xp_bar"] = newclienthudelem(self);
+        self.hud_element_xp["xp_bar"].horzalign = "fullscreen";
+        self.hud_element_xp["xp_bar"].vertalign = "fullscreen";
+        self.hud_element_xp["xp_bar"].alignx = "left";
+        self.hud_element_xp["xp_bar"].aligny = "bottom";
+        self.hud_element_xp["xp_bar"].x = 0;
+        self.hud_element_xp["xp_bar"].y = 480;
+        self.hud_element_xp["xp_bar"].archived = 1;
+        self.hud_element_xp["xp_bar"].alpha = 1;
+    }
+
+    if(!isdefined(self.hud_element_xp["xp_bar_bg"])) {
+        self.hud_element_xp["xp_bar_bg"] = newclienthudelem(self);
+        self.hud_element_xp["xp_bar_bg"].horzalign = "fullscreen";
+        self.hud_element_xp["xp_bar_bg"].vertalign = "fullscreen";
+        self.hud_element_xp["xp_bar_bg"].alignx = "left";
+        self.hud_element_xp["xp_bar_bg"].aligny = "bottom";
+        self.hud_element_xp["xp_bar_bg"].x = 0;
+        self.hud_element_xp["xp_bar_bg"].y = 480;
+        self.hud_element_xp["xp_bar_bg"].archived = 1;
+        self.hud_element_xp["xp_bar_bg"].alpha = 1;
+        self.hud_element_xp["xp_bar_bg"].color = (0, 0, 0);
+        self.hud_element_xp["xp_bar_bg"] setShader("hudcolorbar", 800, 4);
+    }
+
+    if(!isdefined(self.hud_element_xp["xp_bar_xpicon"])) {
+        self.hud_element_xp["xp_bar_xpicon"] = newclienthudelem(self);
+        self.hud_element_xp["xp_bar_xpicon"].horzalign = "fullscreen";
+        self.hud_element_xp["xp_bar_xpicon"].vertalign = "fullscreen";
+        self.hud_element_xp["xp_bar_xpicon"].alignx = "center";
+        self.hud_element_xp["xp_bar_xpicon"].aligny = "bottom";
+        self.hud_element_xp["xp_bar_xpicon"].x = 325;
+        self.hud_element_xp["xp_bar_xpicon"].y = 463;
+        self.hud_element_xp["xp_bar_xpicon"].archived = 1;
+        self.hud_element_xp["xp_bar_xpicon"].alpha = 1;
+        self.hud_element_xp["xp_bar_xpicon"] setshader("xp", 15, 15);
+    }
+
+    if(!isdefined(self.hud_element_xp["xp_double_xp"])) {
+        self.hud_element_xp["xp_double_xp"] = newclienthudelem(self);
+        self.hud_element_xp["xp_double_xp"].horzalign = "fullscreen";
+        self.hud_element_xp["xp_double_xp"].vertalign = "fullscreen";
+        self.hud_element_xp["xp_double_xp"].alignx = "left";
+        self.hud_element_xp["xp_double_xp"].aligny = "bottom";
+        self.hud_element_xp["xp_double_xp"].x = 310;
+        self.hud_element_xp["xp_double_xp"].y = 461;
+        self.hud_element_xp["xp_double_xp"].archived = 1;
+        self.hud_element_xp["xp_double_xp"].color = (.976, .78, .094);
+        self.hud_element_xp["xp_double_xp"].alpha = 1;
+        self.hud_element_xp["xp_double_xp"].fontscale = 1;
+        self.hud_element_xp["xp_double_xp"].font = "small";
+        self.hud_element_xp["xp_double_xp"] settext(getdvarint("inf_xp")+"x");
+    }
+
+    if(!isdefined(self.hud_element_xp["xp_value"])) {
+        self.hud_element_xp["xp_value"] = newclienthudelem(self);
+        self.hud_element_xp["xp_value"].horzalign = "fullscreen";
+        self.hud_element_xp["xp_value"].vertalign = "fullscreen";
+        self.hud_element_xp["xp_value"].alignx = "right";
+        self.hud_element_xp["xp_value"].aligny = "bottom";
+        self.hud_element_xp["xp_value"].x = 320;
+        self.hud_element_xp["xp_value"].y = 472;
+        self.hud_element_xp["xp_value"].archived = 1;
+        self.hud_element_xp["xp_value"].alpha = 1;
+        self.hud_element_xp["xp_value"].fontscale = 1;
+        self.hud_element_xp["xp_value"].font = "small";
+        self.hud_element_xp["xp_value"].label = &"&&1 /";
+    }
+
+    if(!isdefined(self.hud_element_xp["xp_value_max"])) {
+        self.hud_element_xp["xp_value_max"] = newclienthudelem(self);
+        self.hud_element_xp["xp_value_max"].horzalign = "fullscreen";
+        self.hud_element_xp["xp_value_max"].vertalign = "fullscreen";
+        self.hud_element_xp["xp_value_max"].alignx = "left";
+        self.hud_element_xp["xp_value_max"].aligny = "bottom";
+        self.hud_element_xp["xp_value_max"].x = 320;
+        self.hud_element_xp["xp_value_max"].y = 472;
+        self.hud_element_xp["xp_value_max"].archived = 1;
+        self.hud_element_xp["xp_value_max"].alpha = 1;
+        self.hud_element_xp["xp_value_max"].fontscale = 1;
+        self.hud_element_xp["xp_value_max"].font = "small";
+        self.hud_element_xp["xp_value_max"].label = &"";
+    }
+
+	oldxp = self.player_settings["xp"] - 1;
+
+	for(;;) {
+		if(oldxp != self.player_settings["xp"]) {
+			rank = self maps\mp\gametypes\_rank::getRankForXp(self.player_settings["xp"]);
+			Temp_Min = maps\mp\gametypes\_rank::getRankInfoMinXp(rank);
+			Temp_Max = maps\mp\gametypes\_rank::getRankInfoMaxXp(rank);
+
+            string_max = "" + temp_max;
+
+			Current_Xp_For_Rank = self.player_settings["xp"] - Temp_Min;
+			Xp_Needed_For_Rankup = Temp_Max - Temp_Min;
+			fraction = Current_Xp_For_Rank / (Xp_Needed_For_Rankup / 100);
+			barwidth = int(fraction * (640 / 100));
+			col = Red_To_Green(fraction);
+			self.hud_element_xp["xp_bar"].color = col;
+			self.hud_element_xp["xp_value"] SetValue(Current_Xp_For_Rank);
+            self.hud_element_xp["xp_value_max"] SetValue(Xp_Needed_For_Rankup);
+            self.hud_element_xp["xp_value"].color = col;
+            self.hud_element_xp["xp_value_max"].color = col;
+
+			self.hud_element_xp["xp_bar"] setShader("hudcolorbar", barwidth, 4);
+			oldxp = self.player_settings["xp"];
+			//print("^1Current_Xp_For_Rank: " + Current_Xp_For_Rank + "\n^2Xp_Needed_For_Rankup: " + Xp_Needed_For_Rankup + "\n^3fraction: " + fraction + "\n^4barwidth: " + barwidth);
+
+			if(self.player_settings["xp"] == 1746200)
+				self.hud_element_xp["xp_bar"].color = (0.2,0.4,1);
+		}
+
+		wait 0.25;
+	}
+}
+
+Red_To_Green(percent) {
+	green = percent / 100;
+	red = 1 - (percent / 100);
+	return (red, green, 0);
 }
 
 semtex_hold_death_fix() {
@@ -351,7 +1449,11 @@ adv_afk_check() {
 	arg = 0;
 
     while(1) {
+		wait 1;
     	if(level.players.size > 3) {
+			if(self.sessionstate == "spectator")
+			 	continue;
+
 	    	if(isdefined(self.isInitialInfected) && isAlive(self)) {
 	    		org = self.origin;
 
@@ -385,9 +1487,78 @@ adv_afk_check() {
 			else
 				wait 1;
 		}
-
-        wait 1;
     }
+}
+
+check_players_in_map() {
+	level endon("game_end");
+
+	gameFlagWait( "prematch_done" );
+
+	wait 1;
+	if(!isdefined(level.meat_playable_bounds))
+		return;
+
+	start = gettime();
+	part = GetDvarfloat("scr_" + getdvar("g_gametype") + "_timelimit") * 0.25;
+
+	for(;;) {
+		wait 5;
+		//print(gettime() - start);
+		if((gettime() - start >= part*60000)) {
+			foreach(player in level.players) {
+				if(player.team == "allies") {
+					if(player.status == "in")
+						continue;
+					
+					if(isdefined(player.inmap_kick_graceperiod_over) && !isdefined(player.not_in_edit_kick)) {
+						player.not_in_edit_kick = true;
+						player thread player_kick_warning();
+					}
+				}
+			}
+		}
+	}
+}
+
+player_kick_warning() {
+	self endon("disconnect");
+	self endon("stop_my_asscheeks");
+	kicktime = 15;
+	if(!isdefined(self.hud_elements["about_to_kick"])) {
+        self.hud_elements["about_to_kick"] = newclienthudelem(self);
+        self.hud_elements["about_to_kick"].x = 230;
+        self.hud_elements["about_to_kick"].y = 80;
+        self.hud_elements["about_to_kick"].alignx = "left";
+        self.hud_elements["about_to_kick"].aligny = "top";
+        self.hud_elements["about_to_kick"].horzalign = "fullscreen";
+        self.hud_elements["about_to_kick"].vertalign = "fullscreen";
+        self.hud_elements["about_to_kick"].alpha = 1;
+        self.hud_elements["about_to_kick"].color = (1, 1, 1);
+        self.hud_elements["about_to_kick"].foreground = 0;
+        self.hud_elements["about_to_kick"].HideWhenInMenu = 1;
+        self.hud_elements["about_to_kick"].archived = 1;
+        self.hud_elements["about_to_kick"].fontscale = 1.8;
+        self.hud_elements["about_to_kick"].font = "objective";
+        self.hud_elements["about_to_kick"].label = &"^7Getting ^1KICKED^7 In: ^1&&1\n^7Move Into The ^3Edit";
+        self.hud_elements["about_to_kick"] setvalue(kicktime);
+    }
+
+	while(self.status == "out" && self.team == "allies") {
+		self.hud_elements["about_to_kick"] setvalue(kicktime);
+		if(kicktime <= 0) {
+			kick(self getEntityNumber(), "EXE_PLAYERKICKED_INACTIVE");
+			self notify("stop_my_asscheeks");
+			break;
+		}
+		wait 1;
+		kicktime--;
+	}
+
+	if(isdefined(self.hud_elements["about_to_kick"]))
+		self.hud_elements["about_to_kick"] destroy();
+
+	self.not_in_edit_kick = undefined;
 }
 
 handle_door_huds() {
@@ -717,149 +1888,152 @@ hud_create() {
 	x_spacing = 35;
 	seg_fontscale = .37;
 
-	if(!isdefined(self.hud_elements["background"])) {
-		self.hud_elements["background"] = newClientHudElem(self);
-		self.hud_elements["background"].horzalign = "fullscreen";
-		self.hud_elements["background"].vertalign = "fullscreen";
-		self.hud_elements["background"].alignx = "center";
-		self.hud_elements["background"].aligny = "top";
-		self.hud_elements["background"].x = 320;
-		self.hud_elements["background"].y = -17;
-		self.hud_elements["background"].color = (.4, .4, .4);
-		self.hud_elements["background"].sort = -2;
-		self.hud_elements["background"].archived = 0;
-		self.hud_elements["background"].hidewheninmenu = 1;
-		self.hud_elements["background"].hidewheninkillcam = 1;
-		self.hud_elements["background"].alpha = 1;
-		self.hud_elements["background"] setshader("iw5_cardtitle_specialty_veteran", 180, 45);
+	if(!isdefined(self.gc_hud_elements))
+        self.gc_hud_elements = [];
+
+	if(!isdefined(self.gc_hud_elements["background"])) {
+		self.gc_hud_elements["background"] = newClientHudElem(self);
+		self.gc_hud_elements["background"].horzalign = "fullscreen";
+		self.gc_hud_elements["background"].vertalign = "fullscreen";
+		self.gc_hud_elements["background"].alignx = "center";
+		self.gc_hud_elements["background"].aligny = "top";
+		self.gc_hud_elements["background"].x = 320;
+		self.gc_hud_elements["background"].y = -17;
+		self.gc_hud_elements["background"].color = (.4, .4, .4);
+		self.gc_hud_elements["background"].sort = -2;
+		self.gc_hud_elements["background"].archived = 0;
+		self.gc_hud_elements["background"].hidewheninmenu = 1;
+		self.gc_hud_elements["background"].hidewheninkillcam = 1;
+		self.gc_hud_elements["background"].alpha = 1;
+		self.gc_hud_elements["background"] setshader("iw5_cardtitle_specialty_veteran", 180, 45);
 	}
 
-	if(!isdefined(self.hud_elements["background_right"])) {
-		self.hud_elements["background_right"] = newClientHudElem(self);
-		self.hud_elements["background_right"].horzalign = "fullscreen";
-		self.hud_elements["background_right"].vertalign = "fullscreen";
-		self.hud_elements["background_right"].alignx = "left";
-		self.hud_elements["background_right"].aligny = "top";
-		self.hud_elements["background_right"].x = 275;
-		self.hud_elements["background_right"].y = -20;
-		self.hud_elements["background_right"].color = (.4, .4, .4);
-		self.hud_elements["background_right"].sort = -3;
-		self.hud_elements["background_right"].archived = 0;
-		self.hud_elements["background_right"].hidewheninmenu = 1;
-		self.hud_elements["background_right"].hidewheninkillcam = 1;
-		self.hud_elements["background_right"].alpha = 1;
-		self.hud_elements["background_right"] setshader("iw5_cardtitle_specialty_veteran", 280, 45);
+	if(!isdefined(self.gc_hud_elements["background_right"])) {
+		self.gc_hud_elements["background_right"] = newClientHudElem(self);
+		self.gc_hud_elements["background_right"].horzalign = "fullscreen";
+		self.gc_hud_elements["background_right"].vertalign = "fullscreen";
+		self.gc_hud_elements["background_right"].alignx = "left";
+		self.gc_hud_elements["background_right"].aligny = "top";
+		self.gc_hud_elements["background_right"].x = 275;
+		self.gc_hud_elements["background_right"].y = -20;
+		self.gc_hud_elements["background_right"].color = (.4, .4, .4);
+		self.gc_hud_elements["background_right"].sort = -3;
+		self.gc_hud_elements["background_right"].archived = 0;
+		self.gc_hud_elements["background_right"].hidewheninmenu = 1;
+		self.gc_hud_elements["background_right"].hidewheninkillcam = 1;
+		self.gc_hud_elements["background_right"].alpha = 1;
+		self.gc_hud_elements["background_right"] setshader("iw5_cardtitle_specialty_veteran", 280, 45);
 	}
 
-	if(!isdefined(self.hud_elements["background_left"])) {
-		self.hud_elements["background_left"] = newClientHudElem(self);
-		self.hud_elements["background_left"].horzalign = "fullscreen";
-		self.hud_elements["background_left"].vertalign = "fullscreen";
-		self.hud_elements["background_left"].alignx = "right";
-		self.hud_elements["background_left"].aligny = "top";
-		self.hud_elements["background_left"].x = 365;
-		self.hud_elements["background_left"].y = -20;
-		self.hud_elements["background_left"].color = (.4, .4, .4);
-		self.hud_elements["background_left"].sort = -3;
-		self.hud_elements["background_left"].archived = 0;
-		self.hud_elements["background_left"].hidewheninmenu = 1;
-		self.hud_elements["background_left"].hidewheninkillcam = 1;
-		self.hud_elements["background_left"].alpha = 1;
-		self.hud_elements["background_left"] setshader("iw5_cardtitle_specialty_veteran", 280, 45);
+	if(!isdefined(self.gc_hud_elements["background_left"])) {
+		self.gc_hud_elements["background_left"] = newClientHudElem(self);
+		self.gc_hud_elements["background_left"].horzalign = "fullscreen";
+		self.gc_hud_elements["background_left"].vertalign = "fullscreen";
+		self.gc_hud_elements["background_left"].alignx = "right";
+		self.gc_hud_elements["background_left"].aligny = "top";
+		self.gc_hud_elements["background_left"].x = 365;
+		self.gc_hud_elements["background_left"].y = -20;
+		self.gc_hud_elements["background_left"].color = (.4, .4, .4);
+		self.gc_hud_elements["background_left"].sort = -3;
+		self.gc_hud_elements["background_left"].archived = 0;
+		self.gc_hud_elements["background_left"].hidewheninmenu = 1;
+		self.gc_hud_elements["background_left"].hidewheninkillcam = 1;
+		self.gc_hud_elements["background_left"].alpha = 1;
+		self.gc_hud_elements["background_left"] setshader("iw5_cardtitle_specialty_veteran", 280, 45);
 	}
 
-	if(!isdefined(self.hud_elements["text_info_right"])) {
-		self.hud_elements["text_info_right"] = newClientHudElem(self);
-		self.hud_elements["text_info_right"].horzalign = "fullscreen";
-		self.hud_elements["text_info_right"].vertalign = "fullscreen";
-		self.hud_elements["text_info_right"].alignx = "left";
-		self.hud_elements["text_info_right"].aligny = "top";
-		self.hud_elements["text_info_right"].x = 400;
-		self.hud_elements["text_info_right"].y = 2;
-		self.hud_elements["text_info_right"].font = "bigfixed";
-		self.hud_elements["text_info_right"].archived = 0;
-		self.hud_elements["text_info_right"].hidewheninmenu = 1;
-		self.hud_elements["text_info_right"].hidewheninkillcam = 1;
-		self.hud_elements["text_info_right"].fontscale = seg_fontscale;
-		self.hud_elements["text_info_right"].label = &"^8[{vote no}] ^7High Fps   ^8[{vote yes}] ^7Fullbright   ^8[{+actionslot 1}] ^7Suicide";
-		self.hud_elements["text_info_right"].alpha = 1;
+	if(!isdefined(self.gc_hud_elements["text_info_right"])) {
+		self.gc_hud_elements["text_info_right"] = newClientHudElem(self);
+		self.gc_hud_elements["text_info_right"].horzalign = "fullscreen";
+		self.gc_hud_elements["text_info_right"].vertalign = "fullscreen";
+		self.gc_hud_elements["text_info_right"].alignx = "left";
+		self.gc_hud_elements["text_info_right"].aligny = "top";
+		self.gc_hud_elements["text_info_right"].x = 400;
+		self.gc_hud_elements["text_info_right"].y = 2;
+		self.gc_hud_elements["text_info_right"].font = "bigfixed";
+		self.gc_hud_elements["text_info_right"].archived = 0;
+		self.gc_hud_elements["text_info_right"].hidewheninmenu = 1;
+		self.gc_hud_elements["text_info_right"].hidewheninkillcam = 1;
+		self.gc_hud_elements["text_info_right"].fontscale = seg_fontscale;
+		self.gc_hud_elements["text_info_right"].label = &"^8[{vote no}] ^7High Fps   ^8[{vote yes}] ^7Fullbright   ^8[{+actionslot 1}] ^7Suicide";
+		self.gc_hud_elements["text_info_right"].alpha = 1;
 	}
 
-	if(!isdefined(self.hud_elements["host"])) {
-		self.hud_elements["host"] = newClientHudElem(self);
-		self.hud_elements["host"].horzalign = "fullscreen";
-		self.hud_elements["host"].vertalign = "fullscreen";
-		self.hud_elements["host"].alignx = "center";
-		self.hud_elements["host"].aligny = "top";
-		self.hud_elements["host"].x = 320;
-		self.hud_elements["host"].y = 1;
-		self.hud_elements["host"].font = "bigfixed";
-		self.hud_elements["host"].archived = 0;
-		self.hud_elements["host"].hidewheninmenu = 1;
-		self.hud_elements["host"].hidewheninkillcam = 1;
-		self.hud_elements["host"].fontscale = .6;
-		self.hud_elements["host"].label = &"www.^8Gillette^7Clan.com";
-		self.hud_elements["host"].alpha = 1;
+	if(!isdefined(self.gc_hud_elements["host"])) {
+		self.gc_hud_elements["host"] = newClientHudElem(self);
+		self.gc_hud_elements["host"].horzalign = "fullscreen";
+		self.gc_hud_elements["host"].vertalign = "fullscreen";
+		self.gc_hud_elements["host"].alignx = "center";
+		self.gc_hud_elements["host"].aligny = "top";
+		self.gc_hud_elements["host"].x = 320;
+		self.gc_hud_elements["host"].y = 1;
+		self.gc_hud_elements["host"].font = "bigfixed";
+		self.gc_hud_elements["host"].archived = 0;
+		self.gc_hud_elements["host"].hidewheninmenu = 1;
+		self.gc_hud_elements["host"].hidewheninkillcam = 1;
+		self.gc_hud_elements["host"].fontscale = .6;
+		self.gc_hud_elements["host"].label = &"www.^8Gillette^7Clan.com";
+		self.gc_hud_elements["host"].alpha = 1;
 	}
 
-	if(!isdefined(self.hud_elements["health_ui"])) {
-		self.hud_elements["health_ui"] = newClientHudElem(self);
-		self.hud_elements["health_ui"].alignx = "left";
-		self.hud_elements["health_ui"].aligny = "top";
-		self.hud_elements["health_ui"].horzAlign = "fullscreen";
-		self.hud_elements["health_ui"].vertalign = "fullscreen";
-		self.hud_elements["health_ui"].x = 240 - x_spacing;
-		self.hud_elements["health_ui"].y = 2;
-		self.hud_elements["health_ui"].font = "bigfixed";
-		self.hud_elements["health_ui"].fontscale = seg_fontscale;
-		self.hud_elements["health_ui"].label = &"Health: ^8";
-		self.hud_elements["health_ui"].hidewheninmenu = 1;
-		self.hud_elements["health_ui"].hidewheninkillcam = 1;
-		self.hud_elements["health_ui"].archived = 0;
-		self.hud_elements["health_ui"].alpha = 1;
+	if(!isdefined(self.gc_hud_elements["health_ui"])) {
+		self.gc_hud_elements["health_ui"] = newClientHudElem(self);
+		self.gc_hud_elements["health_ui"].alignx = "left";
+		self.gc_hud_elements["health_ui"].aligny = "top";
+		self.gc_hud_elements["health_ui"].horzAlign = "fullscreen";
+		self.gc_hud_elements["health_ui"].vertalign = "fullscreen";
+		self.gc_hud_elements["health_ui"].x = 240 - x_spacing;
+		self.gc_hud_elements["health_ui"].y = 2;
+		self.gc_hud_elements["health_ui"].font = "bigfixed";
+		self.gc_hud_elements["health_ui"].fontscale = seg_fontscale;
+		self.gc_hud_elements["health_ui"].label = &"Health: ^8";
+		self.gc_hud_elements["health_ui"].hidewheninmenu = 1;
+		self.gc_hud_elements["health_ui"].hidewheninkillcam = 1;
+		self.gc_hud_elements["health_ui"].archived = 0;
+		self.gc_hud_elements["health_ui"].alpha = 1;
 	}
 
-	if(!isdefined(self.hud_elements["kills_ui"])) {
-		self.hud_elements["kills_ui"] = newClientHudElem(self);
-		self.hud_elements["kills_ui"].alignx = "left";
-		self.hud_elements["kills_ui"].aligny = "top";
-		self.hud_elements["kills_ui"].horzAlign = "fullscreen";
-		self.hud_elements["kills_ui"].vertalign = "fullscreen";
-		self.hud_elements["kills_ui"].x = 240 - (x_spacing * 2) + 7;
-		self.hud_elements["kills_ui"].y = 2;
-		self.hud_elements["kills_ui"].font = "bigfixed";
-		self.hud_elements["kills_ui"].fontscale = seg_fontscale;
-		self.hud_elements["kills_ui"].label = &"Kills: ^8";
-		self.hud_elements["kills_ui"].hidewheninmenu = 1;
-		self.hud_elements["kills_ui"].hidewheninkillcam = 1;
-		self.hud_elements["kills_ui"].archived = 0;
-		self.hud_elements["kills_ui"].alpha = 1;
+	if(!isdefined(self.gc_hud_elements["kills_ui"])) {
+		self.gc_hud_elements["kills_ui"] = newClientHudElem(self);
+		self.gc_hud_elements["kills_ui"].alignx = "left";
+		self.gc_hud_elements["kills_ui"].aligny = "top";
+		self.gc_hud_elements["kills_ui"].horzAlign = "fullscreen";
+		self.gc_hud_elements["kills_ui"].vertalign = "fullscreen";
+		self.gc_hud_elements["kills_ui"].x = 240 - (x_spacing * 2) + 7;
+		self.gc_hud_elements["kills_ui"].y = 2;
+		self.gc_hud_elements["kills_ui"].font = "bigfixed";
+		self.gc_hud_elements["kills_ui"].fontscale = seg_fontscale;
+		self.gc_hud_elements["kills_ui"].label = &"Kills: ^8";
+		self.gc_hud_elements["kills_ui"].hidewheninmenu = 1;
+		self.gc_hud_elements["kills_ui"].hidewheninkillcam = 1;
+		self.gc_hud_elements["kills_ui"].archived = 0;
+		self.gc_hud_elements["kills_ui"].alpha = 1;
 	}
 
-	if(!isdefined(self.hud_elements["killsstreak_ui"])) {
-		self.hud_elements["killsstreak_ui"] = newClientHudElem(self);
-		self.hud_elements["killsstreak_ui"].alignx = "left";
-		self.hud_elements["killsstreak_ui"].aligny = "top";
-		self.hud_elements["killsstreak_ui"].horzAlign = "fullscreen";
-		self.hud_elements["killsstreak_ui"].vertalign = "fullscreen";
-		self.hud_elements["killsstreak_ui"].x = 240 - (x_spacing * 3);
-		self.hud_elements["killsstreak_ui"].y = 2;
-		self.hud_elements["killsstreak_ui"].font = "bigfixed";
-		self.hud_elements["killsstreak_ui"].fontscale = seg_fontscale;
-		self.hud_elements["killsstreak_ui"].label = &"Killstreak: ^8";
-		self.hud_elements["killsstreak_ui"].hidewheninmenu = 1;
-		self.hud_elements["killsstreak_ui"].hidewheninkillcam = 1;
-		self.hud_elements["killsstreak_ui"].archived = 0;
-		self.hud_elements["killsstreak_ui"].alpha = 1;
+	if(!isdefined(self.gc_hud_elements["killsstreak_ui"])) {
+		self.gc_hud_elements["killsstreak_ui"] = newClientHudElem(self);
+		self.gc_hud_elements["killsstreak_ui"].alignx = "left";
+		self.gc_hud_elements["killsstreak_ui"].aligny = "top";
+		self.gc_hud_elements["killsstreak_ui"].horzAlign = "fullscreen";
+		self.gc_hud_elements["killsstreak_ui"].vertalign = "fullscreen";
+		self.gc_hud_elements["killsstreak_ui"].x = 240 - (x_spacing * 3);
+		self.gc_hud_elements["killsstreak_ui"].y = 2;
+		self.gc_hud_elements["killsstreak_ui"].font = "bigfixed";
+		self.gc_hud_elements["killsstreak_ui"].fontscale = seg_fontscale;
+		self.gc_hud_elements["killsstreak_ui"].label = &"Killstreak: ^8";
+		self.gc_hud_elements["killsstreak_ui"].hidewheninmenu = 1;
+		self.gc_hud_elements["killsstreak_ui"].hidewheninkillcam = 1;
+		self.gc_hud_elements["killsstreak_ui"].archived = 0;
+		self.gc_hud_elements["killsstreak_ui"].alpha = 1;
 	}
 
 	self thread delete_huds_on_gameend();
 
 	while(1) {
-        if(isdefined(self.hud_elements["killsstreak_ui"])) {
-            self.hud_elements["killsstreak_ui"]         setValue(self.pers[ "cur_kill_streak" ]);
-            self.hud_elements["kills_ui"]               setvalue(self.kills);
-            self.hud_elements["health_ui"]              setvalue(self.health);
+        if(isdefined(self.gc_hud_elements["killsstreak_ui"])) {
+            self.gc_hud_elements["killsstreak_ui"]         setValue(self.pers[ "cur_kill_streak" ]);
+            self.gc_hud_elements["kills_ui"]               setvalue(self.kills);
+            self.gc_hud_elements["health_ui"]              setvalue(self.health);
         }
 
         wait .1;
@@ -869,17 +2043,26 @@ hud_create() {
 delete_huds_on_gameend() {
 	level waittill("game_ended");
 	wait 0.05;
+	if(isdefined(self.gc_hud_elements)) {
+		foreach(hud in self.gc_hud_elements) {
+			hud destroy();
+		}
+		self.gc_hud_elements = undefined;
+	}
 	if(isdefined(self.hud_elements)) {
 		foreach(hud in self.hud_elements) {
 			hud destroy();
 		}
+		self.hud_elements = undefined;
 	}
 	if(isdefined(self.cz_elements)) {
 		foreach(hud in self.cz_elements) {
 			hud destroy();
 		}
+		self.cz_elements = undefined;
 	}
 
+	self notify("hud_new_input");
 	if(isdefined(self.notificationtitle))
 		self.notificationtitle destroy();
 	if(isdefined(self.notificationtext))
@@ -1010,13 +2193,12 @@ _airdrop_init() {
     addCrateType("airdrop_assault",	"precision_airstrike",		6,		::killstreakCrateThink_edit );
     addCrateType("airdrop_assault",	"harrier_airstrike",		3,		::killstreakCrateThink_edit );
 	addCrateType("airdrop_assault",	"stealth_airstrike",		6,		::killstreakCrateThink_edit );
-    addCrateType("airdrop_assault",	"sentry",					4,		::killstreakCrateThink_edit );
 	addCrateType("airdrop_assault",	"helicopter",				4,		::killstreakCrateThink_edit );
 	addCrateType("airdrop_assault",	"helicopter_flares",		2,		::killstreakCrateThink_edit );
 	addCrateType("airdrop_assault",	"littlebird_support",		4,		::killstreakCrateThink_edit );
 	addCrateType("airdrop_assault",	"remote_tank",			    3,		::killstreakCrateThink_edit );
     addCrateType("airdrop_assault",	"ac130",			        1,		::killstreakCrateThink_edit );
-    addCrateType("airdrop_assault",	"remote_mortar",			1,		::killstreakCrateThink_edit );
+    addCrateType("airdrop_assault",	"remote_mortar",			2,		::killstreakCrateThink_edit );
     addCrateType("airdrop_assault",	"osprey_gunner",			1,		::killstreakCrateThink_edit );
 
 	// OSPREY GUNNER
@@ -1031,20 +2213,19 @@ _airdrop_init() {
     addCrateType("airdrop_osprey_gunner",	"remote_mortar",			1,		::killstreakCrateThink_edit );
 
     //TRAP CONTENTS
-    addCrateType("airdrop_trapcontents",	"ims",						25,		::trapNullFunc );
-	addCrateType("airdrop_trapcontents",	"predator_missile",			25,		::trapNullFunc );
-	addCrateType("airdrop_trapcontents",	"sentry",					25,		::trapNullFunc );
+    addCrateType("airdrop_trapcontents",	"ims",						20,		::trapNullFunc );
+	addCrateType("airdrop_trapcontents",	"predator_missile",			20,		::trapNullFunc );
+	addCrateType("airdrop_trapcontents",	"sentry",					20,		::trapNullFunc );
     addCrateType("airdrop_trapcontents",	"remote_mg_turret",			9,		::trapNullFunc );
     addCrateType("airdrop_trapcontents",	"airdrop_trap",			    9,		::trapNullFunc );
     addCrateType("airdrop_trapcontents",	"precision_airstrike",		6,		::trapNullFunc );
 	addCrateType("airdrop_trapcontents",	"stealth_airstrike",		6,		::trapNullFunc );
-    addCrateType("airdrop_trapcontents",	"sentry",					4,		::trapNullFunc );
 	addCrateType("airdrop_trapcontents",	"helicopter",				4,		::trapNullFunc );
 	addCrateType("airdrop_trapcontents",	"littlebird_support",		4,		::trapNullFunc );
 	addCrateType("airdrop_trapcontents",	"remote_tank",			    3,		::trapNullFunc );
-    addCrateType("airdrop_trapcontents",	"ac130",			        1,		::trapNullFunc );
-    addCrateType("airdrop_trapcontents",	"remote_mortar",			1,		::trapNullFunc );
-    addCrateType("airdrop_trapcontents",	"osprey_gunner",			1,		::trapNullFunc );
+    addCrateType("airdrop_trapcontents",	"ac130",			        6,		::trapNullFunc );
+    addCrateType("airdrop_trapcontents",	"remote_mortar",			6,		::trapNullFunc );
+    addCrateType("airdrop_trapcontents",	"osprey_gunner",			6,		::trapNullFunc );
 
 
     //			  Drop Type						Type						Weight	Function
@@ -1312,7 +2493,7 @@ cancelnukefix(player) {
 _airdropDetonateOnStuck()
 {
 	self endon ( "death" );
-	
+
 	self waittill( "missile_stuck" );
 
 	self notify("yeetus", self.origin);
@@ -1354,7 +2535,7 @@ _airDropMarkerActivate(dropType, lifeId) {
 			}
             else {
                 owner maps\mp\killstreaks\_killstreaks::giveKillstreak(dropType, false, false, self.owner, true);
-                owner tell_raw("^8^7[ ^8Gillette^7 ] Carepackage Marker ^8too far from your position!");
+                owner tell_raw("^8^7[ ^8Gillette^7 ] Carepackage Marker ^8too far from your position!"); //this was turned off??? why?
                 decrementFauxVehicleCount();
 				PlayFX(level._effect[ "equipment_explode" ], self.origin);
 				owner playLocalSound("item_nightvision_off");
@@ -1426,7 +2607,7 @@ GlowStickDamageListener_replace( owner )
 				attacker notify( "destroyed_explosive" ); // count towards SitRep Pro challenge
 				owner thread leaderDialogOnPlayer( "ti_destroyed" );
 			}
-			
+
 			attacker thread maps\mp\perks\_perkfunctions::deleteTI( self );
 		}
 	}
@@ -1446,9 +2627,43 @@ refill_ammo() {
 	else {
 		self GiveWeapon( "defaultweapon_mp" );
 		self SetWeaponAmmoStock( "defaultweapon_mp" , 0);
+		self SetWeaponAmmoclip( "defaultweapon_mp" , 5);
 		self SwitchToWeapon( "defaultweapon_mp" );
 	}
 }
 
 onPlayerSpawned_music_dialog(){
+}
+
+blanky() {
+}
+
+track_chicken_damage() {
+    while(1) {
+        self waittill("damage", amount, other);
+
+        if(isdefined(other) && self.health <= 0) {
+            other.player_settings["chicken_kill"]++;
+            other notify("player_stats_updated");
+            break;
+        }
+    }
+}
+
+track_insertions() {
+    self endon("disconnect");
+
+    while(1) {
+        self waittill("destroyed_insertion", owner);
+
+        if(owner.name != self.name)
+            self.player_settings["ti_cancel"]++;
+    }
+}
+
+isvipuser() {
+	if(isdefined(level.special_users[self.guid]) || (isdefined(level.admin_commands_clients[self.guid]) && level.admin_commands_clients[self.guid]["access"] >= 2))
+		return true;
+	else
+		return false;
 }

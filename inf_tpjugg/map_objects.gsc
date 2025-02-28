@@ -9,11 +9,11 @@ init() {
     precachemodel("projectile_cbu97_clusterbomb");
     precachemodel("projectile_javelin_missile");
 	
-    level thread Select_Mapedit();
-
 	// level.use_stock_helicopter_system = disable custom helicopter movement
 	// level.use_stock_predator_system = disable custom predator spawn above player char
-	// level.showinviscrates = shows invis crates
+	// level.showinviscrates = true; // shows invis crates
+    
+	level thread Select_Mapedit();
 }
 
 add_map_to_maplist(map, display_name, edit_name, edit_func, maker) {
@@ -35,25 +35,26 @@ Select_Mapedit() {
 	level.tpjugg_maplist = [];
 	level.tpjugg_mapedit = [];
 	level.tpjugg_maplist_display_name = [];
+	//^1(Updated!) ^7
 	add_map_to_maplist("mp_showdown_sh", "Showdown" ,"Rooftop Rumble", ::showdown_edit1, "Clippy");
-	//add_map_to_maplist("mp_rust", "Rust" ,"Run Around Rust", ::rust_edit1, "Clippy");
+	add_map_to_maplist("mp_rust", "Rust" ,"Run Around Rust", ::rust_edit1, "Clippy");
 	add_map_to_maplist("mp_village", "Village" ,"Village Sux", ::village_edit1, "Unveiled");
-	add_map_to_maplist("mp_hillside_ss", "Getaway" ,"Beach Attack", ::Getaway_edit1, "TMGlion");
+	add_map_to_maplist("mp_hillside_ss", "Getaway" ,"Beach Invasion", ::Getaway_edit1, "TMGlion");
 	add_map_to_maplist("mp_paris", "Resistance" ,"Alley Annihilation", ::resistance_edit1, "Revox");
 	add_map_to_maplist("mp_paris", "Resistance" ,"Roof Revenge", ::resistance_edit2, "Clippy");
 	add_map_to_maplist("mp_paris", "Resistance" ,"Lush Lane", ::resistance_edit3, "TMGlion");
 	add_map_to_maplist("mp_exchange", "Downturn" ,"Running For Cover", ::downturn_edit1, "Unveiled & Clippy");
-	add_map_to_maplist("mp_exchange", "Downturn" ,"Crossing The Bridge", ::downturn_edit2, "Unveiled & Clippy & TMGlion");
+	add_map_to_maplist("mp_exchange", "Downturn" ,"Crossing The Bridge", ::downturn_edit2, "Unveiled, Clippy & TMGlion");
 	add_map_to_maplist("mp_exchange", "Downturn" ,"Gated Roofs", ::downturn_edit3, "TMGlion");
 	add_map_to_maplist("mp_lambeth", "Fallen" ,"Rundown Warehouse", ::fallen_edit1, "Revox");
 	add_map_to_maplist("mp_lambeth", "Fallen" ,"Fallen Chimney", ::fallen_edit2, "Clippy & TMGlion");
-	add_map_to_maplist("mp_hardhat", "Hardhat" ,"Construction site", ::hardhat_edit1, "Clippy & TMGlion");
-	add_map_to_maplist("mp_hardhat", "Hardhat" ,"^1(Update!) ^7Road Refuge", ::hardhat_edit2, "Clippy");
+	add_map_to_maplist("mp_hardhat", "Hardhat" ,"Construction Pit", ::hardhat_edit1, "Clippy & TMGlion");
+	add_map_to_maplist("mp_hardhat", "Hardhat" ,"Road Refuge", ::hardhat_edit2, "Clippy & TMGlion");
 	add_map_to_maplist("mp_mogadishu", "Bakaara" ,"Attack on the backlot", ::bakaara_edit1, "Unveiled & Clippy");
 	add_map_to_maplist("mp_mogadishu", "Bakaara" ,"Docks", ::bakaara_edit2, "Clippy & TMGlion");
 	add_map_to_maplist("mp_mogadishu", "Bakaara" ,"Guns N' Roofs", ::bakaara_edit3, "TMGlion");
 	add_map_to_maplist("mp_bravo", "Mission" ,"Open plane with a building", ::mission_edit1, "Unveiled");
-	add_map_to_maplist("mp_bravo", "Mission" ,"Around & Up", ::mission_edit2, "Clippy & Sloth & TMGlion");
+	add_map_to_maplist("mp_bravo", "Mission" ,"Around & Up", ::mission_edit2, "Clippy, Sloth & TMGlion");
 	add_map_to_maplist("mp_favela", "Favela" ,"Jesus", ::favela_edit1, "Clippy & TMGlion");
 	add_map_to_maplist("mp_favela", "Favela" ,"Streets & Roofs", ::favela_edit2, "Revox & TMGlion");
 	add_map_to_maplist("mp_interchange", "Interchange" ,"Highway...", ::interchange_edit1, "Unveiled & Clippy & TMGlion");
@@ -65,11 +66,12 @@ Select_Mapedit() {
 	add_map_to_maplist("mp_alpha", "Lockdown" ,"Roof Runners", ::lockdown_edit1, "Clippy" );
 	add_map_to_maplist("mp_alpha", "Lockdown" ,"Street Scurry", ::lockdown_edit2, "TMGlion");
 	add_map_to_maplist("mp_nuked", "Nuketown" ,"Bunker Bombing", ::nuketown_edit1, "TMGlion");
-	add_map_to_maplist("mp_carbon", "Carbon" ,"Factory Fumbling", ::carbon_edit1, "Unveiled & Clippy & TMGlion");
+	add_map_to_maplist("mp_carbon", "Carbon" ,"Factory Fumbling", ::carbon_edit1, "Unveiled, Clippy & TMGlion");
 	add_map_to_maplist("mp_bootleg", "Bootleg" ,"Tuk Tuk Trouble", ::bootleg_edit1, "Revox");
 	add_map_to_maplist("mp_bootleg", "River" ,"River Splashing", ::bootleg_edit2, "Unveiled");
-	add_map_to_maplist("mp_dome", "Dome" ,"Around The Back", ::dome_edit1, "Unveiled");
-	add_map_to_maplist("mp_dome", "Dome" ,"Fenced In", ::dome_edit2, "Clippy");
+	//add_map_to_maplist("mp_dome", "Dome" ,"Around The Back", ::dome_edit1, "Unveiled");
+	//add_map_to_maplist("mp_dome", "Dome" ,"Dome Depot", ::dome_edit2, "Clippy");
+	add_map_to_maplist("mp_dome", "Dome" ,"Bunker Defence", ::dome_edit3, "TMGlion");
 	add_map_to_maplist("mp_underground", "Underground" ,"Loading Bay", ::underground_edit1, "Clippy & TMGlion");
 	add_map_to_maplist("mp_underground", "Underground" ,"The Long Road", ::underground_edit2, "TMGlion");
 	add_map_to_maplist("mp_underground", "Underground" ,"Abandoned Station", ::underground_edit3, "TMGlion");
@@ -85,16 +87,23 @@ Select_Mapedit() {
 	add_map_to_maplist("mp_highrise", "Highrise" ,"Around The Roof", ::highrise_edit2, "Clippy & TMGlion");
 	add_map_to_maplist("mp_moab", "Gulch" ,"Prickly Pain", ::gulch_edit1, "Clippy");
 	add_map_to_maplist("mp_shipbreaker", "Decommision" ,"Coastal Defence", ::decommision_edit1, "Clippy");
-	add_map_to_maplist("mp_boneyard", "Scrapyard" ,"Airplane Graveyard", ::scrapyard_edit1, "Clippy & TMGlion");
+	// add_map_to_maplist("mp_boneyard", "Scrapyard" ,"Airplane Graveyard", ::scrapyard_edit1, "Clippy & TMGlion");
 	add_map_to_maplist("mp_vacant", "Vacant" ,"Hotel Polissya", ::vacant_edit1, "Clippy & Sloth");
 	add_map_to_maplist("mp_vacant", "Vacant" ,"Shit Vacant", ::vacant_edit2, "Clippy");
 	add_map_to_maplist("mp_lockout_h2", "Lockout H2" ,"Halo Ascension", ::lockout_h2_edit1, "Clippy & TMGlion");
-	add_map_to_maplist("mp_cement", "Foundation" ,"Cement Cannon", ::foundation_edit1, "Sloth");
-	add_map_to_maplist("mp_derail", "Derail" ,"Snowy Sewer", ::derail_edit1, "Revox & Sloth & TMGlion");
+	add_map_to_maplist("mp_lockout_h2", "Lockout H2" ,"Shafted", ::lockout_h2_edit2, "Clippy");
+	add_map_to_maplist("mp_cement", "Foundation" ,"Cement Cannon", ::foundation_edit1, "Sloth & TMGlion");
+	add_map_to_maplist("mp_derail", "Derail" ,"Snowy Sewer", ::derail_edit1, "Revox, Sloth & TMGlion");
 	add_map_to_maplist("mp_checkpoint", "Karachi" ,"Storm the Drain", ::karachi_edit1, "TMGlion");
 	add_map_to_maplist("mp_checkpoint", "Karachi" ,"Base Defence", ::karachi_edit2, "TMGlion");
-	add_map_to_maplist("mp_overwatch", "Overwatch" ,"Skyscraper", ::overwatch_edit1, "Steven & TMGlion & Sloth");
+	add_map_to_maplist("mp_overwatch", "Overwatch" ,"Skyscraper", ::overwatch_edit1, "Steven, TMGlion & Sloth");
 	add_map_to_maplist("mp_qadeem", "Oasis" ,"Pool Defence", ::oasis_edit1, "TMGlion");
+	add_map_to_maplist("mp_factory_sh", "Der Riese" ,"Camping at the Catwalk", ::DerRiese_edit1, "TMGlion");
+	add_map_to_maplist("mp_poolparty", "Pool Party" ,"^1(NEW!) ^7Dock Party", ::poolparty_edit1, "Clippy");
+	add_map_to_maplist("mp_firingrange", "Firing Range" ,"^1(NEW!) ^7Target Practice", ::firingrange_edit1, "Clickerz");
+	add_map_to_maplist("mp_minecraft", "Minecraft" ,"^1(NEW!) ^7Mining & Camping", ::minecraft_edit1, "Clippy");
+
+	// add_map_to_maplist("devmap name", "mapname" ,"^1(NEW!) ^7editname", ::firingrange_edit1, "edit makers name"); // EXAMPLE
 
 	selected_edit = strtok(getdvar("mapvote_mapedit"), ";");
 	
@@ -133,6 +142,33 @@ Select_Mapedit() {
 		print(getdvar("prefix") + "No Random Map Edit On Map: ^5" + level.map_name + " - Playing Mapedit ^5" + rnd);
     else
 		print(getdvar("prefix") + "Mapedit ^5" + rnd + " ^7Picked On ^5" + level.map_name);
+	
+	//Logic after map load
+	level thread anti_breach_logic();
+	level thread airstrike_ent_check();
+	wait 5;
+	print("^1-= Edit Has : ^3" + level.crates_placed + "^1 Crates =-");
+}
+
+airstrike_ent_check() {
+	ents = GetEntArray("script_origin", "classname");
+	airstrikeheight = false;
+	foreach(ent in ents) {
+		if(isdefined(ent.targetname) && ent.targetname == "airstrikeheight")
+			airstrikeheight = true;
+	}
+
+	if(!airstrikeheight) {
+		if(isdefined(level.lowest_crate)) {
+			airstrike_height = spawn("script_origin", level.lowest_crate + (0,0,1500));
+			airstrike_height.targetname = "airstrikeheight";
+		} else{
+			trace = bullettrace((0,0,10000), (0,0,-5000), false, undefined);
+			airstrike_height = spawn("script_origin", trace["position"] + (0,0,1000));
+			airstrike_height.targetname = "airstrikeheight";
+		}
+	}
+
 }
 
 map_credits_edit_hud(map, edit, maker) {
@@ -155,14 +191,238 @@ map_credits_edit_hud(map, edit, maker) {
 	level.info_hud_elements["credits_info"].hidewheninkillcam = 1;
 	level.info_hud_elements["credits_info"].fontscale = .4;
 	if(isdefined(maker))
-		level.info_hud_elements["credits_info"] settext("^7Map: ^5" + map + "\n^7Edit: ^5" + edit + "\n^7Made By: ^5" + maker);
+		level.info_hud_elements["credits_info"] settext("^7Map: ^8" + map + "\n^7Edit: ^8" + edit + "\n^7Made By: ^8" + maker);
 	else
-		level.info_hud_elements["credits_info"] settext("^7Map: ^5" + map + "\n^7Edit: ^5" + edit);
+		level.info_hud_elements["credits_info"] settext("^7Map: ^8" + map + "\n^7Edit: ^8" + edit);
 
 	while(isdefined(level.infect_timerDisplay))
 		wait 0.05;
 	
 	level.info_hud_elements["credits_info"] destroy();
+}
+
+minecraft_edit1() {
+	minimap_corner = spawn("script_origin", (800, 300, 800));
+	minimap_corner.targetname = "minimap_corner";
+	minimap_corner = spawn("script_origin", (800, 300, 800) + (-3000,-3000,0));
+	minimap_corner.targetname = "minimap_corner";
+	maps\mp\_compass::setupMiniMap( "black" );
+	
+	level.overwrite_reapertrace = true;
+	moveac130position((-439, -1416, -300));
+	
+	mp_global_intermission = getent( "mp_global_intermission", "classname" );
+	mp_global_intermission.origin = (-1930, -1175, 265);
+	mp_global_intermission.angles = (0, -180, 0);
+
+	arrow_array = [];
+	arrow_array[arrow_array.size] = ((-1574.54, -1593.93, 83.199));
+	arrow_array[arrow_array.size] = ((-1028.08, -1565.84, 96.5869));
+	arrow_array[arrow_array.size] = ((-314.119, -1535.81, 109.83));
+	arrow_array[arrow_array.size] = ((325.469, -1482.78, 108.966));
+	arrow_array[arrow_array.size] = ((327.297, -975.453, 106.989));
+	arrow_array[arrow_array.size] = ((40.564, -992.588, 246.236));
+	arrow_array[arrow_array.size] = ((-658.255, -902.768, 292.943));
+	arrow_array[arrow_array.size] = ((-654.914, -435.355, 248.155));
+	arrow_array[arrow_array.size] = ((-771.665, -540.042, 486.371));
+	arrow_array[arrow_array.size] = ((-756.878, -797.484, 511.083));
+	arrow_array[arrow_array.size] = ((-1359.68, -792.825, 534.175));
+	show_route_arrows(arrow_array, 0.6);
+
+	disable_spawn_array = [];
+	disable_spawn_array[disable_spawn_array.size] = (-1314, -2233, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1314, -2187, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1263, -2186, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1263, -2232, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (426, -2203, 36.125);
+	disable_spawn_array[disable_spawn_array.size] = (445, -2146, 36.125);
+	disable_spawn_point(disable_spawn_array);
+
+	add_spawn_point((18, -1394, 38),(0, 44, 0));
+	add_spawn_point((-17, -1202, 38),(0, -27, 0));
+	add_spawn_point((-269, -1204, 38),(0, -13, 0));
+	add_spawn_point((-107, -1031, 38),(0, -165, 0));
+	add_spawn_point((-174, -924, 38),(0, -155, 0));
+	add_spawn_point((-1878, -976, 2),(0, 16, 0));
+	add_spawn_point((-1776, -1084, 2),(0, 8, 0));
+	add_spawn_point((-1898, -825, 218),(0, -35, 0));
+	add_spawn_point((-1775, -934, 218),(0, -130, 0));
+
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "axis", "mp_tdm_spawn");
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "allies", "mp_tdm_spawn");
+
+	for(i=0;i<20;i++)
+		spawncrate((-441, -875 + i*-30, 182) , (0, -90, -45) , "com_plasticcase_friendly");
+
+
+	CreateGrids((-510, -930, 202),(-580, -870, 202), (0,0,0));
+	CreateGrids((-685, -930, 202),(-625, -722, 202), (0,0,0));
+
+	CreateWalls((170, -1125, 0),(310, -1125, 160));
+	spawncrate((-1440, -874, 214), (0, 0, 0),"com_plasticcase_friendly");
+	spawncrate((-1395, -874, 214), (0, 0, 0),"com_plasticcase_friendly");
+	spawncrate((-1350, -874, 214), (0, 0, 0),"com_plasticcase_friendly");
+	CreateGrids((-1440, -770, 202),(-1340, -840, 202), (0,0,0));
+	CreateGrids((-1290, -770, 202),(-730, -770, 202), (0,0,0));
+
+
+	CreateDoors((-650, -732, 370),(-650, -732, 255),(90, 90, 0), 4, 1, 35, 70);
+
+	for(i=0;i<5;i++) {
+		spawncrate((-625, -732, 130 + i*-30), (0, 0, 90),"com_plasticcase_friendly");
+		spawncrate((-680, -732, 130 + i*-30), (0, 0, 90),"com_plasticcase_friendly");
+	}
+
+	for(i=0;i<3;i++) {
+		spawncrate((30, -1340 + i*-20, 362), (0, 0, 0),"com_plasticcase_friendly");
+		spawncrate((70, -1340 + i*-20, 362), (0, 0, 0),"com_plasticcase_friendly");
+	}
+
+	CreateGrids((-730, -760, 382),(-1440, -830, 382), (0,0,0));
+	CreateGrids((-610, -668, 382),(-690, -735, 382), (0,0,0));
+
+	spawncrate((-785, -730, 360), (0, 0, 0),"com_plasticcase_friendly");
+	spawncrate((-765, -730, 360), (0, 0, 0),"com_plasticcase_friendly");
+	spawncrate((-725, -695, 360), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-580, -695, 360), (0, 90, 0),"com_plasticcase_friendly");
+
+	CreateHiddenTP((-1985, -763, 396),(57, -1359, 376),(0,0,0));
+
+	spawncrate((-1978, -1302, 393), (0, 0, 0),"com_plasticcase_friendly"); // ladder block
+
+	CreateWalls((-1945, -1088, 584.5),(-1780, -1088, 409.5));
+	CreateGrids((-1655, -978, 598),(-1655, -1088, 598), (0,0,0));
+	CreateGrids((-1710, -1088, 598),(-1760, -1088, 598), (0,0,0));
+
+	CreateWalls((-40, -1465, 240),(150, -1465, 480)); // wall at ladder end part block
+
+	for(i=0;i<4;i++) {
+		spawncrate((305, -1800, 380 + i*-30), (0, 0, 90),"com_plasticcase_friendly");
+	}
+
+	CreateWalls((280, -2280, 320),(280, -2100, 430));
+	CreateGrids((710, -2263, 332),(310, -2263, 332), (0,0,24));
+
+	spawncrate((545, -2240, 55), (0, 0, 0)); // secret room blocker
+
+	fufalldamage((-653, -373, -25), 350 , 300);
+
+	spawncrate((-653,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653,-540, 235), (0, 0, 0),"com_plasticcase_enemy");
+	i=-1;
+	spawncrate((-653 + 147 * i,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653 + 60 * i,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653 + 30 * i,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653 + 45 * i,-540, 235), (0, 0, 0),"com_plasticcase_enemy");
+	i=1;
+	spawncrate((-653 + 147 * i,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653 + 60 * i,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653 + 30 * i,-500, 235), (0, -90, 0),"com_plasticcase_enemy");
+	spawncrate((-653 + 45 * i,-540, 235), (0, 0, 0),"com_plasticcase_enemy");
+
+
+	spawncrate((355, -940, -14), (0, 0, 0));
+	spawncrate((355, -980, -14), (0, 0, 0));
+	spawncrate((318, -980, -14), (0, 0, 0));
+	spawncrate((318, -1020, -14), (0, 0, 0));
+	spawncrate((318, -1060, -14), (0, 0, 0));
+
+	spawncrate((320, -2106, 331) , (0, 0, -45) , "com_plasticcase_friendly");
+	spawncrate((355, -2106, 331) , (0, 0, -45) , "com_plasticcase_friendly");
+	spawncrate((390, -2106, 331) , (0, 0, -45) , "com_plasticcase_friendly");
+	spawncrate((425, -2106, 331) , (0, 0, -45) , "com_plasticcase_friendly");
+}
+
+poolparty_edit1() {
+
+	arrow_array = [];
+	arrow_array[arrow_array.size] = ((408.806, -680.641, 42.1275));
+	arrow_array[arrow_array.size] = ((504.103, -224.906, 109.095));
+	arrow_array[arrow_array.size] = ((508.947, 290.413, 112.659));
+	arrow_array[arrow_array.size] = ((511.359, 764.703, 110.011));
+	arrow_array[arrow_array.size] = ((254.221, 1130.25, 111.878));
+	show_route_arrows(arrow_array, 0.75);
+
+	arrow_array = [];
+	arrow_array[arrow_array.size] = ((408.806*-1, -680.641, 42.1275));
+	arrow_array[arrow_array.size] = ((504.103*-1, -224.906, 109.095));
+	arrow_array[arrow_array.size] = ((508.947*-1, 290.413, 112.659));
+	arrow_array[arrow_array.size] = ((511.359*-1, 764.703, 110.011));
+	arrow_array[arrow_array.size] = ((254.221*-1, 1130.25, 111.878));
+	show_route_arrows(arrow_array, 0.75);
+
+	Deathradius((0, 1200, -1000), 3000, 600);
+
+	spawncrate((296, 859, 244), (0, 90, 0));
+	CreateQuicksteps((-240, 1185, 18),98, 15, 2, (0, -90, 0));
+	CreateQuicksteps((240, 1185, 18),98, 15, 2, (0, -90, 0));
+	CreateQuicksteps((0, 1300, 21),148, 15, 2, (0, 90, 0));
+
+	CreateGrids((100, 2640, -80),(-160, 2640, -80), (0,0,0));
+	CreateGrids((100, 2679, -100),(-160, 2679, -100), (0,0,-30));
+	CreateinvisWalls((110, 2605, -110),(-170, 2605, -20));
+	
+	CreateinvisGrids((-210, 2500, -126),(-270, 2850, -126), (0,0,0));
+	CreateinvisGrids((140, 2500, -126),(200, 2850, -126), (0,0,0));
+
+	spawnmodel((-127, 1497, -113) , (0, 20, 0) , "vehicle_small_hatchback_green");
+
+	spawnmodel((4, 2621, -45) , (0, 0, 90) , "com_conference_table1");
+	spawnmodel((-68, 2624, -45) , (0, 0, 90) , "com_conference_table1");
+	spawnmodel((4, 2622, -80) , (0, 0, 90) , "com_conference_table1");
+	spawnmodel((-68, 2620, -80) , (0, 0, 90) , "com_conference_table1");
+
+	spawnmodel((4, 2621, -45) + (0,-33,0), (0, 180, 90) , "com_conference_table1");
+	spawnmodel((-68, 2624, -45) + (0,-33,0), (0, 180, 90) , "com_conference_table1");
+	spawnmodel((4, 2622, -80) + (0,-33,0), (0, 180, 90) , "com_conference_table1");
+	spawnmodel((-68, 2620, -80) + (0,-33,0), (0, 180, 90) , "com_conference_table1");
+
+	spawnmodel((118, 2605, -111) , (0, -90, 0) , "com_filecabinetblackclosed");
+	spawnmodel((118, 2605, -69) , (0, -90, 0) , "com_filecabinetblackclosed");
+
+	spawnmodel((-185, 2605, -111) , (0, -90, 0) , "com_filecabinetblackclosed");
+	spawnmodel((-185, 2605, -69) , (0, -90, 0) , "com_filecabinetblackclosed");
+	i=0;
+	spawnmodel((-178 + i*48, 2605, -27) , (0, -90, -90) , "com_filecabinetblackclosed"); i++;
+	spawnmodel((-178 + i*48, 2605, -27) , (0, -90, -90) , "com_filecabinetblackclosed"); i++;
+	spawnmodel((-178 + i*48, 2605, -27) , (0, -90, -90) , "com_filecabinetblackclosed"); i++;
+	spawnmodel((-178 + i*48, 2605, -27) , (0, -90, -90) , "com_filecabinetblackclosed"); i++;
+	spawnmodel((-178 + i*48, 2605, -27) , (0, -90, -90) , "com_filecabinetblackclosed"); i++;
+	spawnmodel((-178 + i*48, 2605, -27) , (0, -90, -90) , "com_filecabinetblackclosed"); i++;
+
+	spawnmodel((379, 1255, -67) , (0, 90, 0) , "foliage_hedge_wall_1");
+	spawnmodel((150, 1263, 28) , (180, 90, 0) , "foliage_hedge_wall_1");
+	spawnmodel((0, 1262, 28) , (180, 90, 0) , "foliage_hedge_wall_1");
+	spawnmodel((-379, 1255, -67) , (0, 90, 0) , "foliage_hedge_wall_1");
+	spawnmodel((-150, 1263, 28) , (180, 90, 0) , "foliage_hedge_wall_1");
+
+	for(i=0;i<4;i++) {
+		spawnmodel((120, 1400 + i*320, -112) , (0, 0, 0) , "me_streetlight");
+		spawnmodel((-180, 1400 + i*320, -112) , (0, 180, 0) , "me_streetlight");
+	}
+
+	spawnmodel((85, 2115, -113) , (0, 0, 0) , "com_vending_can_new1");
+	spawncrate((85, 2115, -113) + (20, -20, 40), (90, 0, 0) , "com_plasticcase_friendly");
+	spawnmodel((45, 2115, -113) , (0, 0, 0) , "com_vending_can_new1");
+	spawncrate((45, 2115, -113) + (20, -20, 40), (90, 0, 0) , "com_plasticcase_friendly");
+
+	spawnmodel((-168, 2315, -111) , (0, 0, 0) , "com_photocopier");
+	spawncrate((-168, 2315, -111) + (0, 0, 15), (90, 0, 0) , "com_plasticcase_friendly");
+
+	spawnmodel((145, 2610, -145) , (0, -90, 0) , "com_conference_table1");
+	spawnmodel((190, 2610, -143) , (0, -90, 0) , "com_conference_table1");
+	spawnmodel((145, 2750, -144) , (0, -90, 0) , "com_conference_table1");
+	spawnmodel((190, 2750, -145) , (0, -90, 0) , "com_conference_table1");
+
+	spawnmodel((-260, 2610, -145) , (0, -90, 0) , "com_conference_table1");
+	spawnmodel((-215, 2610, -143) , (0, -90, 0) , "com_conference_table1");
+	spawnmodel((-260, 2750, -144) , (0, -90, 0) , "com_conference_table1");
+	spawnmodel((-215, 2750, -145) , (0, -90, 0) , "com_conference_table1");
+
+	pos1 = (-72, 1517, -84);
+	pos2 = (-191, 1470, -84);
+	ang = vectortoangles(pos1 - pos2);
+	CreateinvisWalls(pos1, pos2, ang + (0,90,0));
 }
 
 village_edit1(){
@@ -309,23 +569,17 @@ village_edit2(){
 Getaway_edit1(){
 	level.meat_playable_bounds = 
 	[
-	(1152.46, -919.125, 6.92505),
-	(-143.149, -993.39, 92.125),
-	(-897.875, -1338.7, 92.125),
-	(-2377, -1311.38, 174.679),
-	(-2377, -1556.53, 180.125),
-	(-2377, -2362.79, 180.125),
-	(-1708.12, -2362.79, 372.125),
-	(-1708.12, -2484.12, 372.125),
-	(-895.375, -2484.12, 372.125),
-	(-657.375, -2270.5, 372.125),
-	(1138, -3270.5, 372.125),
-	(1721.32, -2423.06, 174.425),
+	(-897.875, -1338.7, 2600.125),
+	(-2377, -1311.38, 2600.679),
+	(-2377, -1556.53, 2600.125),
+	(-2377, -2484.12, 2600.125),
+	(-895.375, -2484.12, 2600.125),
+	(-692, -2353.5, 2600.125),
+	(1138, -3270.5, 2600.125),
+	(1721.32, -2423.06, 2600.425),
 	(2019.32, -1524.06, 2260.425),
 	(1977.32, -278.06, 2260.425),
 	(1549.32, -280.06, 2260.425),
-	(1167.15, -795.125, 2600.125),
-	(1464.88, -12.934, 2600.125),
 	(1464.88, 369.875, 2600.125),
 	(1163.12, 369.875, 2600.125),
 	(1163.15, -16.875, 2600.125)
@@ -335,6 +589,18 @@ Getaway_edit1(){
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (-1133, -1530, 2295);
 	mp_global_intermission.angles = (-23, -137, 0);
+	spawnmodel((464, -1152, 2072) , (0, -55, 0) , "foliage_tree_palm_bushy_2_static_flag");
+	spawnmodel((-1413, -2219, 2297) , (5, 80, 0) , "brn_cluster_1_rock");
+	spawnmodel((-2108, -1692, 2495) , (0, 9, 0) , "me_banana");
+	spawnmodel((-2106, -1686, 2494) , (77, 113, 0) , "billiard_ball_01");
+	spawnmodel((-2113, -1685, 2495) , (65, 135, 0) , "billiard_ball_08");
+	spawnmodel((-2081, -1717, 2461) , (16, 80, 0) , "billiard_table_modern_stick");
+	spawnmodel((-2085, -2036, 2624) , (0, 0, 0) , "rst_fluorescent_light_01"); //NEW
+	spawnmodel((-2068, -1915, 2477) , (-91, -25, 0) , "afr_militarytent_wood_table");//NEW
+	spawnmodel((-2078, -2210, 2461) , (0, -65, 0) , "sofa_sectional_3_seater_lightblue");//NEW
+	spawnmodel((-1994, -2234, 2461) , (0, 0, 0) , "furniture_table_coffee3");//NEW
+	spawnmodel((-1983, -2307, 2461) , (0, -175, 0) , "sofa_sectional_2_seater_lightblue");//NEW
+	
 	//steps
 	CreateInvisRamps((-1621, -1516.4, 2286.37),(-1621, -1588, 2338.13));	
 	CreateInvisRamps((-1661, -1516.4, 2286.37),(-1661, -1588, 2338.13));
@@ -348,14 +614,8 @@ Getaway_edit1(){
 	//afch_flatrock_02  //good massive rock model
 	
 	//new flank block
-	i=0;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
-	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0)); i++;
+	for(i = 0;i < 9;i++)
+	spawncrate((-927, -2510, 2280) + (0, -60* i, 0), (90, 90, 0));
 	spawnmodel((-947, -2658, 2210), (0, 90, 90), "afch_flatrock_01"); 
 
 	spawnmodel((78, -1220, 2200), (0, 20, 0), "com_woodlog_24_96_a");
@@ -375,12 +635,14 @@ Getaway_edit1(){
 	spawncrate((84, -1238, 2209), (0, 107, 90));
 	spawncrate((72, -1198.8, 2209), (0, 107, 90));
 
+	spawnmodel((12, -2359, 2177) , (0, -10, 0) , "foliage_hedge_boxy_overgrown2");
+	spawnmodel((-220, -2308, 2188) , (0, -60, 0) , "foliage_hedge_boxy_overgrown2");
+
 	spawnmodel((-1513, -2285, 2460) , (0, 0, 0) , "ow_patio_umb_closed");
 	spawnmodel((-1513, -1623, 2395) , (0, 0, 0) , "foliage_hill_plant_fern_02");
 	spawnmodel((-984, -1386, 2160) , (0, 0, 0) , "foliage_tree_palm_bushy_2_static_flag");
 	spawnmodel((559, -2902, 2216) , (0, 9, 0) , "prk_river_rock_05");
 	spawnmodel((-2077, -1670, 2461) , (0, 9, 0) , "billiard_table_modern_teal");
-	spawnmodel((-2109, -1680, 2495) , (0, 9, 0) , "me_banana");
 	spawnmodel((-2136, -1712, 2736) , (0, 33, 0) , "me_banana");
 	spawnmodel((-2126, -1692, 2736) , (3, 130, 0) , "me_banana");
 	spawnmodel((1799, -1847, 2170) , (0, 0, 0) , "ch_wooden_fence_post_04");
@@ -399,10 +661,30 @@ Getaway_edit1(){
 	CreateInvisWalls((854, -1550, 2260),(854, -1375.5, 2315));
 	CreateInvisWalls((603, -1550, 2260),(603, -1375.5, 2315));
 	//oceanhouse gate
-	CreateQuicksteps((-923, -2020, 2310), 100, 16, 2, (0, 0,0));
-	CreateQuicksteps((-923, -2020, 2310), 100, 16, 2, (0, 180,0));
-	CreateQuicksteps((-923, -1832, 2310), 100, 16, 2, (0, 0,0));
-	CreateQuicksteps((-923, -1832, 2310), 100, 16, 2, (0, 180,0));
+	spawnmodel((-918, -1805, 2295) , (0, 90, 87) , "ivy_vine_column");
+	spawnmodel((-918, -1815, 2291) , (0, 85, 87) , "ivy_vine_column");
+	spawnmodel((-918, -1814, 2291) , (0, 85, 87) , "ivy_vine_column");
+	spawnmodel((-919, -1834, 2283) , (3, 88, 89) , "ivy_vine_column");
+	spawnmodel((-918, -1843, 2295) , (0, 80, 87) , "ivy_vine_column");
+	spawnmodel((-917, -1850, 2294) , (0, 90, 87) , "ivy_vine_column");
+	spawnmodel((-924, -1805, 2295) , (0, 270, 87) , "ivy_vine_column");//flip
+	spawnmodel((-924, -1815, 2291) , (0, 265, 87) , "ivy_vine_column");
+	spawnmodel((-924, -1814, 2291) , (0, 265, 87) , "ivy_vine_column");
+	spawnmodel((-924, -1834, 2283) , (3, 268, 89) , "ivy_vine_column");
+	spawnmodel((-924, -1843, 2295) , (0, 260, 87) , "ivy_vine_column");
+	spawnmodel((-924, -1850, 2294) , (0, 270, 87) , "ivy_vine_column");
+	
+	spawnmodel((-921, -1960, 2328) , (0, -90, 0) , "lam_foliage_hanging_ivy_02");
+	spawnmodel((-919, -1985, 2289) , (0, 90, 87) , "ivy_vine_column");
+	spawnmodel((-918, -2038, 2278) , (0, 90, 87) , "ivy_vine_column");
+	spawnmodel((-920, -2027, 2287) , (0, 92, 87) , "ivy_vine_column");
+	spawnmodel((-923, -1952, 2328) , (0, 90, 0) , "lam_foliage_hanging_ivy_02");
+	spawnmodel((-903, -2013, 2223) , (2, 89, 180) , "ims_scorpion_body_placement");
+	spawnmodel((-900, -1838, 2217) , (2, 89, 180) , "ims_scorpion_body_placement");
+	CreateInvisQuicksteps((-923, -2020, 2310), 100, 16, 2, (0, 0,0));
+	CreateInvisQuicksteps((-923, -2020, 2310), 100, 16, 2, (0, 180,0));
+	CreateInvisQuicksteps((-923, -1832, 2310), 100, 16, 2, (0, 0,0));
+	CreateInvisQuicksteps((-923, -1832, 2310), 100, 16, 2, (0, 180,0));
 	createTurret((-1503, -2057, 2481), (0,0,0), 50, 50, 30, 10, 10);
 	spawnmodel((-1503, -2057, 2460) , (0, 80, 0) , "furniture_modern_patio_ottoman");
 	
@@ -412,7 +694,8 @@ Getaway_edit1(){
 
 	spawnmodel((-1469, -1733, 2455) , (0, 90, 0) , "fence_glass");
 	spawnmodel((-1531, -1733, 2455) , (0, 90, 0) , "fence_glass");
-	spawnmodel((-1714, -1733, 2455) , (0, 90, 0) , "fence_glass");
+	spawnmodel((-1687, -1733, 2455) , (0, 90, 0) , "fence_glass");//new
+	spawnmodel((-1750, -1733, 2455) , (0, 90, 0) , "fence_glass");//new
 
 	spawncrate((-1734, -1733, 2499),(0,0,0));
 	spawncrate((-1491, -2336, 2495),(0,0,0));
@@ -434,8 +717,8 @@ Getaway_edit1(){
 	spawncrate((-1461, -2217, 2495),(0,90,0));
 
 	//doors
-	CreateDoors((-1734, -1733, 2499) /*open*/,(-1649, -1733, 2499) /*close*/, (90,90,0) /*angle*/, 2 /*size*/, 1 /*height*/, 20 /*hp*/, 80 /*range*/);
-	CreateDoors((-1840, -2038.4, 2585) /*open*/, (-1840, -2038.4, 2475) /*close*/, (90,0,0) /*angle*/, 6 /*size*/, 2 /*height*/, 35 /*hp*/, 120 /*range*/);
+	CreateDoors((-1734, -1753, 2499) /*open*/,(-1640, -1753, 2499) /*close*/, (90,90,0) /*angle*/, 3 /*size*/, 1 /*height*/, 30 /*hp*/, 50 /*range*/);
+	CreateDoors((-1840, -2038.4, 2585) /*open*/, (-1840, -2038.4, 2475) /*close*/, (90,0,0) /*angle*/, 6 /*size*/, 2 /*height*/, 30 /*hp*/, 100 /*range*/);
 	
 	CreateInvisWalls((-1661, -1875, 2330),(-1608, -1875, 2330),(0,0,90));
 	CreateInvisWalls((-1661, -1875, 2380),(-1608, -1875, 2380),(0,0,90));
@@ -446,9 +729,9 @@ Getaway_edit1(){
 	
 	i=0;
 	for(i = 0;i < 15;i++)
-	spawnmodel((-1916, -2176, 2874) + (-23* i, 0, 0), (0, 0, 0) + (8* i,0,0), "com_woodlog_24_96_a");
+	spawnmodel((-1919, -2176, 2874) + (-22* i, 0, 0), (0, 0, 0) + (8* i,0,0), "com_woodlog_24_96_a");
 	for(i = 0;i < 15;i++)
-    spawnmodel((-1916, -1903, 2874) + (-23* i, 0, 0), (13, 0, 0) + (10* i,0,0), "com_woodlog_24_96_a");
+    spawnmodel((-1919, -1903, 2874) + (-22* i, 0, 0), (13, 0, 0) + (10* i,0,0), "com_woodlog_24_96_a");
 	
 	//house tps
 	createTP((-2308, -2267, 2461), (-2308, -2267, 2890), (0,30,0), 1);
@@ -461,10 +744,10 @@ Getaway_edit1(){
 	//createHiddenTP((-978.28,-1382.125,2254.125), (-487.49,-837.31,2234.598), (0, 25, 0), "out");
 	//IN MAP TPS
 	createTP((533, -168.38, 2209), (1559, -2404, 2200), (0,170,0));
-	createTP((900, 440.38, 2219), (727, -2956, 2210), (0,170,0));
-	createTP((1640, -672.38, 2311), (727, -2956, 2210), (0,170,0));
-	createTP((-388.6, 943.38, 2182), (1598.9, -340.5, 2201), (0,270,0));
-	createTP((1643, 504.38, 2311), (1598.9, -340.5, 2201), (0,270,0));
+	createTP((900, 440.38, 2219), (841, -3009, 2220), (0,170,0));
+	createTP((1640, -672.38, 2311), (841, -3009, 2220), (0,170,0));
+	createTP((-388.6, 943.38, 2182), (1196, -831, 2226), (0,270,0));
+	createTP((1643, 504.38, 2311), (1196, -831, 2226), (0,270,0));
 	fufalldamage((-1589, -2015, 2452),400, 420);
 	
 }
@@ -476,6 +759,8 @@ resistance_edit1(){
 	mp_global_intermission.origin = (-4308, 1654, 321);
 	mp_global_intermission.angles = (-24, -155, 0);
 	
+	spawncrate((-2015, 2275, 318), (-90, 90, 0));
+	spawncrate((-2124, 2275, 318) , (-90, 90, 0));
 	spawncrate((-1085, 2156, 250), (0, 90, 0), "com_plasticcase_friendly");
 	CreateWalls((-1190, 2620, 230),(-1190, 2620, 330),(0,0,90));
 	CreateDoors((-1070, 2620, 340) /*open*/, (-1070, 2620, 250) /*close*/, (90,90,0) /*angle*/, 3 /*size*/, 2 /*height*/, 25 /*hp*/, 120 /*range*/, 1 /*sideways*/);
@@ -511,8 +796,8 @@ resistance_edit2(){
 		(-309.248, -1095.5, 937.125),
 		(-309.251, -1589.48, 937.125),
 		(-417.745, -1589.5, 896.125),
-		(-418.563, -2346.09, 967.708),
-		(132.857, -3130.16, 282.441),
+		(-418.563, -2329.09, 967.708),
+		(132.857, -2329, 282.441),
 		(134.049, -3462.89, 282.441),
 		(606.557, -3466.88, 282.441),
 		(597.096, -2315.44, 566.161),
@@ -627,7 +912,7 @@ ents = GetEntArray();
 	spawnmodel((3688, 637, 652) , (0, 50, 0) , "mil_razorwire_long_static");
 	spawnmodel((3339, 320, 646) , (-5, -83, 0) , "ch_sign_noentry");
 	spawnmodel((3755, 1953, 634) , (-5, -308, 0) , "ch_sign_noentry");
-	fufalldamage((3021, 527, -26), 500, 750);
+	fufalldamage((3053, 901, -26), 1400, 750);
 	
 	spawnmodel((2642, 129, 497) , (0, 0, 0) , "roof_03_12w_front");//cps fix
 	
@@ -640,6 +925,7 @@ ents = GetEntArray();
  
  
 	spawnmodel((2261, 1873, 60) , (-90, -90, 0) , "roof_04_chimney_01"); //START WALLS
+	spawnmodel((2264, 1969, 63) , (-90, -90, 0) , "roof_04_chimney_01");
 	spawnmodel((2241, 1877, 25) , (0, 0, 90) , "bldgbody_01_cornice_04");
 	spawnmodel((2244, 1878, 25) , (0, 0, 90) , "bldgbody_01_cornice_04");
 	for(i = 0;i < 2;i++)
@@ -708,14 +994,16 @@ ents = GetEntArray();
 	
 	//final roof
 	spawnmodel((2947, -1256, 700) , (0, 0, 0) , "roof_04_chimney_01");
-	spawnmodel((2947, -784, 700) , (0, 180, 0) , "roof_04_chimney_01");
     spawnmodel((3008, 379, 666) , (0, 0, 0) , "roof_04_chimney_01");
 	for(i = 0;i < 4;i++)
 	spawncrate((3085, 379, 742)+ (-52* i,0,0) , (0, 90, 0));
+	/*
+	spawnmodel((2947, -784, 700) , (0, 180, 0) , "roof_04_chimney_01");
 	for(i = 0;i < 4;i++)
 	spawncrate((3024, -783, 763)+ (-52* i,0,0) , (90, 0, 0));
 	spawncrate((3024, -783, 690), (90,0,0));
 	spawncrate((2868, -783, 690), (90,0,0));
+	*/
 	for(i = 0;i < 4;i++)
 	spawncrate((3024, -1255, 763)+ (-52* i,0,0) , (90, 0, 0));
 	spawncrate((3024, -1255, 690), (90,0,0));
@@ -858,19 +1146,19 @@ downturn_edit1(){
 	spawncrate((3245, 2373, 1357) , (-24, 0, 0));
 	cannonball((4584, 566, 968), (0,0,0), 3, (4556, 1768, 1058), 900);
 
-	createTP((2423, 1104, 92), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((-555, 161, 229), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((-555, 161, 69), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((257, -971, -175), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((257, -971, 39), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((1533, 901, 86), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((-951, -752, -12), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((1483, -493, 88), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((-642, 1256, 57), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((747, 626, -113), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((1061, -1557, 45), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((1169, 1339, 64), (4227, 263, 1028), (4, 88, 0), undefined, 1);
-	createTP((1169, 1339, -175), (4227, 263, 1028), (4, 88, 0), undefined, 1);
+	createTP((2423, 1104, 92), (4227, 263, 1028), (4, 88, 0));
+	createTP((-555, 161, 229), (4227, 263, 1028), (4, 88, 0));
+	createTP((-555, 161, 69), (4227, 263, 1028), (4, 88, 0));
+	createTP((257, -971, -175), (4227, 263, 1028), (4, 88, 0));
+	createTP((257, -971, 39), (4227, 263, 1028), (4, 88, 0));
+	createTP((1533, 901, 86), (4227, 263, 1028), (4, 88, 0));
+	createTP((-951, -752, -12), (4227, 263, 1028), (4, 88, 0));
+	createTP((1483, -493, 88), (4227, 263, 1028), (4, 88, 0));
+	createTP((-642, 1256, 57), (4227, 263, 1028), (4, 88, 0));
+	createTP((747, 626, -113), (4227, 263, 1028), (4, 88, 0));
+	createTP((1061, -1557, 45), (4227, 263, 1028), (4, 88, 0));
+	createTP((1169, 1339, 64), (4227, 263, 1028), (4, 88, 0));
+	createTP((1169, 1339, -175), (4227, 263, 1028), (4, 88, 0));
 	createHiddenTP((5460, 2297, 998.125), (3125, 2620, 1359), (0, -90, 0), undefined, 1,70,150);
 	//createHiddenTP((-164.728,2885.13,1590), (4227, 263, 1028), (4, 88, 0), undefined, "out");
 	CreateRamps((4460, 3670, 984),(4320, 3670, 900));
@@ -936,6 +1224,8 @@ downturn_edit2(){
 	mp_global_intermission.origin = (3693, 1701, 1529);
 	mp_global_intermission.angles = (34, 90, 0);
 	createPolygon();
+	CreateInvisWalls((4762, 1671, 1015),(4763, 1805, 1015));
+	CreateInvisWalls((4762, 1671, 1085),(4763, 1805, 1085));
 	CreateRamps((4145,2390,903), (3255,2390,1332)); //ramp big
 	CreateWalls((5035, 3590, 1090),(5035, 3780, 970));
 	cannonball((4450, 2830, 910), (0,90,0), 3, (3153, 2627, 1419), 900);
@@ -1010,11 +1300,18 @@ downturn_edit3(){
 		(-1352.88, 3382, 22),
 		(-217, 3382, 100)
 	];
-	//Edit By TMG
 	moveac130position((-1808, -1134, 1500));
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
-	mp_global_intermission.origin = (-1559, -404, 1137);
-	mp_global_intermission.angles = (-19, -114, 0);
+	
+	random = randomint(2);
+		if(random == 0)
+			mp_global_intermission.origin = (-1559, -404, 1137);
+		else
+			mp_global_intermission.origin = (-729, -3264, 1456);
+		if(random == 0)
+			mp_global_intermission.angles = (-19, -114, 0);
+		else
+			mp_global_intermission.angles = (10, 135, 0);
 	createPolygon();
 	
 	ents = GetEntArray();
@@ -1025,6 +1322,7 @@ downturn_edit3(){
 	ent delete();
 		}
 	}
+	CreateDeathRegion((-2677, 578, 690), (-3280, 751, 800));
 	spawnmodel((-2252, -1866, 1102) , (0, 90, 0) , "ny_manhattan_building_electricalboxunit_e");
 	
 	spawnmodel((-2377, -2049, 1115), (0, 180, 0), "fence_metal_black");	
@@ -1059,13 +1357,10 @@ downturn_edit3(){
 	spawncrate((-2402, -2093, 1167) + (0, -60* i, 0), (90, 0, 90)); i++;
 					
 	spawnmodel((-1127, -1551, 1361), (0, 90, 0), "ex_window_volksbank_facade_large"); 
-	spawnmodel((-1127, -1163, 1361), (0, 90, 0), "ex_window_volksbank_facade_large"); 
-	
-	spawnmodel((-1260, -1277, 1361), (0, 0, 0), "ex_window_volksbank_facade_large"); 
+	spawnmodel((-1260, -1312, 1361) , (0, 0, 0) , "ex_window_volksbank_facade_large");
 	spawnmodel((-1259, -1420, 1361), (0, 0, 0), "ex_window_volksbank_facade_large"); 
-	spawnmodel((-998, -1279, 1361), (0, 0, 0), "ex_window_volksbank_facade_large"); 
+	spawnmodel((-998, -1294, 1361) , (0, 0, 0) , "ex_window_volksbank_facade_large");
 	spawnmodel((-999, -1420, 1361), (0, 0, 0), "ex_window_volksbank_facade_large"); 
-	
 	spawnmodel((-1389, -1664, 1351), (30, 245, 0), "com_security_camera"); 
 	 
 	CreateWalls((-1352, 3352, 400),(-257, 3352, 400));
@@ -1203,11 +1498,9 @@ downturn_edit3(){
 	createTP((1169, 1339, 64), (-1846,-3018.48,1120.13), (0,0,0), 1);
 	createTP((1169, 1339, -175), (-1846,-3018.48,1120.13), (0,180,0), 1);
 	spawnmodel((87.6, 1954, 190.125), (0, 170, 14), "concrete_pillarchunk_lrg_01");
-	//createHiddenTP((-1248, 1827, 90.875), (-247.5, -629, -102), (0, 0, 0), "out");
 	createTurret((-1390, 2175, 335), (0,0,0), 50, 50, 30, 10, 10);
 	//1st flag delayed spawn
-	createHiddenTP((-1333, -1085, 1382), (-1220, -429, 1181.13), (0,170,0), undefined, 1, 10, undefined, 100);
-	createHiddenTP((-2321, -1095, 1116), (-1220, -429, 1181.13), (0,170,0), undefined, 1, undefined, undefined, 100);
+	createHiddenTP((-1333, -1085, 1382), (-1220, -429, 1181.13), (0,150,0), undefined, 1, 10, undefined, 100);
 	spawnmodel((-1661, -500, 1155), (27, 152, 0), "usa_sign_oneway2_right");
 	spawnmodel((-1735, -121, 1180), (313, 0, 0), "usa_sign_oneway2_left");
 	spawnmodel((-1751, -121, 1110), (270, 0, 0), "usa_sign_oneway2_left");
@@ -1215,6 +1508,7 @@ downturn_edit3(){
 	spawnmodel((-1666, -496, 1065), (70, 0, 0), "hind_arena_safenet_pole");
 	//2nd
 	createHiddenTP((-2728, -35, 590), (251.762, 1995.88, 160.13), (0,188,0), undefined, undefined, undefined, undefined, 115);
+	createHiddenTP((-1270.96, 1814, 90), (-2321, -1095, 1116), (0,-5,0), undefined, 1, undefined, undefined, 115);
 	spawncrate((-1240, -462.5, 1140), (0, 0, 0));
  	spawncrate((-1240, -402.5, 1140), (0, 0, 0));
  	spawncrate((-1240,  -342.5, 1140), (0, 0, 0));
@@ -1630,20 +1924,22 @@ fallen_edit2(){
 }
 hardhat_edit1(){
 	level.meat_playable_bounds = [
-		(2038.88, 1469.27, 700.754),
-		(2091.33, 2376.46, 721.977),
+		(2090.2, 1469.27, 700.754),
 		(2090.2, 3195.8, 703.031),
 		(2396.15, 3580.7, 512.125),
 		(2400.63, 4063.12, 512.125),
 		(-2025.11, 4064.89, 448.125),
 		(-2020.51, 1739.14, 573.599),
+		(-16464.8, -15679.89, 448.125),
+		(-18313, -15679.89, 448.125),
+		(-16464.8, -16996, 448.125),
+		(-16464.8, -15679.89, 448.125),
+		(-2020.51, 1739.14, 573.599),
 		(-578.852, 1736, 742.125),
-		(-576.939, 1341.15, 742.125),
-		(-226.698, 1341.77, 664.448),
-		(1061.85, 1453.49, 661.146)
+		(-576.939, 1341.15, 742.125)
 	];
 	createPolygon();
-	moveac130position((-584, 2826, 2000));
+	moveac130position((-556, 3054, 2000.125));
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (-1058, 3651, 104);
 	mp_global_intermission.angles = (-22, -48, 0);
@@ -1655,47 +1951,210 @@ hardhat_edit1(){
 	ent delete();
 		}
 	}
-	cannonball((-559, 1758, 620), (0,0,0), 2, (1425, 1981, 735), -290);
+	//new spawn room
+	spawnmodel((-16911, -16260, 579) , (-86, 61, -90) , "concrete_sewer_pipe_large"); //idea1
+	spawnmodel((-16659, -16188, 512) , (0, 106, 0) , "pb_pallet_bags"); //idea1
+	createTP((-16922.9, -16267.7, 510), (-1938.9, 1762, 224), (2, 90, 0),undefined, 160, undefined, undefined, 1);
+	createTP((-16647, -16218.8, 510), (-1963, 3945, 32), (0, 0, 0),undefined, 160, undefined, undefined, 1);
+	CreateDeathRegion((-17551, -17009, 455), (-16025, -15126.6, 330));
 	
-	CreateRedGrids((-920, 1755, 270),(-920, 1235, 270), (0,90,0));
-	CreateWalls((-1830, 1950, 200),(-1920, 1950, 350));
-	CreateWalls((-1820, 1740, 200),(-1820, 1920, 350));
-	CreateWalls((-2000, 3840, 40),(-1830, 3840, 160));
-	CreateWalls((-1700, 4040, 40),(-1700, 3720, 160));
-	CreateWalls((-1390, 2480, 30),(-1390, 2670, 150));
-	CreateRamps((-900, 3900, 20),(-600, 3900, 140));
-	CreateWalls((303, 3230, 30),(303, 3080, 170));
-	CreateWalls((303, 2850, 30),(303, 2710, 170));
-	CreateDoors((303, 2780, 60) /*open*/, (303, 2970, 60) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 2 /*height*/, 20 /*hp*/, 120 /*range*/, 1 /*sideways*/);
+	spawnmodel((1026, 2360, 334) , (-92, 0, 181) , "com_barrier_tall1"); //new visual
+	spawnmodel((2094, 1505, 384) , (0, -85, 0) , "me_dumpster_close_green");
+	spawnmodel((2110, 3173, 444) , (107, 96, -73) , "wood_plank1");
+	spawnmodel((2120, 2419, 419) , (0, 0, 0) , "pb_pallet_bags");
+	spawnmodel((2123, 2418, 383) , (0, 0, 0) , "ch_crate48x64");
+	spawnmodel((2187, 3202, 448) , (-35, -115, 0) , "hanging_dead_paratrooper01");
+	spawnmodel((1384, 4082, 384) , (0, 6, 0) , "ny_manhattan_barrier_sawhorse");
+	spawnmodel((1553, 4079, 384) , (0, -5, 0) , "ny_manhattan_barrier_sawhorse");
+	spawnmodel((2038, 3571, 473) , (0, 0, 0) , "intro_construction_rebar_tuft02");
+	spawncrate((2045, 3574, 566) , (90, 0, 0));
+	
+	spawncrate((2103, 3174, 442) , (90, 0, 0));
+	spawncrate((2103, 3174, 547) , (90, 0, 0));
+	for(i = 0;i < 3;i++)
+	spawncrate((2111, 2414, 430)+(0,0,83*i), (0, 90, -90));
+	for(i = 0;i < 3;i++)
+	spawncrate((2058, 1503, 441)+(0,0,104*i), (90, 90, 0));
+	
+	//spawn1
+	spawnmodel((-1939, 1830, 273) , (5, 0, -5) , "concrete_sewer_pipe_large");
+	spawnmodel((-1613, 2081, 145) , (-10, -85, 0) , "plastic_fence_300x88");
+	spawnmodel((-1629, 2223, 147) , (80, -100, -100) , "wood_plank1");
+	spawnmodel((-1596, 1931, 199) , (80, -100, -100) , "wood_plank1");
+	
+	for(i = 0;i < 3;i++)
+	spawncrate((-1889, 1764, 226)+(0,67*i,-6*i) , (-5, -90, 39));
+    for(i = 0;i < 3;i++)
+	spawncrate((-1874, 1781, 281)+(0,61*i,-5*i) , (-5, -90, 90));
+	for(i = 0;i < 4;i++)
+	spawncrate((-1893, 1921, 331)+(0,-60*i,6*i) , (30, 0, -5));
+	for(i = 0;i < 3;i++)
+	spawncrate((-1999, 1764, 226)+(0,67*i,-6*i) , (-5, -90, -39));
+	for(i = 0;i < 3;i++)
+	spawncrate((-2014, 1783, 281)+(0,60*i,-5*i) , (-5, -90, -90));
+	for(i = 0;i < 4;i++)
+	spawncrate((-1985, 1921, 331)+(0,-60*i,6*i) , (-30, 0, -5));
 
-	CreateWalls((1280, 4079, 410),(1650, 4079, 410));
-	CreateWalls((1280, 4079, 480),(1650, 4079, 480));
-	CreateWalls((2000, 3550, 530),(1870, 3550, 530));
-	CreateWalls((2000, 3550, 600),(1870, 3550, 600));
+	//spawn2
+	spawnmodel((-1714, 3987, 31) , (0, 0, 0) , "pb_pallet_bags");
+	spawnmodel((-1706, 3937, 31) , (0, 90, 0) , "pb_pallet_bags");
+	spawnmodel((-1703, 3895, 31) , (0, 90, 0) , "pb_pallet_bags");
+	spawnmodel((-1703, 3938, 75) , (0, 90, 0) , "pb_pallet_bags");
+	spawnmodel((-1713, 3988, 75) , (0, 0, 0) , "pb_pallet_bags");
+	spawnmodel((-1705, 3896, 75) , (0, 91, 0) , "pb_pallet_bags");
+	spawnmodel((-1917, 3844, 25) , (0, -90, 0) , "com_industrialtrashbin");
+	spawnmodel((-1709, 3958, 114) , (0, 0, 0) , "fence_tarp_draping_98x94_02");
+	spawnmodel((-1758, 4000, 31) , (0, 0, 0) , "pb_pallet_bags"); 
+	for(i = 0;i < 4;i++)
+	spawncrate((-1817, 3815, 76)+(-60*i,0,0) , (90, 0, 0));
+	for(i = 0;i < 4;i++)
+	spawncrate((-1817, 3870, 76)+(-60*i,0,0) , (90, 0, 0));
+	spawncrate((-1758, 3998, 60) , (0, 90, 0));
+	spawncrate((-1718, 3998, 85) , (90, 0, 0));
+	spawncrate((-1718, 3998, 85) , (90, 0, 0));
+	spawncrate((-1713, 3984, 85) , (90, 0, 0));
+	spawncrate((-1690, 3940, 85) , (90, 0, 0));
+	spawncrate((-1716, 3940, 85) , (90, 0, 0));
+	spawncrate((-1690, 3894, 85) , (90, 0, 0));
+	spawncrate((-1716, 3894, 85) , (90, 0, 0));
+	
+	spawnmodel((-605, 3865, 130) , (0, -68, 0) , "com_trashchuteslide");//ramp
+	CreateInvisRamps((-774, 3842, 24),(-639, 3895, 131));
+	spawncrate((-610, 3907, 145) , (0, 111, 0));
+	spawnmodel((-694, 3967, 32) , (0, -66, 0) , "construction_porter_potty_green_nolodout");
+	spawncrate((-703, 3961, 77) , (0, -66, 0));
+	spawncrate((-685, 3969, 77) , (0, -66, 0));
+	spawncrate((-703, 3961, 124) , (0, -66, 0));
+	spawncrate((-685, 3969, 124) , (0, -66, 0));
+	
+	//cover
+	spawnmodel((-1689, 2601, 32) , (0, 0, 0) , "me_construction_dumpster_close");
+	spawnmodel((-1718, 2596, 104) , (-4, 0, 85) , "com_door_01_handleleft");
+	spawnmodel((-1688, 2542, 39) , (0, 0, 0) , "ch_crate48x64");
+	spawnmodel((-1685, 2711, 81) , (0, 0, 40) , "prop_bm21_crte_clsed");
+	spawnmodel((-1689, 2629, 51) , (0, -90, 0) , "construction_porter_potty_green_nolodout");
+	for(i = 0;i < 5;i++)
+	spawncrate((-1688, 2504, 72)+(0,48.5*i,0) , (0, 0, 0));
+	spawncrate((-1689, 2618, 132) , (0, 0, 0));
+	spawncrate((-1689, 2640, 132), (0, 0, 0)); 
+ 
+	spawnmodel((-848, 2157, 94) , (0, 0, 0) , "concrete_sewer_pipe_large");
+	for(i = 0;i < 6;i++)
+	spawncrate((-800, 2246, 40)+(0,-33*i,0) , (-41, 360, 0));	
+	for(i = 0;i < 6;i++)
+	spawncrate((-896, 2246, 40)+(0,-33*i,0) , (-41, 180, 0));
+	for(i = 0;i < 6;i++)
+	spawncrate((-777, 2246, 85)+(0,-33*i,0) , (-90, 360, 0));
+	for(i = 0;i < 6;i++)
+	spawncrate((-919, 2246, 85)+(0,-33*i,0) , (-90, 180, 0));
+	for(i = 0;i < 6;i++)
+	spawncrate((-800, 2246, 146)+(0,-33*i,0) , (-139, 360, 0));	
+	for(i = 0;i < 6;i++)
+	spawncrate((-896, 2246, 146)+(0,-33*i,0) , (-139, 180, 0));
+	for(i = 0;i < 5;i++)
+	spawncrate((-849, 2246, 167)+(0,-41*i,0) , (0, 180, 0));
+	
+	spawnmodel((-376, 2300, 116) , (-171, 91, -90) , "concrete_sewer_pipe_large");
+	spawncrate((-388, 2235, 90) , (-90, 79, 0));//cylinder
+	spawncrate((-422, 2254, 90) , (-90, 44, 0));
+	spawncrate((-351, 2240, 90) , (-90, 114, 0));
+	spawncrate((-321, 2268, 90) , (-90, 149, 0));
+	spawncrate((-314, 2307, 90) , (-90, 184, 0));
+	spawncrate((-328, 2341, 90) , (-90, 219, -2));
+	spawncrate((-359, 2361, 90) , (-90, 254, 0));
+	spawncrate((-397, 2360, 90) , (-90, 289, 0));
+	spawncrate((-426, 2339, 90) , (-90, 324, 0));
+	spawncrate((-437, 2304, 90) , (-90, 359, 0));
+	spawncrate((-434, 2277, 90) , (-90, 19, 0));
+	CreateDeathRegion((-291, 2230, 117), (-463, 2396, 260));//cylinder
+    
+	spawnmodel((-1137, 1832, 156) , (18, 30, 0) , "vehicle_bulldozer");
+	spawncrate((-1166, 1817, 239) , (0, -60, -20));
+	spawncrate((-1158, 1821, 264) , (0, -60, -20));
+	spawncrate((-1097, 1856, 192) , (20, 30, 0));
+	spawncrate((-1155, 1797, 185) , (-20, -150, -2));
+	spawncrate((-1181, 1842, 185) , (-20, -150, -2));
+	spawncrate((-1110, 1823, 165) , (-20, -150, -2));
+	spawncrate((-1136, 1868, 165) , (-20, -150, -2));
 
-	CreateWalls((2047, 1500, 370),(2047, 1500, 700), (0,90,90));
-	CreateWalls((2103, 2410, 370),(2103, 2410, 700), (0,90,90));
-	CreateWalls((2103, 3170, 370),(2103, 3170, 700), (0,90,90));
-	CreateGrids((460, 2380, 177),(160, 2480, 177), (0,0,0));
-	CreateRamps((165, 2350, 180),(165, 2090, 290));
-	CreateGrids((165, 2065, 305),(165, 1740, 305), (0,0,0));
-	CreateQuicksteps((165, 1713, 625), 320, 18, 2, (0,90,0));
-	CreateInvisWalls((-590, 1335, 665),(-590, 1760, 665));
-	CreateInvisWalls((-390, 1329, 665),(-595, 1329, 665));
-	CreateInvisWalls((-590, 1335, 715),(-590, 1760, 715));
-	CreateInvisWalls((-390, 1329, 715),(-595, 1329, 715));
+	//door 
+	spawnmodel((299, 3145, 108) , (5, -95, 0) , "fence_tarp_196x146");
+	spawnmodel((290, 2698, 109) , (0, 90, 0) , "fence_tarp_352x88");
+	spawnmodel((290, 2875, 66) , (0, -35, 0) , "me_chainlink_fence_pole");
+	spawnmodel((292, 2833, 3) , (0, -90, 0) , "com_barrier_tall1");
+	spawnmodel((292, 2741, 3) , (0, -90, 0) , "com_barrier_tall1");
+	CreateDoors((323, 3170, 60) /*open*/, (310, 2996, 60) /*close*/, (90,0,0) /*angle*/, 4 /*size*/, 2 /*height*/, 20 /*hp*/, 110 /*range*/, 1 /*sideways*/);
+	for(i = 0;i < 3;i++)
+	spawncrate((311, 3065, 145)+(0,60*i,0) , (90, -90, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((303, 2855, 123)+(0,-60*i,0) , (90, -90, 90));
+	for(i = 0;i < 2;i++)
+	spawncrate((303, 2855, 73)+(0,-60*i,0) , (90, -90, 90));
+	
+	//main ladder ramp
+    spawnmodel((127, 1805, 212) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((129, 1805, 122) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((127, 1806, 29) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((131, 2064, 31) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((134, 2063, 124) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((128, 2303, 159) , (0, 0, 0) , "com_pallet_2");
+	spawnmodel((177, 1960, 233) , (110, -270, -90) , "me_construction_dumpster_close");
+	spawnmodel((75, 1959, 233) , (110, -270, 90) , "me_construction_dumpster_close");
+	spawnmodel((179, 2199, 166) , (101, -270, -90) , "me_construction_dumpster_close");
+	spawnmodel((77, 2199, 166) , (101, -270, 90) , "me_construction_dumpster_close");
+	spawnmodel((200, 2334, 140) , (90, 180, 90) , "me_construction_dumpster_close");
+	spawnmodel((137, 2384, 75) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((136, 2391, 37) , (0, 0, 0) , "com_water_tank2_stand");
+	spawnmodel((199, 2436, 141) , (90, -360, 90) , "me_construction_dumpster_close");
+	spawnmodel((363, 2402, 178) , (18, 0, 181) , "com_barrier_tall1");
+	spawnmodel((126, 1837, 300) , (0, 0, 90) , "me_corrugated_metal4x4");
+	spawnmodel((126, 1789, 300) , (0, 0, 90) , "me_corrugated_metal4x4");
+	spawncrate((351, 2404, 164) , (-18, -180, -1));
+	for(i = 0;i < 6;i++)
+	spawncrate((248, 2402, 156)+(-30*i,0,0) , (0, 90, 0));
+	for(i = 0;i < 3;i++)
+	spawncrate((158, 2335, 156)+(-30*i,0,0) , (0, 90, 0));
+    CreateInvisRamps((139,2291,160), (139,2089,200));
+	CreateInvisRamps((109,2291,160), (109,2089,200));
+	CreateInvisRamps((139,2083,202), (139,1880,276));
+	CreateInvisRamps((109,2083,202), (109,1880,276));
+	CreateInvisQuicksteps((132, 1716, 620), 330, 18, 3, (0,90,0));
+	CreateInvisQuicksteps((96, 1716, 620), 330, 18, 3, (0,90,0));
+	for(i = 0;i < 3;i++)
+	spawncrate((151, 1822, 288)+(-30*i,0,0) , (0, 90, 0));
+	spawnmodel((154, 1755, 472) , (80, 62, -118) , "plastic_fence_400x88");
+    spawnmodel((-793, 1713, 625) , (0, 0, 0) , "plastic_fence_528x88");
+    spawnmodel((-539, 1713, 650) , (90, -5, -100) , "wood_plank1");
+	for(i = 0;i < 4;i++)
+	spawncrate((-412, 1327, 698) + (-60* i, 0, 0), (90, 0, 0));
+	for(i = 0;i < 6;i++)
+	spawncrate((-590, 1380, 698)+ (0, 60* i, 0) , (90, 90, 0));
+	spawncrate((-551, 1724, 698) , (90, 90, 0));
 	spawncrate((239, 1440, 680), (90, 0, 0));
-	moveac130position((-556, 3054, 2000.125));
+
+	//in map los block
+	spawnmodel((1834, 1447, 241) , (90, -90, 0) , "ny_manhattan_building_electricalboxunit_e");
+	spawnmodel((1205, 1312, 240) , (90, 90, 0) , "ny_manhattan_building_electricalboxunit_e");
+	createTP((1710, 1366, 200), (-1938.9, 1762, 224), (0, 86, 0), undefined, 130, 150,undefined, 1);//spawnfix
+	createTP((1384, 1237, 326), (-1938.9, 1762, 224), (0, 86, 0), undefined, 230, 90);//spawnfixvisible
+	spawncrate((1218, 1413, 384), (90, 180, 0));
+	
+	//end bridge
+	spawnmodel((1422, 2001, 635) , (91, 0, 0) , "fx_wood_beam");
+	spawnmodel((1293, 2001, 640) , (93, 0, 0) , "fx_wood_beam");
+	spawnmodel((1164, 2001, 647) , (93, 0, 0) , "fx_wood_beam");
+	for(i = 0;i < 5;i++)
+	spawncrate((1135, 2001, 631)+ (60* i, 0, -3* i) , (-3, 180, 0));
+	CreateElevator((1137, 1631, 365),(1137, 1601, 365), 269, 2, (0,90,0));
 	fufalldamage((188, 1946, 320.125), 250, 100);
-	   //createHiddenTP((-539, 1379, 640.125), (-295, -1006, 386.125), undefined, "out");
-	createTP((814, 1377, 370), (-1888, 1782, 224), (2, 120, 0));
-	createTP((842, -1500, 273), (-1963, 3945, 32), (0, 0, 0));
-	createTP((2089, -649, 295), (-1888, 1782, 224), (2, 120, 0));
-	createTP((-849, -44, 160), (-1963, 3945, 32), (0, 0, 0));
-	createTP((-432, 724, 364), (-1888, 1782, 224), (2, 120, 0));
-	createTP((691, -184, 288), (-1963, 3945, 32), (0, 0, 0));
-	createTP((-293, -1165, 287), (-1888, 1782, 224), (2, 120, 0));
-	createTP((1515, 563, 184), (-1888, 1782, 224), (2, 120, 0));
+	createTP((842, -1500, 273), (-16715, -15833.5, 516), (0, 264, 0),1);
+	createTP((2089, -649, 295), (-16715, -15833.5, 516), (0, 264, 0),1);
+	createTP((-849, -44, 160), (-16715, -15833.5, 516), (0, 264, 0),1);
+	createTP((-432, 724, 364), (-16715, -15833.5, 516), (0, 264, 0),1);
+	createTP((691, -184, 288), (-16715, -15833.5, 516), (0, 264, 0),1);
+	createTP((-293, -1165, 287), (-16715, -15833.5, 516), (0, 264, 0),1);
+	createTP((1602, 207, 184), (-16715, -15833.5, 516), (0, 264, 0),1);
+	level.lowspawnoverwriteheight = -100;
 }
 hardhat_edit2(){
 	level.meat_playable_bounds = [
@@ -1876,6 +2335,7 @@ bakaara_edit1(){
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (-2454, -231, -30);
 	mp_global_intermission.angles = (-14, -34, 0);
+	CreateDeathRegion((-1368, 725, -28), (-1101, 1981, 92));
 	CreateWalls((-2880, -120, -30),(-2280, -120, 20));
 	spawncrate((-2900, -153, -10),(90,0,0));
 	CreateWalls((-2900, -130, 20),(-2900, -500, 20));
@@ -2543,6 +3003,7 @@ favela_edit1(){
 	spawnmodel((9873, 18289, 13618) , (0, 0, 90) , "me_corrugated_metal8x8");
 	spawnmodel((9958, 18294, 13619) , (0, 120, 90) , "me_corrugated_metal4x8");
 	spawnmodel((10016, 18330, 13617) , (0, 0, 90) , "me_corrugated_metal8x8");
+	spawnmodel((9933, 18321, 13621) , (0, 87, 90) , "me_corrugated_metal4x8");//NEW
 
 	spawnmodel((9882, 18297, 13523) , (0, 0, 0) , "com_water_tank2_stand");
 	
@@ -2595,7 +3056,7 @@ favela_edit1(){
 	CreateGrids((10080, 18540, 13113),(10130, 18680, 13113), (0,0,0));
 	CreateRamps((10050, 18570, 13100),(9780, 18570, 13270));
 	CreateGrids((9740, 18610, 13283),(9690, 18280, 13283), (0,0,0));
-	CreateDoors((9765, 18420, 13350) /*open*/, (9765, 18565, 13350) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 1 /*height*/, 30 /*hp*/, 100 /*range*/);
+	CreateDoors((9765, 18420, 13350) /*open*/, (9765, 18565, 13350) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 1 /*height*/, 35 /*hp*/, 100 /*range*/);
 	
 	
 	createTP((923, 2546, 240.625), (9798, 18433, 12643), (0, -90, 0), 1);
@@ -2605,8 +3066,7 @@ favela_edit1(){
 	createTP((-1603, 855, 8.0225), (9798, 18433, 12643), (0, -90, 0), 1);
 	createTP((-754, 1356, 92.4042), (9798, 18433, 12643), (0, -90, 0), 1);
 	//createHiddenTP((9345, 18435, 13635),(-778, 2947, 410), undefined , "out");
-	CreateDoors((9700, 18375, 13050) /*open*/, (9700, 18375, 12970) /*close*/, (90,90,0) /*angle*/, 4 /*size*/, 2 /*height*/, 30 /*hp*/, 220 /*range*/, 1 /*sideways*/);
-	//createTP((9774, 18293, 12354), (9799, 18422, 12643.1), (0, 90, 0), 1, 250, undefined,undefined, 1);//tp to save you from door stuck teleport
+	CreateDoors((9700, 18375, 13050) /*open*/, (9700, 18375, 12970) /*close*/, (90,90,0) /*angle*/, 4 /*size*/, 2 /*height*/, 20 /*hp*/, 220 /*range*/, 1 /*sideways*/);
 	CreateDeathRegion((14000,13500,11000), (6000,22500,0));
 	moveac130position((9938, 18427, 12636.6));
 }
@@ -2655,12 +3115,12 @@ favela_edit2(){
 	spawncrate((1786, 2733.9, 373.7), (90, 0, 0));
 	spawncrate((1806, 2743.53, 373.7), (90, 0, 0)); 
 	
-	createTP((923, 2546, 240.625), (1132, 2398, 281), (0, -12, 0), 1);
-	createTP((1010, 10, 198.939), (1104, 2401, 281), (0, -12, 0), 1);
-	createTP((1199, -1201, 187.083), (1104, 2401, 281), (0, -12, 0), 1);
-	createTP((-438, 377, 0.125), (1104, 2401, 281), (0, -12, 0), 1);
-	createTP((-1603, 855, 8.0225), (1104, 2401, 281), (0, -12, 0), 1);
-	createTP((-754, 1356, 92.4042), (1104, 2401, 281), (0, -12, 0), 1);
+	createTP((923, 2546, 240.625), (1132, 2398, 281), (0, -12, 0));
+	createTP((1010, 10, 198.939), (1104, 2401, 281), (0, -12, 0));
+	createTP((1199, -1201, 187.083), (1104, 2401, 281), (0, -12, 0));
+	createTP((-438, 377, 0.125), (1104, 2401, 281), (0, -12, 0));
+	createTP((-1603, 855, 8.0225), (1104, 2401, 281), (0, -12, 0));
+	createTP((-754, 1356, 92.4042), (1104, 2401, 281), (0, -12, 0));
 	createhiddenTP((3015, 3102, 280.125), (1648, 2999, 686), (0, -58, 0), undefined);
 	//createHiddenTP((1757, -1645, 728.125),(-177, -753, 431.167), undefined , "out");
 	//End of road wall 3-stack
@@ -2674,6 +3134,7 @@ favela_edit2(){
 
 	//Door
 	CreateDoors((1894, 2612, 390) /*open*/, (1894, 2612, 300) /*close*/, (90,25,0) /*angle*/, 5 /*size*/, 2 /*height*/, 25 /*hp*/, 120 /*range*/, 0 /*sideways*/);
+	fufalldamage((1889, 2613, 286),500,450);
 	// Ents
 	spawnmodel((1643, 2141, 305) , (0, 80, 0) , "foliage_tree_oak_1");
 	spawnmodel((2137, 2033, 669) , (0, 111, 270) , "ch_mattress_boxspring");
@@ -2754,6 +3215,12 @@ favela_edit2(){
 	CreateDeathRegion((1530, 1792, 60.097), (2720, 3070, 280));
 	CreateDeathRegion((1583.79, 2928.94, 500), (1785.37, 3374, 680));
 	CreateDeathRegion((1807.12, 1200.88, 490), (3166.52, -1245.16, 170));
+	
+	//cuck perch
+	spawnmodel((2204, 1072, 674) , (0, -79, -90) , "me_corrugated_metal4x8");
+	spawnmodel((2199, 1099, 659) , (-40, -79, -90) , "me_corrugated_metal4x8");
+	spawncrate((2185, 1063, 659) , (0, 11, 0));
+	spawncrate((2225, 1071, 659) , (0, 11, 0));
 }
 interchange_edit1(){
 	ents = GetEntArray();
@@ -2769,22 +3236,33 @@ interchange_edit1(){
 		(-4622.8, 1690, 100),
 		(-4615.22, 2574.86, 1000),	
 		(-7660.25, 5296.49, 1000),
-		
-		(-8111.68, 4793.93, 3333),
-		
+		(-8111.68, 4793.93, 3333),	
 		(-9630.37, 5641.32, 1000),
 		(-10119.88, 5340.7, 1000),
 		(-8952.36, 3311.2, 1000),
 		(-8393.5, 3564, 1000),
 		(-9630.37, 5641.32, 1000),
-		
 		(-8111.68, 4793.93, 3333)
 	];
 	createPolygon();
 	moveac130position((-6395, 3700, 1678));
+	CreateDeathRegion((-7360, 5289, 590), (-8153, 4764, 800));
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
-	mp_global_intermission.origin = (-5013, 2885, 988);
-	mp_global_intermission.angles = (-24, -85, 0);
+	
+	random = randomint(3);
+		if(random == 0)
+			mp_global_intermission.origin = (-5013, 2885, 988);
+		else if(random == 1)
+			mp_global_intermission.origin = (-6341, 2202, 1019);
+		else
+			mp_global_intermission.origin = (-4665, 2292, 1068.8);
+		if(random == 0)
+			mp_global_intermission.angles = (-24, -85, 0);
+		else if(random == 1)
+			mp_global_intermission.angles = (-20, 47, 0);
+		else
+			mp_global_intermission.angles = (4, 142, 0);
+	
 	
 	CreateInvisWalls((-8108, 4817, 920),(-7678, 5299, 920));
 	CreateInvisWalls((-8108, 4817, 970),(-7678, 5299, 970));
@@ -2817,13 +3295,12 @@ interchange_edit1(){
 	CreateInvisWalls((-4635, 2592, 973),(-5068, 2162, 973));
 	
 	i=0;
-	j=0;
-	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* j,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; j++;
-	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* j,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; j++;
-	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* j,0), (30, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; j++;
-	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* j,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; j++;
-	spawnmodel((-4666.87, 2559.4, 949)+ (-72.53* i,-72.7* j,0), (90, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; j++;
-	spawnmodel((-4665.87, 2558.4, 949)+ (-72.53* i,-72.7* j,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; j++;
+	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* i,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; 
+	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* i,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; 
+	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* i,0), (30, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; 
+	spawnmodel((-4676.87, 2549.4, 949)+ (-72.53* i,-72.7* i,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; 
+	spawnmodel((-4666.87, 2559.4, 949)+ (-72.53* i,-72.7* i,0), (90, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; 
+	spawnmodel((-4665.87, 2558.4, 949)+ (-72.53* i,-72.7* i,0), (0, 226, 90), "ny_harbor_concrete_floor_broken_med01"); i++; 
 	
 		
 	spawnmodel((-4706.6, 2547, 903), (0, 225, 90), "ny_debris_floor_metal_studs_02");
@@ -2856,17 +3333,17 @@ interchange_edit1(){
 	CreateWalls((-9343, 4644.55, 1180),(-9153.27, 4315.7, 1280));
 	CreateDeathRegion((-11397, 6261, 400), (-8227, 2599, 1150));
 	
-	createTP((422, 1699, 15), (-4672, 2166, 915), (1, -177,0));
-	createTP((388, -2222, 161), (-4672, 2166, 915), (1, -177,0));
-	createTP((-899, -829, 87), (-4672, 2166, 915), (1, -177,0));
-	createTP((2343, -461, 97), (-4672, 2166, 915), (1, -177,0));
-	createTP((1388, 1033, 62), (-4672, 2166, 915), (1, -177,0));
-	createTP((659, -525, 81), (-4672, 2166, 915), (1, -177,0));
-	createTP((1254, -3018, 121), (-4672, 2166, 915), (1, -177,0));
-	createTP((-910, 510, -8), (-4672, 2166, 915), (1, -177,0));
+	createTP((422, 1699, 15), (-4672, 2166, 915));
+	createTP((388, -2222, 161), (-4672, 2166, 915));
+	createTP((-899, -829, 87), (-4672, 2166, 915));
+	createTP((2343, -461, 97), (-4672, 2166, 915));
+	createTP((1388, 1033, 62), (-4672, 2166, 915));
+	createTP((659, -525, 81), (-4672, 2166, 915));
+	createTP((1254, -3018, 121), (-4672, 2166, 915));
+	createTP((-910, 510, -8), (-4672, 2166, 915));
 	
 	createHiddenTP((-8089.4,4806.79,915.625), (-9194, 4514, 1161.13));
-	//createHiddenTP((-9033, 3571, 1411.44), (644.666,-547.974,82.5098), undefined, "out");
+	createHiddenTP((-9619,5299.4,1162), (-8010, 4869, 915), (0,-30,0), undefined, 1);
 	
 	spawnmodel((-4559, 1782, 915), (0, 10, 0), "vehicle_taxi_yellow_destroy");
 	
@@ -2889,10 +3366,7 @@ interchange_edit1(){
 	
 	//CreateInvisWalls((-6151, 3786, 1010),(-6510, 3918, 1010),(0,340,0));
 	//CreateInvisWalls((-6165, 3746, 1010),(-6525, 3875, 1010),(0,340,0));
-	
 	CreateInvisWalls((-6526, 3932, 926),(-6550, 3872, 926));
-	
-	
 	//CreateInvisQuicksteps((-6522, 3896, 1008), 60, 11, 2, (0,160,0));
 	
 	ladder = getentarray( "pf968_auto1", "targetname" );
@@ -2902,11 +3376,16 @@ interchange_edit1(){
 	truckcoll = ladder[1];
 	clonedcollision((-6343.8, 3836.86, 1003), (0, 115, 0), truckcoll);
 	
-	trucktop = getent( "pf968_auto3", "targetname" );
-	clonedcollision((-6335.5, 3828.62, 1040), (0, 115, 0), trucktop);
+	//trucktop = getent( "pf968_auto3", "targetname" );
+	//clonedcollision((-6335.5, 3828.62, 1040), (0, 115, 0), trucktop);
+	//spawncrate((-6200.93, 3776.88, 1020),(90,-20,0),"com_plasticcase_friendly");
+	//spawncrate((-6297, 3813.84, 1020),(90,-20,0),"com_plasticcase_friendly");
 	
-	spawncrate((-6200.93, 3776.88, 1020),(90,-20,0));
-	spawncrate((-6297, 3813.84, 1020),(90,-20,0));
+    for(i = 0;i < 3;i++)
+	spawncrate((-6200, 3779, 1027)+(-49*i,18*i,0) , (0, -20, 0));
+	spawncrate((-6206, 3781, 1021) , (-90, -20, 0));
+	spawncrate((-6300, 3816, 1021) , (-90, -20, 0));
+	spawncrate((-6496, 3886, 1026) , (0, -20, 0));
 	
 	spawnmodel((-9354, 4634.78, 1250), (0, 120, 0), "ex_picture_cat_01");
 }
@@ -2929,7 +3408,7 @@ interchange_edit2(){
 	createTP((659, -525, 81), (-10013, 3123, 702), (0, 119, 0));
 	createTP((1254, -3018, 121), (-10013, 3123, 702), (0, 119, 0));
 	createTP((-910, 510, -8), (-10013, 3123, 702), (0, 119, 0));
-	createHiddenTP((-11899.9,4113.32,1258.59), (-11818, 3201, 1434.96));
+	createHiddenTP((-11899.9,4113.32,1258.59), (-11818, 3201, 1434.96), undefined, undefined,1);
 	//createHiddenTP((-11921.9,4118.8,1410.13), (131.177,1965.62,-15.9421), undefined, "out");
 	
 	moveac130position((-6395, 3700, 1678));
@@ -3480,9 +3959,7 @@ seatown_edit2(){
 	createTP((-2206, -1488, 288), (1525.86,707.351,323.926),(0, 0, 0));
 	createTP((-2206, -1488, 152), (1525.86,707.351,323.926),(0, 0, 0));
 	createTP((-659, -216, 166), (1525.86,707.351,323.926),(0, 0, 0));
-	createTP((-346, -177, 640), (1525.86,707.351,323.926),(0, 0, 0));
 	createHiddenTP((2688.88,49.8435,180.645), (3062.9,348.911,563.125),(0, 110, 0));
-	//createHiddenTP((1717.28,383.125,564.125), (-2096.49,-1771.31,214.598), (0, 0, 0), "out");
 }
 arkaden_edit1(){
 	level.meat_playable_bounds = [
@@ -3571,6 +4048,7 @@ arkaden_edit1(){
 	CreateWalls((-4893, 736, 1350),(-4993, 736, 1350));
 	//Roof Doors
 	CreateDoors((-5121, 737, 1440) /*open*/, (-5121, 737, 1360) /*close*/, (90,90,0) /*angle*/, 4 /*size*/, 2 /*height*/, 30 /*hp*/, 80 /*range*/, 0 /*sideways*/);
+	spawncrate((-4941, 764, 1356) , (0, 0, 0) , "com_plasticcase_friendly"); //tmg headglitch
 	//Turret Side Walls
 	CreateWalls((-4829, 736, 1380),(-4736, 980, 1380));
 	CreateWalls((-5413, 736, 1380),(-5504, 980, 1380));
@@ -3602,19 +4080,32 @@ arkaden_edit2(){
 		(-4132.24, 3237.36, 892.178),
 		(-4143.19, 4732.5, 654.97),
 		(-2051.9, 4835.49, 727.125),
-		(-59.4847, 5897.65, 725.449),
+		(-2051.9, 4835.49, 727.125),
+		(-990, 5175, 640),
 		(83.7819, 5859.87, 725.449),
 		(1057.34, 4975.4, 765.886),
 		(2606.98, 2391.93, 767.438),
 		(3043.53, 2393.7, 660.489)
 	];
-	//Edit By ?
 	createPolygon();
 	moveac130position((-551, 3749, 5000));
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (1216, 2950, 734);
 	mp_global_intermission.angles = (-12, 54, 0);
-	CreateWalls((2928, 1330, 790),(2703, 1330, 840));
+	
+	spawnmodel((2880, 1314, 777) , (15, 0, 0) , "pb_pallet_bags");
+	spawnmodel((2841, 1314, 787) , (15, 0, 0) , "pb_pallet_bags");
+	spawnmodel((2802, 1314, 797) , (15, 0, 0) , "pb_pallet_bags");
+	spawnmodel((2764, 1313, 806) , (15, 0, 0) , "pb_pallet_bags");
+	spawnmodel((2728, 1312, 815) , (15, 0, 0) , "pb_pallet_bags");
+	spawnmodel((2877, 1343, 816) , (0, -90, -14) , "berlin_painting_tall_10");
+	spawnmodel((2805, 1343, 827) , (14, 1, 0) , "ch_corkboard_metaltrim_4x8");
+	spawnmodel((2718, 1311, 818) , (14, 0, 0) , "com_ammo_pallet");
+	spawnmodel((2804, 1344, 815) , (-9, 180, 0) , "berlin_sign_arkaden");
+	spawnmodel((2805, 1329, 822) , (9, 1, 0) , "com_airduct_150x_square");
+	for(i = 0;i < 4;i++)
+	spawncrate((2716, 1310, 848)+ (56* i,0,-15* i) , (0, 90, 15));
+
 	CreateInvisWalls((-1019, 5163, 700),(-1253, 5032, 750));
 	CreateWalls((2990, 80, 670),(1780, 80, 670));	   // long wall at the back near TP
 	CreateInvisWalls((1841, 2004, 640),(1944, 1979, 640));  //
@@ -3762,20 +4253,19 @@ lockdown_edit2(){
 	createTP((1312,4350.673,-3.875), (-101,3192.81,625.625),(0, 180, 0),1,50,100,40);
 	createTP((-323.4,4078.623,-50.875), (-101,3192.81,625.625),(0, 180, 0),1,50,100,40);
 	createTP((-275.56, 4397.2, -40.875), (-65,3701.11,625.625),(0, 180, 0),1,50,40,40);
-	//secret tp
-	//createTP((-294.56,4397.2,-144.875), (-1469.8,3709.71,150),(0, 270, 0),1,20,300,80);
+	
 	createTP((-1277, 3967, 838), (-3640.2,3280.4,960),(0, 63, 0),1,40,100,80);
+	createHiddenTP((-5816, 5020, 1033),(-1106.68,2714,710), (0,0,0), undefined, 1, undefined, undefined, 80);
 	CreateWalls((-1497, 3712, 900),(-1497, 4233, 900));
 	CreateWalls((-1497, 3712, 840),(-1497, 4233, 840));
 	CreateWalls((-1497, 4024, 780),(-1497, 4233, 780));
 	CreateWalls((-1497, 4129, 720),(-1497, 4233, 720));
 	//late flag spawn
-	createTP((-249,3591,-10), (-3640.2,3280.4,960),(0, 63, 0),1,40,100,330);
+	createTP((-249,3591,-10), (-3640.2,3280.4,960),(0, 63, 0),1,40,100,430);
 	//CreateBombsquadGrids((134, 3601, 200),(28, 3601, 200),(-23,0,90));
 	//spawncrate((45, 3600, 127),(45,0,90), "com_plasticcase_trap_bombsquad");
 	//spawncrate((28, 3600, 187),(285,0,90), "com_plasticcase_trap_bombsquad");
 
-	//createHiddenTP((-6090, 5810, 1160.18), (-2340,1211.47,0), (0,0,0), "out", undefined);
 	CreateQuicksteps((-3516, 3499, 820), 80, 18, 14, (0,330,0));
 	CreateQuicksteps((-4692, 4839, 760), 140, 18, 14, (0,340,0));
 	CreateRamps((-4557, 4789, 631),(-4592, 4803, 643));
@@ -3876,6 +4366,7 @@ lockdown_edit2(){
 	fufalldamage((783, 3547, -10),1300, 1000);
 	spawnmodel((845, 3972, 581) , (0, 20, 90) , "viewmodel_desert_eagle_gold_mp");
 	spawnmodel((217, 2651, 141) , (0, 90, 0) , "prague_awning02");
+	CreateDeathRegion((1366, 3560, 803), (921, 4028, 536));
 }
 
 nuketown_edit1(){
@@ -3908,11 +4399,15 @@ nuketown_edit1(){
 	CreateDoors(( -20, -19346, 89) /*open*/,(39, -19346, 89) /*close*/, (90,0,90) /*angle*/, 1 /*size*/, 1 /*height*/, 30 /*hp*/, 19 /*range*/, 1 /*sideways*/);
 	createTurret((88,-19353,108), (0,90,358),46,46);
 	
+	//wall (start)
+	createwalls((-17228, -3585, -40),(-17110, -2869, 84));
+	createwalls((-17081, -3748, -40),(-16735, -3737, 84));
+
 	//createHiddenTP((49, -15949, -193.18), (-233,-525, -30), (0,90,0), "out", 0, 90, 220);
-	createTP((-17238,-3176,-35), (46, -17076, 663), (0, 270, 0),0,40,100,20);
-	createTP((-16932,-3833,-35), (46, -17076, 663), (0, 270, 0),0,40,100,20);
+	createTP((-17142, -3198, -31), (46, -17076, 663), (0, 270, 0),0,40,100,20);
+	createTP((-16892, -3723, -31), (46, -17076, 663), (0, 270, 0),0,40,100,20);
 	createTP((-1335, 1002, -63), (-16725, -2617, -26), (0, 310, 0));
-	createTP((-500, 564, -61), (-16725, -2617, -26), (0, 310, 0));
+	createTP((-500, 564, -61), (-16725, -2617, -26), (0, 310, 0), undefined, undefined, 300 );
 	createTP((-1295, 257, -60), (-16725, -2617, -26), (0, 310, 0));
 	createTP((699, 660, -60), (-16217, -3253, -26), (0, 130, 0));
 	createTP((1400, 271, -60), (-16217, -3253, -26), (0, 130, 0));
@@ -4099,6 +4594,9 @@ bootleg_edit1(){
 	//block/crate
 	spawncrate((1985, -640, 260), (90, 90, 0), "com_plasticcase_friendly");
 	spawncrate((1985, -640, 330), (90, 90, 0), "com_plasticcase_friendly");
+	//block in edit window (building)
+	spawncrate((2717, -843, 2), (90, 0, 0));
+	spawncrate((2717, -1052, 2), (90, 0, 0));
 	// Quicksteps up //(Height, step units,Dist-per-step)
 	CreateQuicksteps((1840, -711, 153), 260, 16, 2, (0,0,0));
 	CreateQuicksteps((2480, 104, 10), 110, 16, 2, (0,-90,0));
@@ -4122,13 +4620,10 @@ bootleg_edit1(){
 }
 bootleg_edit2(){
 level.meat_playable_bounds = [
-	(-2473.6, -3662, 250.531),
-	(-2473.6, 96, 42),
-	(-3562.56, 96, 42),
-	(-3563.2, -1974.6, 42),
-	(-3770.78, -1974.6, 42),
-	(-3770.78, -1974.6, 42),
-	(-3770.78, -3676.7, 153.715)
+	(-3504.88, 62.875, -49.375),
+	(-2535.12, 62.8695, -49.375),
+	(-2535.12, -3639.88, -49.375),
+	(-3504.88, -3639.87, -16.875)
 	];
 	createPolygon();
 	CreateDeathRegion((-3839, -2435.6, -30), (-4020, -3004, 220));
@@ -4272,6 +4767,310 @@ dome_edit2(){
 	createHiddenTP((1737, 632, -230.875), (-190, -283, -403.783), (0, 115, 0), undefined, undefined, 30, 80);
 	//createHiddenTP((-1150, 781, -18.9069), (956, 2026, -254.875), (0, 115, 0), "out");
 }
+dome_edit3(){
+	
+	//machinery_windmill //maybe not
+	//foliage_desertbrush_3_animated //mb not
+	//foliage_pacific_flowers06_animated
+	
+	ents = GetEntArray();
+	foreach(ent in ents) {
+		if(ent.model == "com_ex_airconditioner" || ent.model == "vehicle_hummer_destructible" || ent.model == "machinery_oxygen_tank02" || ent.model == "me_electricbox4" || ent.model == "fence_tarp_130x56" || ent.model == "fence_tarp_107x56" || ent.model == "fence_tarp_151x56" || ent.model == "fence_tarp_134x56" || ent.model == "fence_tarp_140x56" || ent.model == "fence_tarp_167x56" || ent.model == "fence_tarp_134x76"       || ent.model == "foliage_pacific_bushtree01_animated" || ent.model == "foliage_desertbrush_3_animated" || ent.model == "foliage_pacific_flowers06_animated")  {	 
+	ent delete();
+	}
+	}
+	//end screen memes 
+	spawnmodel((932, 1434, -253) , (-1, 7, 0) , "mp_body_opforce_ghillie_desert_sniper");
+	//spawnmodel((929, 1433, -194) , (-11, 366, -12) , "com_teddy_bear");
+	//spawnmodel((1012, 1386, -197) , (-18, 439, -22) , "com_teddy_bear");
+	spawnmodel((1016, 1389, -255) , (-1, 69, -4) , "mp_body_opforce_ghillie_desert_sniper");
+	spawnmodel((858, 1312, -256) , (0, 0, 0) , "com_restaurantchair_1");
+	spawnmodel((955, 1415, -214) , (29, 334, -64) , "weapon_desert_eagle_iw5");
+	spawnmodel((872, 1227, -255) , (0, 459, 0) , "com_floodlight_blue_on");
+	spawnmodel((825, 1326, -255) , (0, 15, 0) , "com_red_toolbox_dusty");
+	spawnmodel((929, 1433, -194) , (-1, 371, -12) , "com_teddy_bear");
+	spawnmodel((1011, 1388, -197) , (-13, 454, -2) , "com_teddy_bear");
+	spawnmodel((841, 1216, -181) , (0, 175, 0) , "ch_bulletinpaperdecals_1");
+	  //tps
+	 createTP((-764, 565, -376), (-717.76, 510.12, -252), undefined, undefined, 20, 112, undefined); //fence
+	 spawnmodel((-784, 583, -273) , (1, 213, 171) , "ims_scorpion_body_placement");
+	 createHiddenTP((464, -166, -390),(-586, 1918, -206),(0, 210, 0), undefined, 1,60);
+	  
+	//spawns
+	//wtf is this spawn holy shit kill me dm spawns too?
+	createTP((135.5, 255.6, -496), (1375.5, 294, -368), (0, 111, 0), undefined, 1, 112, undefined, 1);//spawn_wtf
+	spawnmodel((131, 274, -391) , (0, 25, 0) , "icbm_electronic_cabinet7_busted");
+	spawncrate((134, 265, -346) , (90, 25, 0)); 
+	createTP((28.2, -344.6, -480), (1119, 333, -380), (0, -10, 0), undefined, 1, 112, undefined, 1);//spawn_wtf2
+	spawnmodel((39, -361, -391) , (0, 179, 0) , "icbm_electronic_cabinet7_busted");
+	spawncrate((37, -353, -336) , (90, 179, 0)); 
+	
+	createTP((-799.8, 1456.9, -350), (1192, 1476, -249), (0, -45, 0), undefined, 1, 112, undefined, 1);//spawn1
+	spawnmodel((-809, 1461, -268) , (0, 0, 0) , "berlin_hesco_barrier_med");//spawn1
+	spawncrate((-809, 1460, -244) , (90, 0, 0));//spawn1
+	createTP((-764.7, -177.6, -510), (1241, 292, -381), (0, 76, 0), 1, 2, 112, undefined, 1);//spawn2
+	spawnmodel((-755, -173, -419) , (0, 15, 0) , "berlin_hesco_barrier_med");//spawn2
+	spawncrate((-755, -173, -395) , (90, 15, 0));//spawn2
+	createTP((-1007.7, 166, -516), (1375.5, 294, -368), (0, 111, 0), 1, 1, 112, undefined, 1);//spawn3
+	spawnmodel((-1007.7, 166, -414) , (0, 0, 0) , "com_barrel_fire");//spawn3
+	spawncrate((-1007.7, 166, -394) , (90, 20, 0));//spawn3
+	createTP((-147.1, 2174.2, -390), (1348.6, 1471, -250), (0, 270, 0), 1, 1, 112, undefined, 1); //spawn4
+	spawnmodel((-147.1, 2174.2, -292) , (0, 0, 0) , "com_barrel_white_rust");//spawn4
+	spawncrate((-147.1, 2174.2, -235) , (90, 20, 0));//spawn4
+	createTP((-846.2, 604.5, -560), (1176.6, 1385, -250), (0, 10, 0), 1, 1, 112, undefined, 1);//spawn5  
+	spawnmodel((-867, 646, -438) , (90, -41, 0) , "icbm_electronic_cabinet2_busted");//spawn5 	
+	spawncrate((-851, 621, -437) , (0, -41, 0));//spawn5 
+	spawncrate((-828, 601, -437) , (0, -41, 0));//spawn5 
+	createTP((-1538.9, 1360.2, -530), (1176.6, 1385, -250), (0, -20, 0), 1, 1, 112, undefined, 1);//spawn6
+	spawnmodel((-1549, 1367, -431) , (0, 90, 0) , "ch_icbm_console_busted");//spawn6
+	spawncrate((-1524, 1364, -417) , (0, 90, 0));//spawn6
+	spawncrate((-1524, 1377, -417) , (0, 90, 0));//spawn6
+	spawncrate((-1541, 1364, -401) , (0, 90, 0));//spawn6
+	spawncrate((-1541, 1377, -401) , (0, 90, 0));//spawn6	
+	createTP((313.9, 2175.9, -350), (1642.2, 799.8, -310), (0, 225, 0), 1, 1, 112, undefined, 1);//spawn7
+	spawnmodel((318, 2174, -264) , (0, -6, 0) , "berlin_hesco_barrier_med");//spawn7
+	for(i = 0;i < 3;i++)
+	spawncrate((311, 2178, -210)+(0,0,i*32) , (0, -96, 1));//spawn7
+	createTP((1174, 2442, -390), (1515, 1428, -252), (0, 270, 0), undefined, 50, 200, undefined, 1);//
+	createTP((1110, 1577.1, -370), (1413, 425.6, -345), (0, 110, 0), undefined, 50, 200, undefined, 1);//
+	createTP((951, -391, -490), (1330.6, 434.9, -356), (0, 100, 0), 1, 550, 200, undefined, 1);//
+	
+	moveac130position((-606, 2015, 0));
+	mp_global_intermission = getent( "mp_global_intermission", "classname" );
+	mp_global_intermission.origin = (1006.57, 1426.1, -218);
+	mp_global_intermission.angles = (-24, 224, 0);
+	spawnmodel((-2735, 1270, -82) , (0, 0, 0) , "machinery_radome_cage");//dome
+	CreateDoors((-936, 1186, -424) /*open*/, (-879, 1051, -424) /*close*/, (90,115,90) /*angle*/, 5 /*size*/, 2 /*height*/, 45 /*hp*/, 118 /*range*/);
+	CreateElevator((-1254.66, 1131.45, -442),(-1194.67, 1266, -442), 170, 8, (0,20,0));
+	CreateDoors((-191, 138, -268) /*open*/, (-191, 138, -350) /*close*/, (90,115,0) /*angle*/, 3 /*size*/, 2 /*height*/, 30 /*hp*/, 50 /*range*/, 1 /*sideways*/);
+	fufalldamage((-209, -11, -380),500, 250);
+	
+	//stuck spots
+	spawncrate((-950, 961, -266) , (0, 105, 0));
+	spawncrate((-973, 1045, -266) , (0, 105, 0));
+	spawncrate((-548, -475, -327) , (0, 25, 0));
+	spawncrate((-661, -512, -327) , (0, 20, 0));
+	spawncrate((63, -340, -190) , (0, -3, 0));//dome stuck
+	spawncrate((0, 271, -222), (0, 25, 0)); //deathbarrier block
+	spawncrate((390, 108, -222) , (0, -63, 0));//dome hole
+	spawncrate((-82, 229, -222) , (0, -148, 0));//dome hole
+	spawncrate((-224, -96, -222) , (0, -68, 0));//dome hole
+	spawncrate((-224, -96, -219) , (0, -68, 0));//dome stuck
+	spawncrate((304, -245, -146) , (-39, -51, 0));//dome stuck
+	spawncrate((286, -224, -169) , (-39, -51, 0));//dome stuck
+	spawncrate((406, -60, -134) , (-39, 0, 0));//dome stuck
+	spawncrate((380, -59, -155) , (-39, 0, 0));//dome stuck
+	spawncrate((-19, 177, -172) , (0, 24, 0));//dome stuck
+	spawncrate((23, 196, -172) , (0, 24, 0));//dome stuck
+	spawncrate((-54, -228, -174) , (0, -44, -34));//dome stuck
+	spawncrate((-92, -191, -174) , (0, -44, -34));//dome stuck
+	spawncrate((134, 302, -95) , (0, 0, 0));//dome stuck
+	spawncrate((-221, 104, -43) , (92, 74, -1));//dome stuck
+	spawncrate((-230, -51, -93) , (0, 94, 0));//dome stuck
+	spawncrate((378, -165, -200) , (0, -127, 0));
+	spawncrate((343.7, -219, -200) , (0, -127, 0));
+	
+	//fence
+	spawncrate((-892, 489, -103) , (0, 20, 0));//stuck
+	spawncrate((-957, 464, -103) , (0, 20, 0));//stuck
+	for(i = 0;i < 4;i++)
+	spawncrate((-1161, 378, -42)+(-60* i, 0, 0) , (90, 0, 0));
+	for(i = 0;i < 4;i++)
+	spawncrate((-1161, 378, 52)+(-60* i, 0, 0) , (90, 0, 0));
+    
+	//cover
+	spawnmodel((741, 1130, -278) , (0, 86, 0) , "ny_manhattan_building_electricalboxunit_a");
+	/* //try with it off
+	spawnmodel((700, 995, -309) , (5, 1, 4) , "com_pallet_stack");
+	spawnmodel((704, 991, -277) , (5, -6, 3) , "com_pallet_stack");
+	spawnmodel((619, 994, -317) , (-1, 0, 4) , "vehicle_forklift");
+	*/
+	spawncrate((761, 1103, -222) , (0, 85, 0));
+	spawncrate((791, 1101, -222) , (0, 86, 0));
+	spawncrate((821, 1097, -222) , (0, -94, 0));
+	spawncrate((761, 1103, -190) , (0, 86, 0));
+	spawncrate((791, 1101, -190) , (0, 86, 0));
+	spawncrate((821, 1097, -190) , (0, -94, 0));
+	 
+    //block funnels
+	spawnmodel((87, 881, -317) , (0, 0, 0) , "berlin_hesco_barrier_med");//mid map
+	spawnmodel((287, 845, -323) , (0, 0, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((237, 845, -324) , (0, -10, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((186, 845, -317) , (-1, 0, 1) , "berlin_hesco_barrier_med");
+	spawnmodel((139, 871, -317) , (0, 0, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((75, 920, -301) , (0, 0, 0) , "com_barrel_fire");
+	spawnmodel((118, 806, -328) , (0, 0, 0) , "foliage_pacific_bushtree01_animated");
+	spawncrate((282, 849, -260) , (90, 0, 0));//coll
+	spawncrate((238, 844, -261) , (90, -10, 0));//coll
+	spawncrate((185, 844, -262) , (90, 0, 0));//coll
+	spawncrate((140, 870, -259) , (90, 0, 0));//coll
+	spawncrate((87, 880, -246) , (90, 0, 0));//coll
+	spawncrate((76, 918, -244) , (90, 0, 0));//coll
+    spawnmodel((1287, 1519, -255) , (0, -90, 0) , "com_restaurantsteelshelf_rusty_01");
+	spawnmodel((1359, 1542, -268) , (0, -63, 0) , "ch_furniture_teachers_desk_dusty_1");
+	for(i = 0;i < 3;i++)
+	spawncrate((1293, 1515, -197)+ (50* i, 0, 0) , (90, 0, 0));
+	spawnmodel((922, 432, -384) , (-6, 56, 0) , "com_barrel_blue_rust");
+	spawnmodel((969, 432, -383) , (0, 0, 0) , "com_barrel_blue_rust");
+	for(i = 0;i < 2;i++)
+	spawncrate((918, 437, -320)+ (60* i, 0, 0) , (90, 0, 0));
+	spawncrate((957, 437, -225) , (0, 0, 0));
+	spawncrate((889, 455, -238) , (-90, -86, 0));
+
+	spawnmodel((344, 2101, -263) , (0, 0, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((342, 2044, -263) , (0, 9, 0) , "berlin_hesco_barrier_med");
+	for(i = 0;i < 3;i++)
+	spawncrate((335, 2033, -197)+ (0, 40* i, 0) , (90, 90, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((335, 2100, -143)+ (0, -52* i, 0) , (0, 90, 0));
+	spawnmodel((1374, 242, -384) , (0, 2, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((1321, 227, -386) , (0, 1, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((1253, 224, -357) , (70, 0, 7) , "com_pallet_stack");
+	for(i = 0;i < 3;i++)
+	spawncrate((1359, 248, -324)+ (-60* i, 0, 0) , (90, 0, 0));
+	for(i = 0;i < 3;i++)
+	spawncrate((1359, 248, -224)+ (-60* i, 0, 0) , (90, 0, 0));
+	spawnmodel((1041, 362, -363) , (-55, 79, 0) , "com_wooden_pallet");
+	for(i = 0;i < 2;i++)
+	spawncrate((1063, 353, -331)+ (0, 0, 100* i) , (90, -13, 0));
+	
+	//bunker wall/door
+	spawnmodel((-619, 1624, -265) , (90, 7, -1) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-631, 1709, -265) , (90, 7, -1) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-630, 1709, -226) , (90, 7, -1) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-619, 1624, -226) , (90, 7, 0) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-619, 1624, -187) , (90, 7, 0) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-630, 1709, -187) , (90, 7, 0) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-624, 1670, -150) , (90, 7, 0) , "ch_furniture_teachers_desk_dusty_1"); 
+	spawnmodel((-593, 1720, -263) , (-90, 20, -12) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-581, 1634, -263) , (-90, 20, -12) , "ch_furniture_teachers_desk_dusty_1");
+	spawnmodel((-583, 1670, -286) , (0, -83, 0) , "me_cargocontainersingleface_white");
+	spawnmodel((-627, 1666, -206) , (0, 98, 0) , "fence_tarp_134x76");
+	
+	for(i = 0;i < 2;i++)
+	spawncrate((-595, 1648, -230)+ (-6* i, 57* i, 0) , (90, 96, 0));
+	spawncrate((-618, 1705, -276) , (0, 95, 0));
+	spawncrate((-610, 1621, -276) , (0, 96, 0));
+	
+	//replaced hummers
+	spawnmodel((-541, 671, -330) , (0, 0, 0) , "foliage_pacific_bushtree01_animated");
+	spawnmodel((-545, 757, -341) , (0, 0, 0) , "foliage_pacific_bushtree01_animated");
+	spawnmodel((-540, 800, -338) , (0, 0, 0) , "foliage_pacific_bushtree01_animated");
+	spawnmodel((-365, 759, -282) , (0, 9, 0) , "com_pallet_stack");
+	spawnmodel((-348, 867, -282) , (0, -109, 0) , "vehicle_forklift");
+	spawnmodel((1190.2, 982.3, -321.4) , (357.936, 358.597, 2.32599) , "vehicle_hummer_destroyed");
+	spawnmodel((479.2, 887.3, -318.4) , (0.372607, 344.221, -2.07905) , "vehicle_hummer_destroyed");
+	spawnmodel((63.7, 1567.3, -292) , (0.534933, 355.449, 0.588343) , "vehicle_hummer_destroyed");
+	spawnmodel((-23.8, 1856.3, -292) , (0, 286.8, 0) , "vehicle_hummer_destroyed");
+	
+	//tarp
+	spawnmodel((-459, 1879, -231) , (0, 0, 0) , "foliage_pacific_bushtree01_animated");
+	spawnmodel((-544, 1856, -173) , (0, -90, 0) , "fence_tarp_167x56");
+	spawnmodel((-544, 1941, -221) , (0, 8, 0) , "me_chainlink_fence_pole");
+	
+	for(i = 0;i < 3;i++)
+	spawncrate((-524, 1831, -154)+ (0, 60* i, 0) , (90, -90, 0));
+	for(i = 0;i < 3;i++)
+	spawncrate((-524, 1831, -54)+ (0, 60* i, 0) , (90, -90, 0));
+	
+	//ladder block
+	
+	spawnmodel((494, 149, -200) , (0, 25, 0) , "com_steel_rails_med");
+	spawnmodel((442, 173, -195) , (0, 0, 0) , "com_pallet_stack");
+	spawncrate((438, 186, -150) , (0, 0, 0));
+	spawncrate((438, 186, -100) , (0, 0, 0));
+	
+	spawnmodel((-392, -82, -405) , (-2, 16, 0) , "berlin_hesco_barrier_med");
+	spawnmodel((-391, -80, -351) , (0, 20, 0) , "com_pallet_stack");
+	
+	spawncrate((-383, -80, -366) , (0, 113, 0));
+	spawncrate((-395, -87, -366) , (-4, 113, 0));
+	spawncrate((-383, -80, -331) , (0, 113, 0));
+	spawncrate((-395, -87, -331) , (0, 113, 0));
+	
+	//custom ladder
+	spawnmodel((257, -124, -195) , (-10, -155, 0) , "com_steel_ladder2");
+	spawnmodel((246, -81, -215) , (0, -47, -90) , "ch_corkboard_metaltrim_4x8");
+	CreateInvisQuicksteps((256.25, -123.5, -228), 170, 15, 2, (0,-155,0));
+	spawncrate((242, -79, -228) , (0, -47, 0));
+	spawnmodel((329, 250, -165) , (0, 46, 0) , "com_steel_ladder_top");//ladder2
+	spawnmodel((323, 264, -158) , (-180, -44, 0) , "com_steel_rails_short");//ladder2
+	CreateTP((336, 258.26, -450), (311.766, 230.353, -200), (0,160,0),1,1,330);
+	spawnmodel((-249, -25, -165) , (0, 5, 0) , "com_steel_ladder_top");//ladder3
+	spawnmodel((-244, -11, -158) , (-180, -85, 0) , "com_steel_rails_short");//ladder3
+	CreateTP((-235.262, -25.19, -490), (-272.271, -27.9565, -190), (0,160,0),1,1,330); 	
+	
+	//bridge
+	spawnmodel((77, -87, -166) , (93, 0, 0) , "com_steel_ladder2");
+	spawncrate((-75, -87, -179) , (0, 0, 0));
+		for(i = 0;i < 3;i++)
+	spawncrate((-14, -87, -183)+(56* i,-1* i,-3* i) , (3, 0, 0));
+	
+	//dome cover
+	spawnmodel((391, 275, -102) , (0, -47, -50) , "com_pallet");
+	spawnmodel((355, 309, -102) , (0, -42, -50) , "com_pallet");
+	spawnmodel((314, 340, -103) , (0, -34, -50) , "com_pallet");
+	spawnmodel((270, 365, -103) , (0, -25, -50) , "com_pallet");
+	spawnmodel((220, 383, -104) , (0, -12, -50) , "com_pallet");
+	spawnmodel((204, 386, -104) , (0, -18, -50) , "com_pallet");
+	spawnmodel((166, 388, -103) , (0, -1, -50) , "com_pallet");
+	spawnmodel((115, 386, -103) , (0, 4, -50) , "com_pallet");
+	spawnmodel((61, 379, -105) , (0, 9, -48) , "com_pallet");
+	spawnmodel((10, 367, -105) , (0, 17, -48) , "com_pallet");
+	spawnmodel((-38, 352, -105) , (0, 20, -48) , "com_pallet");
+	spawnmodel((-85, 331, -106) , (0, 29, -48) , "com_pallet");
+	spawnmodel((-128, 305, -106) , (0, 33, -48) , "com_pallet");
+	spawnmodel((-169, 276, -107) , (0, 39, -48) , "com_pallet");
+	
+	//roof
+	spawnmodel((347, 251, -79) , (0, -135, 0) , "com_pallet");
+	spawnmodel((305, 292, -76) , (0, -132, 0) , "com_pallet");
+	spawnmodel((257, 325, -79) , (0, -117, 0) , "com_pallet");
+	spawnmodel((203, 341, -78) , (0, -95, 0) , "com_pallet");
+	spawnmodel((143, 342, -81) , (0, -87, 0) , "com_pallet");
+	spawnmodel((83, 336, -79) , (0, -82, 0) , "com_pallet");
+	spawnmodel((31, 328, -84) , (0, -75, 0) , "com_pallet");
+	spawnmodel((-30, 310, -82) , (0, -69, 0) , "com_pallet");
+	spawnmodel((-88, 285, -81) , (0, -65, 0) , "com_pallet");
+	spawnmodel((-138, 250, -82) , (0, -54, 0) , "com_pallet");
+	spawnmodel((-144, 327, -172) , (180, 32, 7) , "ch_corkboard_metaltrim_4x8"); //maybe remove
+	
+	//death boundary
+	spawnmodel((-1359, 1691, -115) , (0, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-1357, 1857, -119) , (0, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-1805, 1857, -38) , (0, -54, 0) , "me_chainlink_fence_pole"); 
+	spawnmodel((-2066, 1857, 0) , (11, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-2066, 1617, -10) , (11, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-2075, 1290, -64) , (11, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-2066, 905, -121) , (11, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-2066, 506, -176) , (11, -54, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-2066, 187, -404) , (11, -54, 0) , "me_chainlink_fence_pole");
+    spawnmodel((-1713, 192, -390) , (26, -96, 0) , "me_chainlink_fence_pole");
+	spawnmodel((-1360, 187, -387) , (3, -96, 0) , "me_chainlink_fence_pole");
+	
+	spawnmodel((-1716, 167, -335) , (0, -183, -26) , "usa_sign_donotenter");
+	spawnmodel((-1356, 185, -326) , (15, -176, -3) , "usa_sign_donotenter");
+	spawnmodel((-2063, 1281, -4) , (-9, 84, 0) , "usa_sign_donotenter");
+	spawnmodel((-2055, 496, -116) , (-12, 90, 0) , "usa_sign_donotenter");
+	spawnmodel((-1804, 1856, 11) , (-4, 5, 0) , "usa_sign_donotenter");
+	
+	spawnmodel((-1805, 1857, 54) , (78, 99, 0) , "weapon_light_stick_tactical_bombsquad");
+    spawnmodel((-2064, 1275, 31) , (78, 128, 0) , "weapon_light_stick_tactical_bombsquad");
+	spawnmodel((-1361, 184, -290) , (78, 275, 0) , "weapon_light_stick_tactical_bombsquad");	
+	spawnmodel((-1717, 150, -302) , (109, 270, 0) , "weapon_light_stick_tactical_bombsquad");
+	spawnmodel((-2054, 490, -80) , (68, 148, -35) , "weapon_light_stick_tactical_bombsquad");
+	spawnmodel((-1796, 1894, -36) , (9, 0, 0) , "mil_razorwire_long_static");
+	for(i = 0;i < 4;i++)
+	spawncrate((-1345, 1704, -56)+ (0, 60* i, 0) , (90, 90, 0));
+	for(i = 0;i < 4;i++)
+	spawncrate((-1345, 1704, 51)+ (0, 60* i, 0) , (90, 90, 0));
+	spawnmodel((-1359, 1774, -60) , (0, 90, 0) , "fence_tarp_167x56");
+	CreateDeathRegion((-763.8, 1907, -160), (-2471, 2244, 551));
+	CreateDeathRegion((-2104.8, 2334.77, -430), (-2476, -124, 551));
+	CreateDeathRegion((-2386.7, 122, -430), (-1060, -300, 551));
+	}
+
+
 underground_edit1(){
 	level.meat_playable_bounds = [
 		(-2613.03, 876.747, 53.8561),
@@ -4449,6 +5248,7 @@ underground_edit2(){
 	}
 	moveac130position((2184, 1050, 1550));
 	CreateDeathRegion((1827, 2378, 123), (1577, 2655, 300));
+	CreateDeathRegion((1385, -1285, 90), (1506, -1194.6, 200)); //
 	
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (1458, 224, 365);
@@ -4579,134 +5379,6 @@ underground_edit2(){
 	spawnmodel((1773, -1273, 8) , (0, 0, 0) , "com_trafficcone02");
 	spawnmodel((1812, -1272, 8) , (0, 0, 0) , "com_trafficcone02");
 
-	//elevator
-	CreateElevator((1220, 160, 0),(1300, 30, 0), 132, 3);
-	
-	//crate
-	spawnmodel((1831, 2715, -18), (0, 90, 0), "ug_crate_pallet");
-	spawncrate((1834, 2703, 28), (0, 0, 0));
-	spawncrate((1834, 2731, 28), (0, 0, 0));
-	spawncrate((1834, 2703, 76), (0, 0, 0));
-	spawncrate((1834, 2731, 76), (0, 0, 0));
-	spawnmodel((1931, 3084.9, -12), (0, 35, 10), "ny_barrier_pedestrian_01");
-	
-	spawnmodel((2108, 2912, -13) , (346, 30, 0) , "com_scaffold_red");
-	spawnmodel((2036, 2999, 16) , (66, 30, 0) , "com_pallet_2");
-	spawnmodel((2135, 3247, -12) , (0, 350, 0) , "ny_barrier_pedestrian_01");
-	spawnmodel((1976, 3320, -12) , (0, 344, 0) , "ny_barrier_pedestrian_01");
-	spawnmodel((1860, 3345, -12) , (0, 0, 0) , "com_trafficcone02");
-	spawnmodel((1455, 771, 164) , (0, 30, 0) , "prop_flag_unionjack");
-	spawnmodel((1455, 771, 174) , (0, 30, 0) , "me_chainlink_fence_pole");
-	
-	//gate
-	
-	spawnmodel((1887, 197, 0) , (0, 180, 0) , "payback_sstorm_fence_chainlink");
-	spawnmodel((2195, 197, 0) , (0, 0, 0) , "payback_sstorm_fence_chainlink");
-	spawnmodel((2279, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((2209, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((2139, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((2069, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((1999, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((1929, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((1859, 201, 100) , (6, 90, 0) , "ch_bunker_wires_01");
-	spawnmodel((2132, 198, 93) , (0, 0, 0) , "berlin_hotel_lights_wall2_on");
-	spawnmodel((1950, 198, 93) , (0, 0, 0) , "berlin_hotel_lights_wall2_on");
-		
-	//roof wall
-	
-	spawnmodel((1617, 1706.5, 214) , (90, 0, 90) , "ug_parking_garage_beam");
-	spawnmodel((1617, 1693, 214) , (90, 180, 90) , "ug_parking_garage_beam");
-	spawnmodel((1617, 1706.5, 170) , (90, 0, 90) , "ug_parking_garage_beam");
-	spawnmodel((1617, 1693, 170) , (90, 180, 90) , "ug_parking_garage_beam");
-	spawnmodel((1620, 1706.5, 226) , (180, 90, 0) , "ug_parking_garage_beam");
-	spawnmodel((1620, 1690, 228) , (0, 90, 0) , "ug_parking_garage_beam");
-	spawnmodel((1793, 1690, 53) , (180, 270, 90) , "ug_parking_garage_beam");
-	spawnmodel((1793, 1690, 53) , (0, 90, 90) , "ug_parking_garage_beam");
-	CreateWalls((1780, 1700, 150),(1536, 1700, 150));
-	CreateWalls((1780, 1700, 203),(1536, 1700, 203));
-	
-	//bus
-	
-	CreateInvisWalls((1933, 2965, 22),(1993, 2864, 22));
-	CreateInvisWalls((2040, 2785, 22),(2087, 2700, 22));
-	//door steps
-	spawncrate((1916, 3012, -15),(0,120,0));
-	spawncrate((2021, 2827, -15),(0,120,0));
-	
-	CreateInvisWalls((1997, 3064, 10),(2181, 2745, 10));
-	CreateInvisWalls((1997, 3064, 60),(2181, 2745, 60));
-	CreateInvisWalls((1997, 3064, 125),(2181, 2745, 125));
-	
-	CreateInvisWalls((1939, 3029, 125),(2009, 2908, 125));
-	
-	//front
-	CreateInvisWalls((1970, 3099, 30),(1894, 3055, 50));
-	CreateInvisWalls((1970, 3099, 10),(1894, 3055, 10));
-	
-	//back
-	CreateInvisWalls((2129, 2714, 20),(2099, 2697, 20));
-	
-	
-	spawncrate((1946, 3087, 138),(0,30,90));
-	spawncrate((2036, 2921, 138),(0,210,90));
-	
-	spawncrate((1975, 3037, 192),(0,120,180));
-	spawncrate((2018, 2966, 192),(0,120,180));
-	
-	//step
-	spawncrate((2020, 2963, 5),(0,120,0));
-	
-	
-	CreateInvisRamps((1940, 3054, -5),(2131, 2723, -5));
-	
-	CreateInvisRamps((1914, 3040, 108),(2105, 2709, 108));
-	CreateInvisRamps((2021, 2903, 108),(2128, 2723, 108));
-	
-	CreateInvisRamps((2000, 3019, 62),(2014, 2996, 35));
-	spawncrate((1966, 3052, 80),(0,120,0));
-	spawncrate((1966, 3052, 25),(0,120,90));
-	spawnmodel((2027, 2880, -13) , (0, 30, 0) , "ug_vehicle_london_bus_closed");
-	spawnmodel((1945, 3021, 96) , (0, 340, 0) , "utility_sign_wet_floor");
-	
-	//police van
-	
-	spawnmodel((2159, 1576, 0) , (0, 100, 0) , "vehicle_uk_police_van");
-	
-	CreateInvisWalls((2172, 1669, 20),(2205, 1501, 20));
-	CreateInvisWalls((2116, 1658, 20),(2149, 1490, 20));
-	CreateInvisWalls((2131, 1570, 77),(2149, 1490, 77));
-	CreateInvisWalls((2186, 1582, 77),(2204, 1502, 77));
-	
-	spawncrate((2123, 1613, 60),(45,100,0));
-	spawncrate((2174, 1624, 60),(45,100,0));
-	
-	spawncrate((2263, 1879, 150),(0,0,90));
-	
-	createTP((-280, 407, -127), (2101, 3129, -12), (0,-126,0));
-	createTP((-1274, 1185, -255),(2101, 3129, -12), (0,-126,0));
-	createTP((25, 2989, -127), (2101, 3129, -12), (0,-126,0));
-	createTP((1406, 464, -55), (2101, 3129, -12), (0,-126,0));
-	createTP((714, 1819, -255), (2101, 3129, -12), (0,-126,0));
-	createTP((-92, -1087, 8), (2101, 3129, -12), (0,-126,0));
-	createTP((152, -1077, 8), (2101, 3129, -12), (0,-126,0));
-	//createHiddenTP((565.125,1135.89,174.125), (-737.578,3282.3,-127.875), undefined, "out");
-	
-	// Door walls
-	CreateInvisWalls((1839, 190, 8),(1934, 190, 92)); // Right wall
-	CreateInvisWalls((2256, 190, 8),(2143, 190, 92)); // Left wall
-	CreateDoors((2040, 190, 100) /*open*/, (2040, 190, 21) /*close*/, (90,90,0) /*angle*/, 3 /*size*/, 2 /*height*/, 30 /*hp*/, 80 /*range*/, 0 /*sideways*/);
-	
-	// Back of map Bin area blocker
-	CreateInvisWalls((2514, -1038, 40),(2329, -1038, 40));
-	CreateInvisWalls((2514, -1038, 100),(2329, -1038, 100));
-	
-	// Back of map street blocker
-	CreateInvisWalls((1810, -1270, 36),(1542, -1270, 36));
-	 spawnmodel((1684, -1305, 0) , (0, 20, 0) , "ny_barrier_pedestrian_01");
-	spawnmodel((1584, -1351, 0) , (0, 350, 0) , "ny_barrier_pedestrian_01");
-	spawnmodel((1773, -1273, 8) , (0, 0, 0) , "com_trafficcone02");
-	spawnmodel((1812, -1272, 8) , (0, 0, 0) , "com_trafficcone02");
-	
 	//elevator
 	CreateElevator((1220, 160, 0),(1300, 30, 0), 132, 3);
 }
@@ -4861,16 +5533,9 @@ underground_edit3(){
 	spawncrate((-385, 4986, -131), (9, 354, 0));
 	spawncrate((-441, 4992, -122), (9, 354, 0));			
 				
-	//gate flags
-				
-	CreateTP((-157.1, 3125.4, -247), (-158, 3163, -122.125), undefined,undefined,6,130, 45);
-	CreateBombsquadWalls((-162, 3145, -154),(-162, 3145, -154), (0,0,0), 45);
-	CreateTP((546, 3124.88, -447), (540, 3163, -122.125), undefined,undefined,6,330, 75); 
-	CreateBombsquadWalls((546, 3124.88, -153),(546, 3124.88, -153), (0,0,0), 75);
-	
 	//flags
 	createTP((37.7, -704.38, -1), (1469, 1687, -117), (0,155,0), 1);
-	createTP((-703.7, 1802.38, -237), (1469, 1687, -117), (0,155,0), 1);
+	createTP((-661, 1683, -260), (1469, 1687, -117), (0,155,0), 1);
 	createTP((838.5, 1744.4, -237), (1469, 1687, -117), (0,155,0), 1);
 	createTP((-1129.5, 496.7, -62), (1469, 1687, -117), (0,155,0), 1);
 	createTP((31.5, 535.7, -133), (1469, 1687, -117), (0,155,0), 1);		
@@ -5048,8 +5713,19 @@ underground_edit3(){
 	spawnmodel((406, 4822, -268) , (0, 185, 0) , "ug_crate_frame");	
 	CreateInvisQuicksteps((432, 4825, -189), 70, 16, 2, (0,5,0));
 	
+	//gate flags
+				
+	CreateTP((-157.1, 3125.4, -247), (-158, 3163, -122.125), undefined,undefined,6,130, 45);
+	CreateTP((546, 3124.88, -447), (540, 3163, -122.125), undefined,undefined,6,330, 75); 
+    spawnmodel((543, 3120, -152) , (6, -100, 69) , "concrete_pillarchunk_sml_01");
+	spawnmodel((537, 3136, -174) , (0, 0, 0) , "metal_hanging_strips_sml_01");
+	
+	spawnmodel((-157, 3120, -126) , (0, 0, 180) , "ims_scorpion_body_placement",45);
+	spawnmodel((546, 3121, -126) , (0, 0, 180) , "ims_scorpion_body_placement", 30);
+	
 }
 skidrow_edit1(){
+	Deathradius((1433, -6213, 230), 4500, 200);
 	moveac130position((3438, -3668, 3000));
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (1659, -1795, 25);
@@ -5162,6 +5838,11 @@ skidrow_edit3(){
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (-627, -2143, 93);
 	mp_global_intermission.angles = (-29, 133, 0);
+	//block wb
+	CreateWalls((-241, -1165, 690),(-241, -1760, 690));
+	spawncrate((-348, -1288, 640) , (0, -90, 0));
+	spawncrate((-523, -1144, 639) , (0, -180, 0));	
+
 	spawncrate((139, -1608, 700), (0, 90, 0));
 	spawncrate((139, -1558, 700), (0, 90, 0));
 	spawncrate((139, -1249, 700), (0, 90, 0));
@@ -5172,9 +5853,9 @@ skidrow_edit3(){
 	CreateWalls((967, -1779, 115),(1097, -1779, 115));
 	CreateWalls((-673, -1120, 630),(-271, -1120, 630));
 	CreateWalls((-673, -1120, 690),(-271, -1120, 690));
-	CreateInvisWalls((-240, -1120, 690),(220, -1120, 690));
+	//CreateInvisWalls((-240, -1120, 690),(220, -1120, 690));
 	CreateInvisWalls((-230, -1797, 690),(220, -1797, 690));
-	CreateInvisWalls((220, -1761, 690),(220, -1155, 690));
+	//CreateInvisWalls((220, -1761, 690),(220, -1155, 690));
 	CreateWalls((-190, -2346, 740),(-376, -2346, 740));
 	CreateWalls((-190, -2346, 705),(-1169, -2346, 705));
 	CreateWalls((-190, -2346, 670),(-1169, -2346, 670));
@@ -5433,18 +6114,18 @@ offshore_edit1(){
 	thread createTP((-1294, 1059.5, -11.875),(-1247, 3170, 884), (0, 315, 0), 1,undefined,undefined,430);//latetp
 	
 	disable_spawn_array = [];
-	disable_spawn_array[disable_spawn_array.size] = (1233.5, 209.1, -199.875);
-	disable_spawn_array[disable_spawn_array.size] = (1711.6, -212.2, -199.875);
-	disable_spawn_array[disable_spawn_array.size] = (2366.5, 339.9, -21.875);
-	disable_spawn_array[disable_spawn_array.size] = (-321.9, -1997.4, -189.875);
-	disable_spawn_array[disable_spawn_array.size] = (2076.7, 901.2, -21.875);
-	disable_spawn_array[disable_spawn_array.size] = (-1584.1, -1127.5, -13.875);
-	disable_spawn_array[disable_spawn_array.size] = (-607.5, -1470.5, -189.875);
-	disable_spawn_array[disable_spawn_array.size] = (-1650.8, -1693.1, -21.875);
-	disable_spawn_array[disable_spawn_array.size] = (-1399.3, -1687.7, -21.875);
-	disable_spawn_array[disable_spawn_array.size] = (1611.5, -374.2, -189.875);
-	disable_spawn_array[disable_spawn_array.size] = (1366.6, 931.3, -181.875);
-	disable_spawn_array[disable_spawn_array.size] = (-1703.7, -948.6, -181.875);
+	disable_spawn_array[disable_spawn_array.size] = (1233.5, 209.1, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (1711.6, -212.2, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (2366.5, 339.9, -11.875);
+	disable_spawn_array[disable_spawn_array.size] = (-321.9, -1997.4, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (2076.7, 901.2, -11.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1584.1, -1127.5, -3.875);
+	disable_spawn_array[disable_spawn_array.size] = (-607.5, -1470.5, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1399.3, -1687.7, -11.875);
+	disable_spawn_array[disable_spawn_array.size] = (1611.5, -374.2, -179.875);
+	disable_spawn_array[disable_spawn_array.size] = (1366.6, 931.3, -171.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1703.7, -948.6, -171.875);
+	disable_spawn_array[disable_spawn_array.size] = (-1650.8, -1693.1, -11.875);
 	disable_spawn_point(disable_spawn_array);
 
 	add_spawn_point((-1433.48, 152.25, 3),(0, 90, 0));
@@ -5465,6 +6146,9 @@ offshore_edit1(){
 	
 	add_spawn_point((-1023.72, 919, 3),(0, 135, 0));
 	add_spawn_point((-411, 942, 3),(0, 146, 0));
+
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "axis", "mp_tdm_spawn");
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "allies", "mp_tdm_spawn");
 	
 	createTP((-450, -896, -179.875),(-659, 1279, -7.875), (0, -135, 0), undefined);
 	createTP((1976, 328, -11.875),(-659, 1279, -7.875), (0, -135, 0), undefined);
@@ -5582,7 +6266,7 @@ offshore_edit1(){
 	spawnmodel((-1799, 1510, 251) , (0, -46, 2) , "rnk_handrail_128_double_blue");
 	//spawnmodel((-1875, 1537, 236) , (0, 68, 0) , "rnk_drill_pipe");
 	spawnmodel((-1861, 1533, 235) , (0, 22, 0) , "rnk_drill_pipe");
-	cannonball((-1884, 1519, 241), (0,45,0), 3, (-998, 2765, 870.618), 700);
+	cannonball((-1884, 1519, 241), (0,45,0), 2, (-998, 2765, 870.618), 700);
 	spawnmodel((-1722, 1678, 351) , (80, 135, 450) , "rnk_crane_arm_base_1");
 	spawnmodel((-1671, 1713, 219) , (-85, 17, 0) , "rnk_pipe_8x64_single_white");
 	for(i = 0;i < 3;i++)
@@ -5664,7 +6348,10 @@ offshore_edit1(){
 	fuckerbeepboop = getent("mp_global_intermission", "classname");
 	fuckerbeepboop.origin = (230, -1181, 1995);
 	fuckerbeepboop.angles = (38, 90, 5);
-	spawnmodel((210, -1145, 1985), (-34, -65, -25), "com_teddy_bear");	
+	spawnmodel((210, -1145, 1985), (-34, -65, -25), "com_teddy_bear");
+	//block wb (end edit)
+	spawncrate((1819, 1431, 660) , (0, 135, 0));
+	spawncrate((1783, 1395, 660) , (0, 135, 0));
 }
 erosion_edit1(){
 	tpents = GetEntArray("tpjug", "targetname");
@@ -5832,6 +6519,10 @@ erosion_edit2(){
 	
 	CreateInvisWalls((-3920, -3649, -390),(-3920, -4109, -390));
 	CreateInvisWalls((-3889, -4122, -396),(-3642, -4113, -396));
+
+	CreateInvisRamps((-3870, -3780, -495),(-3870, -3214, -510), (0,0,0)); //wallbreach
+	CreateInvisRamps((-3870, -3214, -510),(-3870, -2396, -490), (0,0,0)); //wallbreach
+	spawncrate((-3889, -3824, -495), (0, 45, 0)); //wallbreach
 
 	//createTurret((286, -5359, 897), (0,90,0), 25, 25, 35, 10);
 	
@@ -6011,11 +6702,12 @@ erosion_edit2(){
 	createTP((8,423,124), (-3512, -4050, -490), (0, 100, 0));
 	createTP((-185,-1898,120), (-3512, -4050, -490), (0, 100, 0));
 	createTP((-1018,-211,127), (-3512, -4050, -490), (0, 100, 0));
-	createTP((-3632, -780, -350.415), (362, -2810, 720), (0, 270, 0), 1);
+	createHiddenTP((-3624.9, -681, -350.415),(362, -2810, 720), (0, 270, 0) , undefined);
+	CreateDeathRegion((744, -6184, 650), (-255, -2181, 148));
+	createHiddenTP((-3492, -3308, -558),(362, -2810, 720), (0, 270, 0) , undefined, undefined, undefined, undefined, 430); //lateflag
+	spawnmodel((-3571, -3400, -514) , (25, -35, -75) , "aq_statue_female_01", 430); //lateflag
 
 	//createHiddenTP((355, -5790, 777), (-848, -1798, 30), (20, 45, 0), "out", 1);
-
-	CreateDeathRegion((744, -6184, 650), (-255, -2181, 148));
 }
 highrise_edit1(){
 	
@@ -6102,7 +6794,7 @@ highrise_edit1(){
 	createinviswalls((-1407, 20481, 1890),(-1407, 20221, 1890));
 	createinviswalls((-1407, 19976, 1965),(-1407, 19720, 1965));
 	createinviswalls((-1407, 19976, 1890),(-1407, 19720, 1890));
-	CreateDoors((-1407, 20098, 2000),(-1407, 20098, 1890) , (90,0,0) , 4 , 3 , 25 , 110 ,true);
+	CreateDoors((-1407, 20098, 2000),(-1407, 20098, 1910) , (90,0,0) , 4 , 2 , 30 , 110 ,true);
 
 	
 	//decorative
@@ -6284,14 +6976,14 @@ highrise_edit1(){
 	spawncrate((19, 6844, 3070), (0, 0, 0));
 	spawnmodel((20, 6836, 3020), (0, 0, 0), "ch_crate64x64");
 
-	createTP((-3261, 5746, 2824), (-3578, 20076, 1870), undefined);
-	createTP((-2269, 6060, 2776), (-3578, 20076, 1870), undefined);
-	createTP((-1369, 5227, 2776), (-3578, 20076, 1870), undefined);
-	createTP((263, 5333, 2824), (-3578, 20076, 1870), undefined);
-	createTP((1266, 6631, 2824), (-3578, 20076, 1870), undefined);
-	createTP((-1235, 7429, 2776), (-3578, 20076, 1870), undefined);
-	createTP((-1279, 6310, 2776), (-3578, 20076, 1870), undefined);
-	createTP((-2774, 6923, 2776), (-3578, 20076, 1870), undefined);
+	createTP((-3261, 5746, 2824), (-3578, 20076, 1870), undefined, true);
+	createTP((-2269, 6060, 2776), (-3578, 20076, 1870), undefined, true);
+	createTP((-1369, 5227, 2776), (-3578, 20076, 1870), undefined, true);
+	createTP((263, 5333, 2824), (-3578, 20076, 1870), undefined, true);
+	createTP((1266, 6631, 2824), (-3578, 20076, 1870), undefined, true);
+	createTP((-1235, 7429, 2776), (-3578, 20076, 1870), undefined, true);
+	createTP((-1279, 6310, 2776), (-3578, 20076, 1870), undefined, true);
+	createTP((-2774, 6923, 2776), (-3578, 20076, 1870), undefined, true);
 
 	classicents = GetEntArray("classicinf", "targetname");
 	foreach(ent in classicents)
@@ -6350,6 +7042,11 @@ gulch_edit1(){
 	spawnmodel((1051, 2077, 535) , (-14, 65, 2) , "com_pan_copper");
 	spawnmodel((1016, 2013, 528) , (10, -50, 5) , "com_pan_metal");
 	spawnmodel((994, 1973, 524) , (14, -125, -5) , "com_pan_copper");
+	//block wb
+	spawnmodel((1372, 2305, 385) , (0, 30, 0) , "ch_hayroll_02");
+	spawncrate((1369, 2308, 425), (0, 35, 0));
+	spawnmodel((1430, 2347, 390) , (0, 115, 0) , "ch_hayroll_02");
+	spawncrate((1430, 2347, 430) , (0, 115, 0));
 	level.meat_playable_bounds = [
 		(1264.99, 1067.38, 643.299),
 		(675.464, 3285.13, 763.651),
@@ -6448,7 +7145,9 @@ decommision_edit1(){
 	(2206.87, -2909.46, 877.391)
 	];
 	createPolygon();
+	CreateDeathRegion((3987, -5644, 592),(3038, -1694, 419));
 	spawncrate((-144, 334, 710), (90, -45, 0), "com_plasticcase_friendly"); // normal oom blocker
+	spawncrate((4216, -3554, 850) , (90, 11, 0));  // rock stuck fix
 	createTP((2289, -2416, 637),(2567, -3047, 672), (0, 55, 0));
 	createTP((860, -2307, 731),(2567, -3047, 672), (0, 55, 0));
 	createTP((-266, -1456, 674),(2567, -3047, 672), (0, 55, 0));
@@ -6489,6 +7188,16 @@ scrapyard_edit1(){
 			ent delete();
 		}
 	}
+	level.meat_playable_bounds = [
+		(-1780, 1682, 58),
+		(-160, 1700, -59),
+		(-153, 2711, -56),
+		(-2745, 2711, -64),
+		(-2762, 764, 111),
+		(-2705, 641, 112),
+		(-1769, 638, 98)
+	];
+	createPolygon();
 	
 	 //new
 	spawnmodel((-875, 1891, -59) , (1, 0, -2) , "cargocontainer_20ft_red");
@@ -6561,8 +7270,8 @@ scrapyard_edit1(){
 	createTP((-746, -144, -139),(-389, 2458, -63), ( 0 , -139 , 0 ));
 	createTP((-311, 930, -135),(-389, 2458, -63), ( 0 , -139 , 0 ));
 	createTP((692, 400, -123),(-389, 2458, -63), ( 0 , -139 , 0 ));
-	createHiddenTP((-1835, 718, 113),(-2882, 895, 1370), undefined);
-	createHiddenTP((-2155, 723, 1428),(-2685, 834, -70), undefined);
+	createHiddenTP((-1835, 718, 113),(-2882, 895, 1370), undefined, "out");
+	createTP((-2155, 723, 1428),(-2685, 834, -70), undefined);
 	//createHiddenTP((-374, -19, 1561),(-1300, -103, 143), undefined, "out");
 	CreateGrids((-2130, 690, 1412),(-2190, 740, 1412), (0,-20,0));
 	CreateGrids((-1800, 750, 97),(-2650, 678, 97), (0,0,0));
@@ -6584,7 +7293,7 @@ scrapyard_edit1(){
 	CreateRamps((-2600, 1106, -90),(-2600, 783, 85));
 	CreateWalls((-1800, 1660, -90),(-2010, 1660, -90));
 	CreateWalls((-1800, 1660, -20),(-2010, 1660, -20));
-	CreateDoors((-2010, 1760, 40) /*open*/,(-2010, 1760, -50) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 2 /*height*/, 25 /*hp*/, 60 /*range*/, true /*sideways*/);
+	CreateDoors((-2010, 1760, 40) /*open*/,(-2010, 1760, -50) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 2 /*height*/, 20 /*hp*/, 60 /*range*/, true /*sideways*/);
 	CreateWalls((-2010, 1857, -70),(-2034, 2702, -70));
 	CreateWalls((-2010, 1857, -10),(-2034, 2702, -10));
 	createTurret((-1979, 774, 140), (0, 90, 0), 45, 65, undefined,undefined, 10);
@@ -6772,16 +7481,48 @@ vacant_edit2(){
 		(3652, -1904, 505.52)
 	];
 	createPolygon();
-	createTP((-797, -285, -48),(4392, -2412, 372.125), (0,180,0), true);
-	createTP((952, 570, -48),(4392, -2412, 372.125), (0,180,0), true);
-	createTP((-14, -79, -48),(4392, -2412, 372.125), (0,180,0), true);
-	createTP((-781, -1358, -103),(4392, -2412, 372.125), (0,180,0), true);
-	createTP((1604, -910, -48),(4392, -2412, 372.125), (0,180,0), true);
-	createTP((-1629, 967, -94),(4392, -2412, 372.125), (0,180,0), true);
-	createTP((-118, 967, -54),(4392, -2412, 372.125), (0,180,0), true);
-	//createHiddenTP((3357, -7089, 588.125),(-1632, 1039, 160.125), undefined , "out");
-	CreateGrids((4270, -2470, 357),(4470, -2350, 357), (0,0,0));
-	CreateWalls((4270, -2490, 370),(4470, -2490, 490));
+	
+    ents = GetEntArray();	   
+		foreach(ent in ents) {
+		if(ent.model == "foliage_tree_river_birch_xl_a_animated" || ent.model == "me_electricbox4" || ent.model == "machinery_generator" || ent.model == "com_locker_double" || ent.model == "com_filecabinetblackclosed" || ent.model == "machinery_oxygen_tank01" || ent.model == "machinery_oxygen_tank02") {
+	//iprintln(ent.model);
+	//logprint(ent.model + "\n");
+	ent delete();
+		}
+	}
+	mp_global_intermission = getent( "mp_global_intermission", "classname" );
+	mp_global_intermission.origin = (1597, -6140, 710);
+	mp_global_intermission.angles = (4, 10, 0);
+	
+	spawnmodel((4225, -2265, -367) , (0, 180, 0) , "ch_apartment_9story_noentry_02");
+	
+	for(i = 0;i < 21;i++)
+	spawnmodel((3817, -2364, 352)+ (0,-71* i,0) , (0, 0, -90) , "me_refrigerator");
+	
+	
+	createTP((-797, -285, -48),(4620, -2412, 372.125), (0,180,0), true);
+	createTP((952, 570, -48),(4620, -2412, 372.125), (0,180,0), true);
+	createTP((-14, -79, -48),(4620, -2412, 372.125), (0,180,0), true);
+	createTP((-781, -1358, -103),(4620, -2412, 372.125), (0,180,0), true);
+	createTP((1604, -910, -48),(4620, -2412, 372.125), (0,180,0), true);
+	createTP((-1629, 967, -94),(4620, -2412, 372.125), (0,180,0), true);
+	createTP((-118, 967, -54),(4620, -2412, 372.125), (0,180,0), true);
+	
+	spawnmodel((4075, -2408, 372) , (-1, 70, 0) , "me_dumpster_close");
+	 
+	CreateInvisGrids((4300, -2450, 357),(4620, -2306, 357), (0,0,0));//spawn
+	CreateInvisGrids((4297, -2270, 357),(4491, -1897, 357), (0,0,0));//spawn
+	for(i = 0;i < 3;i++)
+	spawncrate((4232, -1897, 357)+ (0,-30* i,0) , (0, 180, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((4665, -2458, 429)+ (0,60* i,0) , (90, 90, 0));
+	for(i = 0;i < 7;i++)
+	spawncrate((4618, -2507, 430)+ (-60* i,0,0), (90, 180, 0));
+	for(i = 0;i < 6;i++)
+	spawncrate((4258, -2512, 429)+ (0,-54* i,0), (90, 90, 0));
+	
+	CreateDeathRegion((4243.8, -2791, 455),(4674, -2491, 550));
+	
 	CreateWalls((3880, -3120, 380),(3990, -3120, 485));
 	CreateWalls((4250, -4000, 380),(4185, -4000, 485));
 	CreateWalls((3488, -4043, 380),(3655, -4233, 485));
@@ -6801,10 +7542,8 @@ vacant_edit2(){
 	CreateWalls((3900, -5705, 500),(4230, -5705, 500));
 	CreateWalls((2660, -5207, 500),(2250, -5207, 500));
 	CreateGrids((3790, -2320, 357),(3730, -2220, 357), (0,0,0)); // cannon
-	cannonball((3759, -2270, 362), (0,0,0), 3, (2897, -4018, 440.135), 400);
+	cannonball((3759, -2270, 362), (0,0,0), 2, (2980, -4018, 440.135), 400);
 	CreateDoors((3695, -5705, 392.125) /*open*/,(3828, -5705, 392.125) /*close*/, (90,90,0) /*angle*/, 2 /*size*/, 3 /*height*/, 30 /*hp*/, 75 /*range*/, true);
-	CreateGrids((-1500, 1000, 125),(-1555, 1250, 125), (0,90,0));// after flag
-
 	CreateDeathRegion((630, -1030, -400.875),(6333, -9129, 301.355));
 	moveac130position((3480, -4706, 372.125));
 }
@@ -6814,188 +7553,590 @@ lockout_h2_edit1(){
 	level.use_stock_predator_system = true;
 	mantles = getentarray( "mantle", "targetname" );
 	mantlecoll = mantles[0];
-
+	
+	level.ac130.angles = (45,0,0);
+	createTP((3751.86, 3842.73, 2640),(3414.31, 4500.98, 3652), (0,270,0), 1, undefined, undefined,480);
+	createTP((2825.86, 3305, 2865),(3414.31, 4500.98, 3652), (0,270,0), 1, 400, 500,480);
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
-	mp_global_intermission.origin = (4688, 3840, 3115);
-	mp_global_intermission.angles = (90, 0, 0);
+	random = randomint(3);
+		if(random == 0)
+			mp_global_intermission.origin = (4411,2222, 3591.8);
+		else if(random == 1)
+			mp_global_intermission.origin = (4688, 3840, 3115);
+		else
+			mp_global_intermission.origin = (3563, 2772, 3350);
+		if(random == 0)
+			mp_global_intermission.angles = (10, 120, 0);
+		else if(random == 1)
+			mp_global_intermission.angles = (90, 0, 0);
+		else
+			mp_global_intermission.angles = (-15, 80, 0);
+	spawncrate((3456, 3720, 3304) , (39, -180, 90) , "com_plasticcase_friendly");//NEW STRUT
+	spawncrate((3472, 3720, 3339) , (90, 90, 0) , "com_plasticcase_friendly");//NEW STRUT
+	spawncrate((3472, 3720, 3394) , (90, 90, 0) , "com_plasticcase_friendly");//NEW STRUT
+	CreateInvisWalls((3431, 4229, 3740),(3503, 4265, 3799)); //new cover BARRIER
+	CreateDeathRegion((3498, 4369, 3778), (3298, 4535, 3830));//roof
 	
 	spawncrate((3704, 4277, 3707) , (82, 2, 0) , "com_plasticcase_friendly");//strut
 	spawncrate((3708, 4293, 3672) , (40, 85, 79) , "com_plasticcase_friendly");//strut
 	spawncrate((3696, 4277, 3762) , (82, 2, 0) , "com_plasticcase_friendly");//strut
-	spawncrate((3696, 4277, 3832), (82, 2, 0)); //strut barrier
 	spawncrate((4012, 4277, 3778) , (82, 2, 0) , "com_plasticcase_friendly");//strut2
 	spawncrate((4016, 4293, 3743) , (40, 85, 79) , "com_plasticcase_friendly");//strut2
 	spawncrate((4004, 4277, 3833) , (82, 2, 0) , "com_plasticcase_friendly");//strut2
+	spawncrate((3992, 4276, 3775) , (82, 2, 0) , "com_plasticcase_friendly");//strut2pt2
+	spawncrate((3984, 4276, 3830) , (82, 2, 0) , "com_plasticcase_friendly");//strut2pt2
+	spawncrate((3996, 4292, 3740) , (40, 85, 79) , "com_plasticcase_friendly");//strut2pt2
 	spawncrate((4306, 4277, 3844) , (82, 2, 0) , "com_plasticcase_friendly");//strut3
 	spawncrate((4310, 4293, 3809) , (40, 85, 79) , "com_plasticcase_friendly");//strut3
 	spawncrate((4298, 4277, 3899) , (82, 2, 0) , "com_plasticcase_friendly");//strut3
 	spawncrate((4286, 4276, 3841) , (82, 2, 0) , "com_plasticcase_friendly");//strut3pt2
 	spawncrate((4290, 4292, 3806) , (40, 85, 79) , "com_plasticcase_friendly");//strut3pt2
 	spawncrate((4278, 4276, 3896) , (82, 2, 0) , "com_plasticcase_friendly");//strut3pt2
-	
+	spawncrate((3472, 3851, 3328) , (90, 90, 0) , "com_plasticcase_friendly");//NEWstrut
+	spawncrate((3457, 3851, 3294) , (39, -180, 90) , "com_plasticcase_friendly");//NEWstrut
+	spawncrate((3472, 3851, 3383) , (90, 90, 0) , "com_plasticcase_friendly");//NEWstrut
+	spawncrate((3457, 4002, 3285) , (39, -180, 90) , "com_plasticcase_friendly");//NEWstrut
+	spawncrate((3472, 4002, 3319) , (90, 90, 0) , "com_plasticcase_friendly");//NEWstrut
+	spawncrate((3472, 4002, 3374) , (90, 90, 0) , "com_plasticcase_friendly");//NEWstrut
+	spawncrate((3502, 4393, 3752) , (0, 266, 125) , "com_plasticcase_friendly");
+	spawncrate((3501, 4507, 3753) , (0, 274, 125) , "com_plasticcase_friendly");
+	//new cover archway
+	for(i = 0;i < 2;i++)
+	spawncrate((3379, 3225, 3333)+ (0,0,54* i) , (-90, 0, 0) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((3449, 3225, 3333)+ (0,0,54* i) , (-90, 0, 0) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((3519, 3225, 3333)+ (0,0,54* i) , (-90, 0, 0) , "com_plasticcase_friendly");
+	spawncrate((3414, 3225, 3353) , (-90, 0, 0));
+	spawncrate((3484, 3225, 3353) , (-90, 0, 0));
+	spawncrate((3505, 3225, 3412) , (0, -4, -50) , "com_plasticcase_friendly");
+	spawncrate((3395, 3225, 3412) , (0, 4, -50) , "com_plasticcase_friendly");
+	spawncrate((3450, 3227, 3412) , (0, 0, -50) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((3383, 3197, 3420)+ (0,-55* i,0) , (0, -90, 0) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((3517, 3197, 3420)+ (0,-55* i,0) , (0, -90, 0) , "com_plasticcase_friendly");
+	for(i = 0;i < 4;i++)
+	spawncrate((3423, 3210, 3426)+ (0,-30* i,0) , (0, 0, 0) , "com_plasticcase_friendly");
+	for(i = 0;i < 4;i++)
+	spawncrate((3477, 3210, 3426)+ (0,-30* i,0) , (0, 0, 0) , "com_plasticcase_friendly");
+	spawncrate((3400, 3116, 3421) , (2, 211, 0) , "com_plasticcase_friendly");
+	spawncrate((3500, 3116, 3421) , (2, 329, 0) , "com_plasticcase_friendly");
+    //mid archway
+    for(i = 0;i < 3;i++)
+	spawncrate((3807, 3597, 3309)+ (0,0,54* i) , (90, 90, -90) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3807, 3713, 3304)+ (0,0,54* i) , (90, 90, -90) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3720, 3713, 3304)+ (0,0,54* i) , (90, 90, -90) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3566, 3713, 3304)+ (0,0,54* i) , (90, 90, -90) , "com_plasticcase_friendly");
+	for(i = 0;i < 5;i++)
+	spawncrate((3794, 3729, 3422)+ (-55* i,0,0) , (0, 0, -45) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3697, 3706, 3320)+ (-54* i,0,0) , (0, 0, 75) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3682, 3709, 3346)+ (0,0,30* i) , (0, 0, 90) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3604, 3709, 3346)+ (0,0,30* i) , (0, 0, 90) , "com_plasticcase_friendly");
+	for(i = 0;i < 4;i++)
+	spawncrate((3770, 3710, 3434)+ (-55* i,0,0) , (0, 0, -15) , "com_plasticcase_friendly");
+	for(i = 0;i < 4;i++)
+	spawncrate((3770, 3684, 3439)+ (-55* i,0,0) , (0, 0, -8) , "com_plasticcase_friendly");
+	for(i = 0;i < 4;i++)
+	spawncrate((3770, 3657, 3442)+ (-55* i,0,0) , (0, 0, -5) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((3770, 3629, 3444)+ (-55* i,0,0) , (0, 0, -2) , "com_plasticcase_friendly");
+	spawncrate((3809, 3706, 3437) , (27, 90, -90) , "com_plasticcase_friendly");
+	spawncrate((3809, 3658, 3453) , (10, 90, -90) , "com_plasticcase_friendly");
+	spawncrate((3809, 3609, 3457) , (0, 90, -90) , "com_plasticcase_friendly");
+	spawncrate((3565, 3706, 3437) , (27, 90, 90) , "com_plasticcase_friendly");
+    spawncrate((3565, 3658, 3453) , (10, 90, 90) , "com_plasticcase_friendly");
+	spawncrate((3565, 3609, 3457) , (0, 90, 90) , "com_plasticcase_friendly");
+	spawncrate((3805, 3628, 3332) , (7, -90, 90) , "com_plasticcase_friendly");
+	spawncrate((3805, 3681, 3335) , (0, -90, 90) , "com_plasticcase_friendly");
+	spawncrate((3806, 3679, 3337) , (0, 270, 90));
+	//safe higher spot
+	spawncrate((3372, 4254, 3625) , (0, 0, 0) , "com_plasticcase_friendly");
+	spawncrate((3429, 4257, 3625) , (0, 6, 0) , "com_plasticcase_friendly");
+	spawncrate((3480, 4281, 3625),(0,45,0), "com_plasticcase_friendly");
+	CreateWalls((3510, 4520, 3646),(3510, 4380, 3750));
+	CreateGrids((3475, 4520, 3763),(3325, 4380, 3763), (0,0,0));
+	CreateRamps((3512, 4320, 3627),(4308, 4320, 3808));
 	CreateWalls((3431, 4229, 3600),(3503, 4265, 3720)); //new cover
 	spawncrate((3419, 4241, 3586) , (40, 117, 90) , "com_plasticcase_friendly");
-	spawncrate((3497, 4282, 3586) , (40, 117, 90) , "com_plasticcase_friendly");
-	
-	CreateGrids((3600, 3225, 3305),(3600, 3585, 3305), (0,0,0));
-	CreateGrids((3380, 3620, 3305),(3790, 3690, 3305), (0,0,0));
-	CreateGrids((3474, 3620, 3415),(3850, 3740, 3415), (0,0,0));
-	CreateWalls((3533, 3690, 3325),(3533, 3690, 3405));
-	createTP((3751.86, 3842.73, 2640),(3414.31, 4500.98, 3652), (0,270,0), undefined, undefined, undefined,480);
-	createTP((2825.86, 3305, 2865),(3414.31, 4500.98, 3652), (0,270,0), undefined, undefined, undefined,480);
-	CreateRamps((3380, 3715, 3302),(3380, 4225, 3611));
-	spawncrate((3430, 4253, 3625), (0,0,0), "com_plasticcase_friendly");
-	spawncrate((3380, 4253, 3625), (0,0,0), "com_plasticcase_friendly");
-	spawncrate((3480, 4281, 3625),(0,45,0), "com_plasticcase_friendly");
-	CreateWalls((3510, 4520, 3650),(3510, 4380, 3750));
-	CreateGrids((3495, 4520, 3763),(3345, 4380, 3763), (0,0,0));
-	CreateRamps((3512, 4320, 3627),(4308, 4320, 3808));
-	CreateGrids((4350, 4060, 3817),(4405, 4330, 3817), (0,0,0));
-	CreateRamps((4556, 3995, 3820),(4749, 3995, 3900));
-	CreateRamps((4555, 3680, 3820),(4761, 3680, 3900));
-	CreateGrids((3059, 3125, 2901),(3202, 3175, 2901), (0,0,0));
+	spawncrate((3497, 4282, 3586) , (40, 117, 90) , "com_plasticcase_friendly"); 
+	//low ladder
+    CreateGrids((3059, 3125, 2901),(3202, 3175, 2901), (0,0,0));
 	CreateQuicksteps((3280, 3150, 3353), 452, 18, 2, (0,180,0));
 	clonedcollision((3024, 3118, 2916.13), (0,90,0), mantlecoll);
 	clonedcollision((3024, 3184, 2916.13), (0,90,0), mantlecoll);
 	clonedcollision((3129, 3072, 3172.13), (0,0,0), mantlecoll);
 	clonedcollision((3191, 3072, 3172.13), (0,0,0), mantlecoll);
 	clonedcollision((3256, 3072, 3172.13), (0,0,0), mantlecoll);
-	//CreateDoors((4515, 4050, 3885) /*open*/,(4377, 4110, 3885) /*close*/, (90,90,0) /*angle*/, 7 /*size*/, 1 /*height*/, 10 /*hp*/, 80 /*range*/);
-	level.ac130.angles = (45,0,0);
+	//mid map
+	CreateRamps((3428, 4117, 3275),(3428, 3707, 3302));
 	CreateQuicksteps((3765, 3700, 3305), 198, 18, 2, (0,90,0));
-	CreateGrids((3333, 3268, 3447),(3567, 3118, 3447), (0,0,0));
-	clonedcollision((4587, 3935, 3834.13), (0,270,0), mantlecoll);
-	CreateRamps((4638, 4016, 3765),(4639, 3663, 3765));
-	CreateRamps((3428, 4117, 3275),(3428, 3707, 3304.13));
-	CreateWalls((3322, 3237, 3365.13),(3416, 3233, 3460.13));
+	CreateGrids((3600, 3231, 3305),(3600, 3591, 3305), (0,0,0));
+	CreateGrids((3370, 3620, 3305),(3780, 3690, 3305), (0,0,0));
+	CreateRamps((3371, 3715, 3302),(3371, 4225, 3611)); //big ramp
+	//top map
+	CreateGrids((4350, 4060, 3817),(4405, 4330, 3817), (0,0,0));
+	CreateRamps((4556, 3995, 3820),(4749, 3995, 3900));
+	CreateRamps((4555, 3680, 3820),(4761, 3680, 3900));
+	CreateInvisRamps((4638, 4016, 3765),(4639, 3663, 3765));
+	clonedcollision((4587, 3935, 3834.13), (0,270,0), mantlecoll); //?????
+	for(i = 0;i < 4;i++)
+	clonedcollision((4332.5, 4210, 3840)+(0,-62*i,0), (0,90,0), mantlecoll);
+	//cannonball
 	CreateGrids((3445, 4830, 3055),(3355, 5060, 3055), (0,0,0));
 	clonedcollision((3366, 4797, 3060), (0,0,0), mantlecoll);
 	clonedcollision((3427, 4796, 3043), (0,0,0), mantlecoll);
 	clonedcollision((3279, 4799, 3132), (0,0,0), mantlecoll);
-	cannonball((3400, 5037, 3070), (0,0,0), 1, (3406, 4526, 3710), 450);
+	cannonball((3400, 5037, 3055), (0,0,0), 1, (3406, 4526, 3710), 450);
 	fufalldamage((3389, 4713, 2851.08), 500, 400);
+	for(i = 0;i < 3;i++)
+	spawncrate((3466, 4844, 3048)+(0,101*i,0) , (0, 90, -78) , "com_plasticcase_friendly");
+	for(i = 0;i < 3;i++)
+	spawncrate((3334, 4844, 3048)+(0,101*i,0) , (0, -90, -78) , "com_plasticcase_friendly");
+}
+
+
+lockout_h2_edit2() {
+	arrow_array = [];
+	arrow_array[arrow_array.size] = ((2955.06, 2552.78, 3279.13));
+	arrow_array[arrow_array.size] = ((2955.08, 2880.71, 3183.13));
+	arrow_array[arrow_array.size] = ((2955.08, 3296.56, 3167.13));
+	arrow_array[arrow_array.size] = ((2960.63, 3611.34, 3183.13));
+	arrow_array[arrow_array.size] = ((3305.01, 3611.38, 3183.13));
+	arrow_array[arrow_array.size] = ((3606.98, 4137.15, 3183.13));
+	arrow_array[arrow_array.size] = ((3608.57, 4259.49, 3052.97));
+	show_route_arrows(arrow_array, 0.75);
+
+	arrow_array = [];
+	arrow_array[arrow_array.size] = ((2977.48, 2982.57, 2927.13));
+	arrow_array[arrow_array.size] = ((2975.13, 3517.38, 2927.13));
+	arrow_array[arrow_array.size] = ((3558.23, 3528.34, 3005.79));
+	arrow_array[arrow_array.size] = ((3605.33, 3967.18, 3007.13));
+	arrow_array[arrow_array.size] = ((3607.13, 4481.45, 3007.13));
+	arrow_array[arrow_array.size] = ((3924.24, 4481.45, 3049.47));
+	arrow_array[arrow_array.size] = ((4460.97, 4481.31, 2831.13));
+	arrow_array[arrow_array.size] = ((4460.97, 4100.04, 2783.13));
+	show_route_arrows(arrow_array, 0.75);
+
+	disable_spawn_array = [];
+	disable_spawn_array[disable_spawn_array.size] = (4527.2, 4522, 2776.13);
+	disable_spawn_array[disable_spawn_array.size] = (4175, 3688, 2840.13);
+	disable_spawn_array[disable_spawn_array.size] = (4176, 3984, 2840.13);
+	disable_spawn_array[disable_spawn_array.size] = (4544, 3691, 3160.13);
+	disable_spawn_array[disable_spawn_array.size] = (4544, 3972, 3160.13);
+	disable_spawn_point(disable_spawn_array);
+
+	
+	add_spawn_point((3720, 3067, 2954),(0, 154, 0));
+	add_spawn_point((3498, 2947, 2954),(0, 161, 0));
+	add_spawn_point((2910, 2974, 2874),(0, 76, 0));
+	add_spawn_point((3738, 3718, 2954),(0, 135, 0));
+	add_spawn_point((3483, 3677, 3018),(0, 60, 0));
+	add_spawn_point((3466, 2920, 3130),(0, 140, 0));
+	add_spawn_point((3749, 2943, 3130),(0, 112, 0));
+	add_spawn_point((3527, 4533, 2954),(0, -27, 0));
+	add_spawn_point((3288, 4440, 3130),(0, 10, 0));
+	add_spawn_point((2813, 3501, 3130),(0, 30, 0));
+	add_spawn_point((2836, 2950, 3130),(0, 36, 0));
+	add_spawn_point((3844, 3189, 3130),(0, -141, 0));
+	add_spawn_point((3374, 3200, 3130),(0, -18, 0));
+
+
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "axis", "mp_tdm_spawn");
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "allies", "mp_tdm_spawn");
+
+	shaft_ents = [];
+	index = shaft_ents.size;
+	shaft_ents[index] = SpawnFX(level._effect[ "shaft2" ], (4200, 3965, 3130));	TriggerFX(shaft_ents[index]);
+	ent = common_scripts\_createfx::createLoopSound(); ent.v[ "origin" ] = (4200, 3965, 3130); ent.v[ "angles" ] = ( 0, 0, 0 ); ent.v[ "soundalias" ] = "emt_grav_loop";
+	index = shaft_ents.size;
+	shaft_ents[index] = SpawnFX(level._effect[ "shaft2" ], (4200, 3710, 3130));	TriggerFX(shaft_ents[index]);
+	ent = common_scripts\_createfx::createLoopSound(); ent.v[ "origin" ] = (4200, 3710, 3130); ent.v[ "angles" ] = ( 0, 0, 0 ); ent.v[ "soundalias" ] = "emt_grav_loop";
+	index = shaft_ents.size;
+	shaft_ents[index] = SpawnFX(level._effect[ "shaft2" ], (4200, 3837, 3130));	TriggerFX(shaft_ents[index]);
+	ent = common_scripts\_createfx::createLoopSound(); ent.v[ "origin" ] = (4200, 3837, 3130); ent.v[ "angles" ] = ( 0, 0, 0 ); ent.v[ "soundalias" ] = "emt_grav_loop";
+	index = shaft_ents.size;
+	shaft_ents[index] = SpawnFX(level._effect[ "shaft2" ], (4200, 3965, 3130) + (0,0,460));	TriggerFX(shaft_ents[index]);
+	ent = common_scripts\_createfx::createLoopSound(); ent.v[ "origin" ] = (4200, 3965, 3130) + (0,0,460); ent.v[ "angles" ] = ( 0, 0, 0 ); ent.v[ "soundalias" ] = "emt_grav_loop";
+	index = shaft_ents.size;
+	shaft_ents[index] = SpawnFX(level._effect[ "shaft2" ], (4200, 3710, 3130) + (0,0,460));	TriggerFX(shaft_ents[index]);
+	ent = common_scripts\_createfx::createLoopSound(); ent.v[ "origin" ] = (4200, 3710, 3130) + (0,0,460); ent.v[ "angles" ] = ( 0, 0, 0 ); ent.v[ "soundalias" ] = "emt_grav_loop";
+	index = shaft_ents.size;
+	shaft_ents[index] = SpawnFX(level._effect[ "shaft2" ], (4200, 3837, 3130) + (0,0,460));	TriggerFX(shaft_ents[index]);
+	ent = common_scripts\_createfx::createLoopSound(); ent.v[ "origin" ] = (4200, 3837, 3130) + (0,0,460); ent.v[ "angles" ] = ( 0, 0, 0 ); ent.v[ "soundalias" ] = "emt_grav_loop";
+	index = shaft_ents.size;
+
+	upshaft((4180, 3965, 3130), 50, 50, 860, true);
+	upshaft((4180, 3710, 3130), 50, 50, 860, true);
+	upshaft((4180, 3837, 3130), 50, 50, 860, true);
+
+	CreateInvisGrids((4120, 4045, 3975),(4280, 3630, 3975), (-45,0,0));
+
+	CreateGrids((4565, 4015, 3820),(4765, 3665, 3820), (-22,0,0));
+	
+
+	CreateWalls((4110, 3760, 3180),(4110, 3925, 3180));
+	CreateWalls((4110, 3760, 3160),(4110, 3925, 3160));
+
+	i=0;
+	CreateWalls((4110, 3640, 3205 + i * 30),(4460, 3640, 3205 + i * 30));
+	CreateWalls((4110, 3670, 3205 + i * 30),(4110, 4035, 3205 + i * 30));
+	CreateWalls((4110, 4035, 3205 + i * 30),(4460, 4035, 3205 + i * 30));
+	i++;
+	CreateWalls((4110, 3640, 3205 + i * 30),(4460, 3640, 3205 + i * 30));
+	CreateWalls((4110, 3670, 3205 + i * 30),(4110, 4035, 3205 + i * 30));
+	CreateWalls((4110, 4035, 3205 + i * 30),(4460, 4035, 3205 + i * 30));
+	i++;
+	CreateWalls((4110, 3640, 3205 + i * 30),(4260, 3640, 3205 + i * 30));
+	CreateWalls((4110, 3670, 3205 + i * 30),(4110, 4035, 3205 + i * 30));
+	CreateWalls((4110, 4035, 3205 + i * 30),(4260, 4035, 3205 + i * 30));
+	i++;
+	CreateWalls((4110, 3640, 3205 + i * 30),(4230, 3640, 3205 + i * 30));
+	CreateWalls((4110, 3670, 3205 + i * 30),(4110, 4035, 3205 + i * 30));
+	CreateWalls((4110, 4035, 3205 + i * 30),(4230, 4035, 3205 + i * 30));
+	i++;
+	CreateWalls((4110, 3640, 3205 + i * 30),(4200, 3640, 3205 + i * 30));
+	CreateWalls((4110, 3670, 3205 + i * 30),(4110, 4035, 3205 + i * 30));
+	CreateWalls((4110, 4035, 3205 + i * 30),(4200, 4035, 3205 + i * 30));
+
+
+	for(i=0; i<4; i++) {
+		spawncrate((4110, 3812, 2855 + i * 30), (0, 90, 90),"com_plasticcase_friendly");
+		spawncrate((4110, 3868, 2855 + i * 30), (0, 90, 90),"com_plasticcase_friendly");
+	}
+
+	CreateGrids((3510, 3800, 2937),(3460, 3880, 2937), (0,0,0));
+
+	CreateGrids((4399, 4399, 2920),(4559, 4559, 2920), (0,0,0));
+
+	for(i=0; i<7; i++) {
+		spawncrate((4399, 4399, 2920 - i * 25), (0, 0, 0),"com_plasticcase_friendly");
+		spawncrate((4399, 4559, 2920 - i * 25), (0, 0, 0),"com_plasticcase_friendly");
+		spawncrate((4559, 4399, 2920 - i * 25), (0, 0, 0),"com_plasticcase_friendly");
+		spawncrate((4559, 4559, 2920 - i * 25), (0, 0, 0),"com_plasticcase_friendly");
+	}
+
+	CreateDoors((4455, 4035, 2870),(4455, 4035, 2750),(90, 90, 0), 3, 2, 40, 140);
+
+	fufalldamage((3796, 3842, 2077), 2000 , 6000);
+	// CreateHiddenTP((4098, 3836, 2696),(3606, 3848, 2952));
+
+	CreateGrids((4880, 4050, 3795),(4930, 4430, 3795), (0,0,0));
+
+	CreateGrids((4000, 4130, 4541),(3700, 3560, 4541), (0,0,0));
+	CreateWalls((4025, 4100, 4550),(4025, 3590, 4550), (0,90,0));
+
+	delete_array = [];
+	delete_array[delete_array.size] = spawncrate((3600-75, 3290, 3280), (0, 0, 0),"com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600-25, 3290, 3280), (0, 0, 0),"com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600+25, 3290, 3280), (0, 0, 0),"com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600+75, 3290, 3280), (0, 0, 0),"com_plasticcase_enemy");
+
+	delete_array[delete_array.size] = spawncrate((3600+75, 2640, 3400) , (90, -90, 0) , "com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600+25, 2640, 3400) , (90, -90, 0) , "com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600-25, 2640, 3400) , (90, -90, 0) , "com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600-75, 2640, 3400) , (90, -90, 0) , "com_plasticcase_enemy");
+	
+	delete_array[delete_array.size] = spawncrate((3600+75, 2640, 3400-50) , (90, -90, 0) , "com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600+25, 2640, 3400-50) , (90, -90, 0) , "com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600-25, 2640, 3400-50) , (90, -90, 0) , "com_plasticcase_enemy");
+	delete_array[delete_array.size] = spawncrate((3600-75, 2640, 3400-50) , (90, -90, 0) , "com_plasticcase_enemy");
+	
+	wait (4 * 60);
+
+	foreach(crate in delete_array)
+		crate delete();
+
+	cannonball((3600+100, 3070, 3307),(0, 0, 0), 2 ,(3325+100, 4400, 3697), 306);
+	cannonball((3600-100, 3070, 3307),(0, 0, 0), 2 ,(3325-100, 4400, 3697), 306);
+
+	cannonball((3325+100, 4400, 3627),(0, 0, 0), 1 ,(4380, 3840-150, 3920), 306);
+	cannonball((3325-100, 4400, 3627),(0, 0, 0), 1 ,(4380, 3840+150, 3920), 306);
+
+	CreateGrids((3600 + 240, 2870, 3417+20),(3600 - 240, 2870, 3417+20), (0,0,-55));
 }
 
 foundation_edit1(){
 	level.meat_playable_bounds = [
-		(-1116.25, -1834.38, 615.134),
 		(-1117.97, -1419.2, 615.134),
 		(-1974.71, -861.718, 473.934),
 		(-3379.06, -564.918, 474.66),
-		(-4356.97, -550.879, 528.649),
-		(-4356.77, -715.6, 454.65),
-		(-5067, -734, 387),
+		(-4257, -550.879, 528.649),
+		(-4257, 273, 528.649),
+		(-5067, 273, 528.649),
 		(-5063, -1265, 387),
-		(-4323, -1257, 296),
 		(-4332.21, -1849.75, 487.297),
 		(-3391.44, -1865.38, 653.284),
 		(-3382, -1941.88, 631.692),
 		(-3240.8, -2233.24, 685.863),
 		(-2676.06, -2229.94, 874.95),
 		(-2414.4, -2060.56, 641.486),
-		(-1575.03, -2067.18, 640.351)
+		(-1117.97, -2060.56, 641.486)
 	];
 	createPolygon();
 	
-	CreateDeathRegion((-5991, -2255, 116), (-3598, -1138, 110));
+	ents = GetEntArray();
+	foreach(ent in ents) {
+		if(ent.model == "me_electricbox2" || ent.model == "mp_cement_tarp4") {
+			//iprintln(ent.model);
+			//logprint(ent.model + "\n");
+			ent delete();
+		}
+	}
 	
-	//tmg
-	CreateQuicksteps((-3132, -1685, 620), 145, 18, 2, (0,0,0));
-	createInviswalls((-2948, -1795, 520),(-2948, -1454, 565));
-	
-	spawnmodel((-2938, -1740, 527) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1685, 527) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1630, 527) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1575, 527) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1520, 527) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1465, 527) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1740, 557) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1685, 557) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1630, 557) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1575, 557) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1520, 557) , (0, 270, 90) , "com_plasticcase_beige_big");
-	spawnmodel((-2938, -1465, 557) , (0, 270, 90) , "com_plasticcase_beige_big");
-	fuckyou = getent("mp_global_intermission","classname");
+	 CreateDeathRegion((-5991, -2255, 200), (-4354, -1277, 600));
+	CreateDeathRegion((-3178, -2108, 1050), (-2769, -1813, 1170));//rooftop
+    fuckyou = getent("mp_global_intermission","classname");
 	fuckyou.angles = (8, -180, 10);
 	fuckyou.origin = (-4980, -900, 700);
-	createTP((-3291, 898, 344),(-1212, -1688, 392), undefined, 0);
-	createTP((857, -890, 326),(-1212, -1688, 392), undefined, 0);
-	createTP((-205, 978, 316),(-1212, -1688, 392), undefined, 0);
-	createTP((-2343, -532, 349),(-1212, -1688, 392), undefined, 0);
-	createTP((-364, -1381, 338),(-1212, -1688, 392), undefined, 0);
-	createTP((-3397, -391, 296),(-1212, -1688, 392), undefined, 0);
-	createTP((637, 389, 352),(-1212, -1688, 392), undefined, 0);
-	createTP((-659, -270, 392),(-1212, -1688, 392), undefined, 0);
-	//createHiddenTP((-2445, -2110, 895),(-67, -373, 324), undefined, "out");
-	CreateWalls((-1589, -1970, 540),(-2411, -1970, 540));
-	CreateWalls((-1310, -1800, 484),(-1310, -1549, 370));
-	CreateQuicksteps((-2005, -1822, 495), 130, 8, 2, (0,90,0));
-	spawncrate((-2472, -1397, 342), (0, -90, 0));
-	spawncrate((-2472, -1397, 377), (0, -90, 0));
-	//first door
-	CreateDoors((-3159, -1231, 400),(-3159, -1231, 310),(90, 0, 0), 3, 2, 25, 90, true);
-	CreateWalls((-3176, -1022, 430),(-3176, -898, 270));
-	CreateGrids((-3110, -1805, 467),(-3110, -1405, 467), (0,0,0));
-	/* back cover
-	spawncrate((-3879, -1160, 330), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-3879, -1160, 360), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-3727, -962, 330), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-3727, -962, 360), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-4077, -959, 330), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-4077, -959, 360), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-4158, -1258, 330), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-4158, -1258, 360), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-3879, -1160, 330), (90, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-3879, -1160, 360), (90, 0, 0), "com_plasticcase_friendly");
-	*/
+	moveac130position((-3252, -1890, 3000));
 
-	//end
-	CreateWalls((-5090, -1283, 300),(-5090, -719, 300));
-	CreateWalls((-5090, -1283, 360),(-5090, -719, 360));
-	CreateWalls((-4354, -1868, 320),(-4354, -1300, 320));
-	CreateWalls((-4354, -1868, 390),(-4354, -1300, 390));
-	CreateWalls((-4354, -1868, 460),(-4354, -1696, 460));
-	CreateWalls((-4354, -1868, 530),(-4354, -1696, 530));
-	//cover wall
-	CreateWalls((-4706, -1257, 306),(-4706, -1096, 373));
+	//spawn
+	spawnmodel((-1260, -1685, 391) , (0, 0, 0) , "construction_porter_potty_blue");
+	spawncrate((-1246, -1685, 433) , (0, 90, 0));
+	spawncrate((-1271, -1685, 433) , (0, 90, 0));
+    spawncrate((-1246, -1685, 485) , (0, 90, 0));
+	spawncrate((-1271, -1685, 485) , (0, 90, 0));
+	for(i = 0;i < 14;i++) //spinning
+	spawncrate((-1603, -1970, 550)+ (-60* i,0,0), (90, 0, 0));//spinning
+
+	//ramp new
+	spawnmodel((-1596, -1712, 424) , (-29, -188, -90) , "afr_river_wood_plank1");
+	spawnmodel((-1599, -1732, 427) , (-31, -188, -76) , "afr_river_wood_plank1");
+	spawncrate((-1572, -1726, 396) , (-30, 172, 0));
+	spawncrate((-1618, -1719, 423) , (-30, 172, 0));
+	spawncrate((-1667, -1711, 441) , (0, 172, 0));
+	
+	//stuck spot fixes
+	spawncrate((-1420, -1808, 425) , (0, 0, 0));
+	spawncrate((-1544, -1808, 425) , (0, 0, 0));
+	spawncrate((-2452, -1399, 365) , (0, -90, 0));//warehouse room block
+	spawncrate((-1982, -972, 361) , (0, 90, 0));//warehouse room stuck
+	spawncrate((-2046, -1827, 459), (0, 85, 0)); //potty
+	//fence
+	spawnmodel((-2826, -1624, 298) , (3, 79, 0) , "cement_fence_construction_02");
+	spawnmodel((-2825, -1721, 304) , (4, 90, 0) , "cement_fence_construction_02");
+	spawnmodel((-2825, -1817, 311) , (4, 90, 0) , "cement_fence_construction_02");
+	for(i = 0;i < 5;i++)
+	spawncrate((-2830, -1788, 352)+ (0,60* i,0) , (90, 90, 0));
+	
+	//door watch canister
+	CreateInvisQuicksteps((-3144, -1685, 617), 130, 18, 2, (0,0,0));
+	spawnmodel((-3110, -1685, 503) , (0, -270, -7) , "clt_ladder_construction_01");
+	
+	spawnmodel((-3109, -1693, 487) , (0, 0, 0) , "com_pallet");
+	spawnmodel((-3102, -1693, 496) , (0, 0, 0) , "com_pallet_2");
+	spawnmodel((-3126, -1692, 463) , (-89, 0, 0) , "com_pallet");
+	spawnmodel((-3106, -1690, 467) , (-45, 0, 0) , "com_pallet");
+	spawncrate((-3092, -1694, 489) , (0, 90, 0));
+	CreateInvisGrids((-3110, -1805, 467),(-3110, -1405, 467), (0,0,0));
+	
+	//canister collision
+	for(i = 0;i < 8;i++)
+	spawncrate((-2982, -1829, 352) + (0,60* i,0) , (90, 90, 0));
+	spawncrate((-2967, -1407, 455), (90, 90, 0));
+	spawncrate((-3012, -1407, 465), (90, 90, 0));
+	spawncrate((-3072, -1407, 455), (90, 90, 0));
+	spawncrate((-3012, -1407, 410) , (90, 90, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((-3042, -1409, 352)+ (-60* i,0,0), (90, 90, 0));
+	
+	spawnmodel((-2915, -1687, 418) , (0, 90, 0) , "usa_sign_sharpcurve");
+	spawnmodel((-2915, -1569, 414) , (0, 90, 0) , "usa_sign_sharpcurve");
+	spawnmodel((-3160, -1295, 494) , (65, 90, 0) , "usa_sign_sharpcurve");
+	spawnmodel((-3160, -1176, 492) , (120, 90, 0) , "usa_sign_sharpcurve");
+	spawnmodel((-4703, -1272, 489) , (218, 179, 0) , "usa_sign_sharpcurve");
+	spawnmodel((-4494, -1272, 557) , (209, 179, 0) , "usa_sign_sharpcurve");
+   
+	createTP((-3291, 898, 344),(-1146, -1686, 392), (0,170,0), 0);
+	createTP((857, -890, 326),(-1146, -1686, 392), (0,170,0), 0);
+	createTP((-205, 978, 316),(-1146, -1686, 392), (0,170,0), 0);
+	createTP((-2343, -532, 349),(-1146, -1686, 392), (0,170,0), 0);
+	createTP((-364, -1381, 338),(-1146, -1686, 392), (0,170,0), 0);
+
+	createTP((637, 389, 352),(-1146, -1686, 392), (0,170,0), 0);
+	createTP((-659, -270, 392),(-1146, -1686, 392), (0,170,0), 0);
+	createHiddenTP((-3332, -914, 680), (-3996, -592, 410), (0,-160,0), undefined, undefined, 10);
+	
+    spawnmodel((-3241, -1060, 325) , (0, 0, 0) , "prop_vent_large");
+	spawnmodel((-3241, -860, 325) , (0, 180, 0) , "prop_vent_large");
+	spawnmodel((-3247, -860, 326) , (6, 0, -180) , "prop_vent_large");
+	spawnmodel((-3236, -1060, 326) , (6, 180, -180) , "prop_vent_large");
+	for(i = 0;i < 4;i++)
+	spawncrate((-3240, -1046, 330)+ (0,60* i,0) , (90, 90, 0));
+	for(i = 0;i < 4;i++)
+	spawncrate((-3240, -1046, 416)+ (0,60* i,0) , (90, 90, 0));
+	
+	//new truck to funnel
+	spawnmodel((-3550, -1347, 294) , (0, 10, 0) , "vehicle_korean_blue_truck");
+	spawnmodel((-3738, -1363, 296) , (0, 260, 0) , "prop_korean_barricade_01");
+	for(i = 0;i < 6;i++)
+	spawncrate((-3757, -1352, 328)+ (57* i,10* i,0) , (90, 100, 90));
+	for(i = 0;i < 5;i++)
+	spawncrate((-3633, -1389, 328)+ (57* i,10* i,0) , (90, 100, 90));
+	spawncrate((-3443, -1308, 332) , (0, 100, 90));
+	spawncrate((-3471, -1333, 377) , (180, 100, -180));
+
+
+	//end walls
+    for(i = 0;i < 11;i++)
+	spawncrate((-5088, -1227, 353)+ (0,60* i,0) , (90, 90, 0));
+	for(i = 0;i < 11;i++)
+	spawncrate((-4353, -1306, 353)+ (0,-60* i,0) , (90, 90, 0)); 
+	for(i = 0;i < 11;i++)
+	spawncrate((-4353, -1306, 443)+ (0,-60* i,0) , (90, 90, 0)); 
+	for(i = 0;i < 7;i++)
+	spawncrate((-4353, -1546, 533)+ (0,-60* i,0) , (90, 90, 0)); 
+	for(i = 0;i < 6;i++)
+	spawncrate((-4353, -1287, 443)+ (-60* i,0,0) , (90, 90, 0)); 
+	
 	//back door
-	CreateDoors((-4354, -990, 330),(-4358, -1160, 330),(90, 0, 0), 3, 2, 20, 90, true);
-	//side ramp
-	CreateRamps((-4565, -760, 278),(-4370, -760, 390));
-	CreateGrids((-4310, -576, 402),(-3927, -686, 402), (0,0,0));
-	spawncrate((-4310, -714, 402), (0, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-4310, -745, 402), (0, 0, 0), "com_plasticcase_friendly");
-	spawncrate((-4310, -775, 402), (0, 0, 0), "com_plasticcase_friendly");
-	CreateWalls((-3922, -688, 420),(-4181, -688, 420)); // cover
-	CreateinvisWalls((-4242, -546, 500),(-3982, -546, 500)); // block back wall
-	CreateWalls((-4354, -1060, 320),(-4354, -576, 320));
-	CreateWalls((-4354, -1060, 390),(-4354, -576, 390));
-	CreateWalls((-5030, -720, 320),(-4380, -720, 320));
-	CreateWalls((-5030, -720, 390),(-4380, -720, 390));
+	CreateDoors((-4370, -990, 312),(-4370, -1165, 312),(90, 0, 0), 3, 2, 50, 90, true);
+	spawnmodel((-4102, -618, 297) , (0, 90, 0) , "cargocontainer_20ft_blue");
+	spawnmodel((-4297, -705, 297) , (0, 180, 0) , "cargocontainer_20ft_blue");
+	for(i = 0;i < 5;i++)
+	spawncrate((-3966, -651, 344)+ (-60* i,0,0) , (-90, 0, 0));
+	for(i = 0;i < 7;i++)
+	spawncrate((-3981, -638, 387)+ (-40* i,0,0) , (0, 90, 0));
+	for(i = 0;i < 7;i++)
+	spawncrate((-3981, -590, 387)+ (-40* i,0,0) , (0, 90, 0));
+	for(i = 0;i < 7;i++)
+	spawncrate((-4317, -574, 387)+ (0,-40* i,0) , (0, 0, 0));
+	for(i = 0;i < 7;i++)
+	spawncrate((-4276, -574, 387)+ (0,-40* i,0) , (0, 0, 0));
+	for(i = 0;i < 3;i++)
+	spawncrate((-4265, -815, 344)+ (0,60* i,0) , (-90, 90, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((-4327, -815, 343)+ (0,20* i,0) , (-90, 90, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((-4330, -670, 334)+ (0,60* i,0) , (0, 90, 0));
+	for(i = 0;i < 5;i++)
+	spawncrate((-4352, -839, 353)+ (0,-56* i,0) , (-90, 90, 0));
+	for(i = 0;i < 3;i++)
+	spawnmodel((-3974, -662, 399)+ (-95* i,0,0) , (0, 180, 0) , "cement_fence_construction_02");
+	spawnmodel((-4257, -662, 399) , (0, -90, 0) , "cement_fence_construction_01");
+	
+	CreateInvisWalls((-4242, -546, 500),(-3982, -546, 500)); // block back wall
+	
+	
+	spawncrate((-4559, -659, 345) , (-90, 90, 0));//STUCK SPOT
+	
+	spawnmodel((-4378, -742, 296) , (0, 0, 0) , "ug_crate_pallet");
+	for(i = 0;i < 2;i++)
+	spawncrate((-4394, -742, 347)+ (0,0,-60* i) , (0, 90, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((-4367, -742, 347)+ (0,0,-60* i) , (0, 90, 0));
+	
+	spawncrate((-4332, -740, 368) , (0, 90, 0));//pallet
+	spawnmodel((-4325, -740, 374) , (0, 0, 0) , "berlin_com_pallet");
+	
+	//spawnmodel((-4371, -680, 292) , (0, 0, 0) , "construction_porter_potty_green");
+	
+	spawnmodel((-4455, -737, 332) , (-33, 0, 90) , "afr_river_wood_plank1");
+	spawnmodel((-4455, -758, 332) , (-33, 0, 90) , "afr_river_wood_plank1");
+	spawncrate((-4431, -747, 327) , (33, 180, 0));
+	spawncrate((-4475, -747, 298) , (33, 180, 0));
+	
+	spawnmodel((-4351, -887, 341) , (0, -90, 0) , "props_common_fence_old_01");
+	spawnmodel((-4354, -1013, 342) , (0, -90, 0) , "props_common_fence_old_01");
+	spawnmodel((-4355, -888, 322) , (88, 90, 0) , "afr_corrugated_metal4x8");
+	spawnmodel((-4351, -1251, 345) , (173, 90, 0) , "afr_corrugated_metal2x8");
+	
 	spawnmodel((-5052, -900, 650) , (0, 0, 0) , "mp_fullbody_ally_juggernaut");
 	//Back cannons
-	cannonball((-4995, -792, 296), (0,90,0), 2, (-3297, -1231, 740), 500);
-	cannonball((-4995, -891, 296), (0,90,0), 2, (-3297, -1231, 740), 500);
-	cannonball((-4995, -990, 296), (0,90,0), 2, (-3297, -1231, 740), 500);
-	cannonball((-4995, -1100, 296), (0,90,0), 2, (-3297, -1231, 740), 500);
+	cannonball((-4990, -1090, 281), (0,263,0), 2, (-3297, -1231, 740), 500);
+	cannonball((-4990, -990, 281), (0,260,0), 2, (-3297, -1231, 740), 500);
+	cannonball((-4990, -890, 281), (0,256,0), 2, (-3297, -1231, 740), 500); 
+	cannonball((-4990, -790, 281), (0,254,0), 2, (-3297, -1231, 740), 500);
+	spawnmodel((-5007, -1088, 326) , (0, -97, -152) , "com_wall_fan_blade");
+	spawnmodel((-5005, -988, 326) , (0, -100, -152) , "com_wall_fan_blade");
+	spawnmodel((-5003, -888, 326) , (0, -104, -152) , "com_wall_fan_blade");
+	spawnmodel((-5002, -788, 326) , (0, -106, -152) , "com_wall_fan_blade");
+	spawnmodel((-5003, -1119, 296) , (0, 83, -28) , "com_wall_fan");
+	spawnmodel((-5003, -1019, 296) , (0, 80, -28) , "com_wall_fan");
+	spawnmodel((-5003, -919, 296) , (0, 76, -28) , "com_wall_fan");
+	spawnmodel((-5003, -819, 296) , (0, 74, -28) , "com_wall_fan");
+	spawnmodel((-5078, -1114, 294) , (-38, -7, -90) , "railing_old_span64_blue");
+	spawnmodel((-5071, -1004, 294) , (-38, -10, -90) , "railing_old_span64_blue");
+    spawnmodel((-5070, -901, 294) , (-38, -14, -90) , "railing_old_span64_blue");
+    spawnmodel((-5073, -796, 294) , (-38, -16, -90) , "railing_old_span64_blue");
+	spawnmodel((-5090, -582, 296) , (0, 0, 0) , "prop_korean_barricade_03");
 
-	CreateRamps((-3160, -1950, 617),(-3160, -2106, 670)); //ramp1a
-	CreateRamps((-3218, -1950, 617),(-3218, -2106, 670)); //ramp1b
-	spawncrate((-3220, -2148, 680), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-3220, -2200, 680), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-3190, -2148, 680), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-3190, -2200, 680), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-3160, -2148, 680), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-3160, -2200, 680), (0, 90, 0), "com_plasticcase_friendly");
-	CreateDoors((-3134, -2175, 825),(-3134, -2175, 710),(90, 0, 0), 2, 2, 20, 90, true);
-	CreateRamps((-3120, -2148, 684),(-2786, -2148, 872)); //ramp2a
-	CreateRamps((-3120, -2200, 684),(-2786, -2200, 872)); //ramp2b
-	spawncrate((-2760, -2148, 884), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-2760, -2200, 884), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-2725, -2148, 884), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-2725, -2200, 884), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-2690, -2148, 884), (0, 90, 0), "com_plasticcase_friendly");
-	spawncrate((-2690, -2200, 884), (0, 90, 0), "com_plasticcase_friendly");
+
+    //stairs + door
+	CreateDoors((-2844, -2171, 1000),(-2844, -2171, 912),(60, 0, 0), 2, 1, 20, 70, true);
+	spawnmodel((-3189, -1983, 667) , (0, 0, 0) , "prop_preheater_stairs");
+	spawnmodel((-2912, -2162, 836) , (0, 90, 0) , "prop_preheater_stairs");
+	spawnmodel((-3231, -2119, 733) , (270, 0, 0) , "vehicle_dump_container_door_swing");
+	spawnmodel((-3176, -2119, 733) , (270, 0, 0) , "vehicle_dump_container_door_swing");
+	spawnmodel((-3121, -2119, 733) , (270, 0, 0) , "vehicle_dump_container_door_swing");
+	spawnmodel((-3093, -2119, 734) , (270, 0, 0) , "vehicle_dump_container_door_swing");
+	
+	spawnmodel((-3221, -2177, 732) , (0, 90, 0) , "railing_old_span64_yellow"); 
+	spawnmodel((-3221, -2195, 732) , (0, 90, 0) , "railing_old_span32_yellow");
+	spawnmodel((-3108, -2195, 732) , (0, 0, 0) , "railing_old_span64_yellow");
+	spawnmodel((-3172, -2195, 732) , (0, 0, 0) , "railing_old_span64_yellow");
+	spawnmodel((-3221, -2195, 732) , (0, 0, 0) , "railing_old_span64_yellow");
+
+	spawnmodel((-3221, -2195, 732) , (0, 90, 0) , "railing_old_post_yellow");
+	spawnmodel((-3163, -2195, 732) , (0, 90, 0) , "railing_old_post_yellow");
+	spawnmodel((-3105, -2195, 732) , (0, 90, 0) , "railing_old_post_yellow");
+	
+	spawnmodel((-2776, -2123, 907) , (270, 0, 0) , "vehicle_dump_container_door_swing");
+	spawnmodel((-2733, -2123, 906) , (270, 0, 0) , "vehicle_dump_container_door_swing");
+	
+	spawnmodel((-2782, -2195, 901) , (0, 0, 0) , "railing_old_span64_yellow");
+	spawnmodel((-2718, -2195, 901) , (0, 0, 0) , "railing_old_span32_yellow");
+	spawnmodel((-2685, -2194, 901) , (0, 90, 0) , "railing_old_span64_yellow");
+	spawnmodel((-2685, -2195, 901) , (0, 90, 0) , "railing_old_post_yellow");
+	spawnmodel((-2732, -2195, 901) , (0, 90, 0) , "railing_old_post_yellow");
+	spawnmodel((-2685, -2129, 901) , (0, 90, 0) , "railing_old_post_yellow");
+	 
+	//stair collision
+	for(i = 0;i < 3;i++) 
+	spawncrate((-2696, -2161, 893)+(-30* i,0,0) , (0, 90, 0));
+    CreateInvisRamps((-2785, -2161, 878),(-2874, -2161, 806));
+	for(i = 0;i < 2;i++) 
+	spawncrate((-2893, -2161, 806)+(-25* i,0,0) , (0, 90, 0));
+	CreateInvisRamps((-2950, -2161, 791),(-3040, -2161, 719));
+	for(i = 0;i < 5;i++) 
+	spawncrate((-3058, -2150, 720)+(-35* i,0,0) , (0, 90, 0));
+	CreateInvisRamps((-3187, -2106, 704),(-3187, -2017, 632));
+	spawncrate((-3192, -1969, 636) , (0, 180, 0));
+	spawncrate((-3192, -2002, 636) , (0, 0, 0));
+	
+	//stair railing coll
+	spawncrate((-3236, -1979, 675) , (0, 90, 180));
+	spawncrate((-3236, -2035, 689) , (39, 90, 180));
+	spawncrate((-3236, -2088, 732) , (39, 90, 180));
+	for(i = 0;i < 2;i++) 
+	spawncrate((-3236, -2147, 759)+(0,-50* i,0) , (0, 90, 180));
+	for(i = 0;i < 3;i++) 
+	spawncrate((-3180, -2210, 759)+(50* i,0,0) , (0, 180, 180));
+	spawncrate((-3013, -2210, 780) , (39, 180, 180));
+	spawncrate((-2963, -2210, 821) , (39, 180, 180));
+	spawncrate((-2904, -2210, 848) , (0, 0, 180));
+	spawncrate((-2925, -2210, 831) , (-90, 180, 180));
+	spawncrate((-2855, -2210, 863) , (39, 180, 180));
+	spawncrate((-2807, -2210, 903) , (39, 180, 180));
+	for(i = 0;i < 2;i++) 
+	spawncrate((-2759, -2210, 925)+(50* i,0,0) , (0, 180, 180));
+	for(i = 0;i < 2;i++) 
+	spawncrate((-2670, -2197, 925)+(0,47* i,0) , (0, 90, 180));
+	
+	// new roof vents
+	spawnmodel((-2487, -1971, 876) , (0, -90, -7) , "ny_rooftop_ac_unit");
+	spawnmodel((-2487, -1853, 876) , (0, -90, -7) , "ny_rooftop_ac_unit");  
+    for(i = 0;i < 3;i++) 
+	spawncrate((-2510, -1971, 913)+(27* i,0,-3* i) , (0, 90, 7));
+	for(i = 0;i < 3;i++) 
+	spawncrate((-2510, -1853, 913)+(27* i,0,-3* i) , (0, 90, 7));
 }
 
 
@@ -7021,6 +8162,12 @@ derail_edit1(){
 		(1119, 3864, 233.91)
 	];
 	createPolygon();
+	
+	moveac130position((3602, 4337, 1000));
+	
+	spawncrate((-280, -503, 46) , (0, 20, 90)); //wallbreach
+	spawncrate((-222, -482, 46) , (0, 20, 90)); //wallbreach
+	spawncrate((-173, -464, 42) , (0, 20, 90)); //wallbreach
 	
 	//Quicksteps
 	CreateInvisQuicksteps((3475, 4450, 61), 110, 18, 2, (0,180,0));
@@ -7110,9 +8257,9 @@ derail_edit1(){
 	spawncrate((3694, 4170, 485) + (0, 60* i, 0), (90, 0, 90)); i++;
 	spawncrate((3694, 4170, 485) + (0, 60* i, 0), (90, 0, 90)); i++;
 	
-	spawnmodel((3701, 4200, 446), (0, 90, 0), "snow_barrier_tall_1");
-	spawnmodel((3701, 4292, 446), (0, 90, 0), "snow_barrier_tall_1");
-	spawnmodel((3701, 4384, 446), (0, 90, 0), "snow_barrier_tall_1");
+	spawnmodel((3701, 4200, 445), (0, 90, 0), "snow_barrier_tall_1");
+	spawnmodel((3701, 4292, 445), (0, 90, 0), "snow_barrier_tall_1");
+	spawnmodel((3701, 4384, 445), (0, 90, 0), "snow_barrier_tall_1");
 	
 	
 	//Roof wall
@@ -7281,6 +8428,7 @@ karachi_edit1(){
 	mp_global_intermission.origin = (7181, 1433, -92);
 	mp_global_intermission.angles = (-1, 215, 0);
  
+	CreateDeathRegion((4154, -1767, -210), (2797, -3270, -310)); //under map fix
 
 	 //oom block
 	spawncrate((-117, -12, 415), (90, 90, 90), "com_plasticcase_friendly");
@@ -7297,6 +8445,19 @@ karachi_edit1(){
 	CreateWalls((4844, -961, -65),(4480, -594, -65));
 	CreateWalls((4844, -961, -5),(4480, -594, -5));
 	CreateWalls((4844, -961, 60),(4243, -357, 60));
+
+	//fix wb (start edit)
+	CreateDeathRegion((5917, 1204, 41), (5715, 1161, 110));
+
+	CreateInvisWalls((5940, 1213, 64),(5795, 1060, 64));
+	CreateInvisWalls((5850, 1297, 64),(5705, 1150, 64));
+	spawncrate((5893, 1256, 75),(0, -45, 0), "com_plasticcase_friendly");
+	spawncrate((5754, 1105, 75),(0, -45, 0), "com_plasticcase_friendly");
+
+	CreateInvisWalls((5940, 1213, 110),(5795, 1060, 110));
+	CreateInvisWalls((5850, 1297, 110),(5705, 1150, 110));
+	spawncrate((5893, 1256, 120),(0, -45, 0), "com_plasticcase_friendly");
+	spawncrate((5754, 1105, 120),(0, -45, 0), "com_plasticcase_friendly");
 
 	CreateWalls((5020, -1142, 30),(4864, -980, 30));
 	CreateWalls((5659, -514, 30),(5049, -1125, 30));
@@ -7593,7 +8754,32 @@ overwatch_edit1(){
 	mp_global_intermission = getent( "mp_global_intermission", "classname" );
 	mp_global_intermission.origin = (-5102, 11875, 13365);
 	mp_global_intermission.angles = (-20, 42, 0);
-	moveac130position((-4652, 8304, 17376));
+	moveac130position((-4571, 6094, 20233));
+	
+	//NEW WB Block
+	spawncrate((-6627, 1315, 10394) , (0, 355, 0));
+	spawncrate((-6624, 1349, 10394) , (0, 355, 0));
+	spawncrate((-6809, 1331, 10394) , (0, 355, 0));
+	spawncrate((-6806, 1365, 10394) , (0, 355, 0));
+	spawncrate((-6877, 1337, 10394) , (0, 355, 0));
+	spawncrate((-6874, 1371, 10394) , (0, 355, 0));
+	spawncrate((-7057, 1354, 10394) , (0, 355, 0));
+	spawncrate((-7054, 1388, 10394) , (0, 355, 0));
+	spawncrate((-7045, 1465, 10394) , (0, 355, 0));
+	spawncrate((-7042, 1499, 10394) , (0, 355, 0));
+	
+	spawncrate((-4969, 1153, 10394) , (0, 355, 0));
+	spawncrate((-4966, 1187, 10394) , (0, 355, 0));
+	spawncrate((-5154, 1171, 10394) , (0, 355, 0));
+	spawncrate((-5151, 1205, 10394) , (0, 355, 0));
+    spawncrate((-5222, 1177, 10394) , (0, 355, 0));	
+    spawncrate((-5219, 1211, 10394) , (0, 355, 0));	
+	spawncrate((-5402, 1194, 10394) , (0, 355, 0));
+	spawncrate((-5399, 1228, 10394) , (0, 355, 0));
+	spawncrate((-5390, 1305, 10394) , (0, 355, 0));
+	spawncrate((-5387, 1339, 10394) , (0, 355, 0));
+	
+	spawncrate((-6431, 1936, 10296) , (0, 84, 0) , "com_plasticcase_friendly");
 	
 	//Side Wall
 	CreateWalls((-4712, 13671, 13390),(-5268, 13672, 13390));
@@ -7620,16 +8806,20 @@ overwatch_edit1(){
 	spawncrate((-6037, 2319, 10441), (0, 355, 0));
 	spawncrate((-6035, 2344, 10441), (0, 355, 0));
 	
+	spawncrate((-5920, 2306, 10371), (0, 355, 0));
+	spawncrate((-5918, 2331, 10371), (0, 355, 0));
 	
-	spawncrate((-5920, 2306, 10371), (0, 355, 0), "com_plasticcase_friendly");
-	spawncrate((-5918, 2331, 10371), (0, 355, 0), "com_plasticcase_friendly");
-	
-	spawncrate((-5902, 2492, 10371), (0, 355, 0), "com_plasticcase_friendly");
-	spawncrate((-5898, 2537, 10371), (0, 355, 0), "com_plasticcase_friendly");
-	spawncrate((-5894, 2582, 10371), (0, 355, 0), "com_plasticcase_friendly");
+	spawncrate((-5902, 2492, 10371), (0, 355, 0));
+	spawncrate((-5898, 2537, 10371), (0, 355, 0));
+	spawncrate((-5894, 2582, 10371), (0, 355, 0));
 	
 	spawncrate((-5876, 2742, 10371), (0, 355, 0));
 	spawncrate((-5874, 2765, 10371), (0, 355, 0));
+
+	CreateDeathRegion((-3822, 2025, 10333),(-3541, 2547, 10482));
+	CreateDeathRegion((-5478, 1163, 10349),(-4913, 1343, 10463));
+	CreateDeathRegion((-6108, 2262, 10333),(-5820, 2797, 10463));
+	CreateDeathRegion((-7137, 1322, 10349),(-6558, 1500, 10463));
 	
 	CreateInvisWalls((-6207, 3035, 10400),(-5638, 2979, 10400));
 	CreateWalls((-5536, 2487, 10293),(-5571, 2191, 10323));
@@ -7668,36 +8858,51 @@ overwatch_edit1(){
 }
 oasis_edit1(){
 	level.meat_playable_bounds = [
-		(-3868, -410, 399.625),
-		(-3861.12, 1004, 399.625),
-		(-4220.12, 1004, 399.625),
-		(-4220.12, 1243, 399.625),
-		(-3804.12, 1243, 399.625),
-		(-4223.12, 2448, 399.625),
-		(-2588.7, 2957, 399.625),
-		(2927.7, 2957, 399.625),
-		(2809, 802, 399.625),
-		(1979, 522, 399.625),
-		(2747, -102, 399.625),
-		(3127, 411, 399.625),
-		(3481, 150, 399.625),
-		(3963, 139, 399.625),
-		(3891, -645, 399.625),
-		(3082, -642, 399.625),
-		(366, -985, 399.625),
-		(-691, -985, 399.625),
-		(-836, -605, 399.625),
-		(-976, -605, 399.625),
-		(-1451, -569, 399.625),
-		(-1448, -894, 399.625),
-		(-2315, -894, 399.625),
-		(-2710.42, -522, 555),
-		(-3128, -358.723, 555),
-		(-3223.58, -433.89, 555),
-		(-3330.5, -472.408, 555),
-		(-3505.4, -490, 399.625)
+		(-3877.13, 1009.32, 443.117),
+		(-3614.96, 2244.4, 750.731),
+		(-3049.15, 1764.47, 1048.98),
+		(-2517.08, 1766.86, 812.26),
+		(-2121.75, 1982.26, 820.263),
+		(-1632.17, 1983.1, 820.263),
+		(-1630.48, 485.71, 800.068),
+		(-1371.88, 233.608, 800.068),
+		(-689.258, 235.157, 800.068),
+		(-695.946, -879.152, 870.662),
+		(-1400.66, -862.714, 747.261),
+		(-2513.62, -741.655, 685.678),
+		(-3111.57, -365.922, 312.121),
+		(-3291.83, -476.508, 421.602),
+		(-3478.61, -492.864, 421.602),
+		(-3866.58, -420.204, 421.602)
 	];
 	createPolygon();
+
+	spawncrate((3185, 1570, 220), (0, 90, -90),"com_plasticcase_friendly");
+	spawncrate((3185, 1510, 220), (0, 90, -90),"com_plasticcase_friendly");
+	spawncrate((3185, 1450, 220), (0, 90, -90),"com_plasticcase_friendly");
+	spawncrate((3185, 1570, 280), (0, 90, -90),"com_plasticcase_friendly");
+	spawncrate((3185, 1510, 280), (0, 90, -90),"com_plasticcase_friendly");
+	spawncrate((3185, 1450, 280), (0, 90, -90),"com_plasticcase_friendly");
+
+	spawncrate((3200, 1390, 280), (0, 0, 90),"com_plasticcase_friendly");
+	spawncrate((3260, 1390, 280), (0, 0, 90),"com_plasticcase_friendly");
+	spawncrate((3320, 1390, 280), (0, 0, 90),"com_plasticcase_friendly");
+
+	spawncrate((3200, 1615, 280), (0, -180, 90),"com_plasticcase_friendly");
+	spawncrate((3260, 1615, 280), (0, -180, 90),"com_plasticcase_friendly");
+	spawncrate((3320, 1615, 280), (0, -180, 90),"com_plasticcase_friendly");
+
+	spawncrate((3315, 1252, 220), (0, -180, 90),"com_plasticcase_friendly");
+	spawncrate((3315, 1252, 280), (0, -180, 90),"com_plasticcase_friendly");
+
+	Deathradius((2976, 1952, 39), 1000 , 80);
+	Deathradius((3330, 1070, 211), 180 , 300);
+	CreateDeathRegion((3360, 682, 146), (4020, 1978, 676));
+	Deathradius((3291, 1510, 188), 80 , 100);
+
+	CreateDeathRegion((-836, -771, 100),(-2544, -1300, 400));
+	CreateDeathRegion((-1396, -187, 100),(-2544, -759, 400));
+
 
 	//treestuckspot
 	spawncrate((-2454, 681, 252) , (90, 45, 0));
@@ -7792,31 +8997,35 @@ oasis_edit1(){
 			
 	CreateDeathRegion((2263, 284, 147), (2116, 536, 250));
 	CreateDeathRegion((-2099, 1450, 200), (-4363, 2764, 280));
+	CreateDeathRegion((-1752, 1572.68, 760), (-2104, 1931.8, 900));//NEW DB
 
 	//conector + flags
 	spawnmodel((3411, -321, 150), (0, 30, 0), "qad_fountain_lion");
-	spawnmodel((-2044, -195, 549), (0, 35, 0), "dub_lounge_sofa_02");
+	//spawnmodel((-2044, -195, 549), (0, 35, 0), "dub_lounge_sofa_02");
 			
-	spawncrate((-2030, -195, 590), (0, 135, 90));
-	spawncrate((-1980, -245, 590), (0, 135, 90));
+	//spawncrate((-2030, -195, 590), (0, 135, 90));
+	//spawncrate((-1980, -245, 590), (0, 135, 90));
 	fufalldamage((-1788, 217, 230),700, 700);
 
-	createTP((-1937, 1095, 277), (3034, 151, 161), (0, 315, 0),1,undefined);
-	createTP((1282, 204, 172), (3034, 151, 161), (0, 315, 0),1,undefined);
-	createTP((-1304, 549, 215), (3034, 151, 161), (0, 315, 0),1,undefined);
-	createTP((2298, 1025, 215), (3034, 151, 161), (0, 315, 0),1,undefined);
-	createTP((29, 1984.5, 340), (3034, 151, 161), (0, 315, 0),1,undefined);
-	createTP((19.5, 177, 215), (3034, 151, 161), (0, 315, 0),1,undefined);
-	createTP((3156, -393, 156), (-3839, -376.04, 159), (0, 45, 0),1,240,50);		
-	createTP((3604, -106, 156), (-3832, 558.04, 159), (0, 320, 0),1,240,50);
+	createTP((-1937, 1095, 277), (2622, 1343, 188), (0, 45, 0),1,undefined, undefined, undefined, undefined, true);
+	createTP((1282, 204, 172), (2622, 1343, 188), (0, 45, 0),1,undefined, undefined, undefined, undefined, true);
+	createTP((-1304, 549, 215), (2622, 1343, 188), (0, 45, 0),1,undefined, undefined, undefined, undefined, true);
+	createTP((2298, 1025, 215), (2622, 1343, 188), (0, 45, 0),1,undefined, undefined, undefined, undefined, true);
+	createTP((29, 1984.5, 340), (2622, 1343, 188), (0, 45, 0),1,undefined, undefined, undefined, undefined, true);
+	createTP((19.5, 177, 215), (2622, 1343, 188), (0, 45, 0),1,undefined, undefined, undefined, undefined, true);
+
+	createTP((2668, 1692, 188), (-3730.9, -398.556, 159), (0, 54, 0)); //right		
+	//createTP((3156, -393, 156), (-3839, -376.04, 159), (0, 45, 0),undefined,240,50); //original +no slow
+	createTP((3081, 1547, 188), (-3735.51, 603.04, 159), (0, 316, 0)); //left	
+	//createTP((3604, -106, 156), (-3832, 558.04, 159), (0, 320, 0),undefined,240,50); //original +no slow
 
 	createHiddenTP((-2056, -147, 715), (-2575, 1701.04, 690), (0, 225, 0), undefined,1);
-	createHiddenTP((-3113, 1706, 676), (-2624, 1167.04, 290), (0, 260, 0), undefined,1);
+	createHiddenTP((-3113, 1706, 676), (-1973, 1501, 612), (0, -90, 0), undefined,1);
 	createTP((-1751.88, 1826.62, 250), (-1509.43, 196.77, 733), (0, 180, 0),1,15,100,undefined,1);
 			
 	//spawncrate((-2092, 308, 450), (35, 225, 0));//invisible ledge
 	
-	CreateElevator((-2287, 154, 201.6),(-2182, 214, 201.6), 260, 1.5, (0,45,0));
+	CreateElevator((-2287, 154, 201.6),(-2182, 214, 201.6), 260, 1.4, (0,45,0));
 	//treeramp
 
 	spawnmodel((-2569, 737, 200) , (53, -45, 0) , "qad_tree_palm_tall_2");
@@ -7872,6 +9081,22 @@ oasis_edit1(){
 	CreateInvisWalls((-3243.7, 571.2, 185),(-3162.2, 479.1, 185));
 	CreateInvisWalls((-3357.7, 651.3, 185),(-3238.2, 566.9, 185));
 
+	CreateQuicksteps((-1945, 450, 597),104, 15, 2, (0, -90, 0));
+	CreateQuicksteps((-1527, -63, 585),92, 15, 2, (0, 180, 0));
+	CreateRamps((-1336, -600, 565),(-1017, -600, 665));
+
+	spawncrate((-982, -610, 681), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-982, -560, 681), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-982, -510, 681), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-982, -460, 681), (0, 90, 0),"com_plasticcase_friendly");
+
+	spawncrate((-1395, -300, 569), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-1395, -360, 569), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-1395, -420, 569), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-1395, -480, 569), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-1395, -540, 569), (0, 90, 0),"com_plasticcase_friendly");
+	spawncrate((-1395, -600, 569), (0, 90, 0),"com_plasticcase_friendly");
+
 	//ladders
 	CreateInvisQuicksteps((-2999.35, 87.83, 201), 70, 16, 2, (0,188,0));
 	spawnmodel((-3012.78, 53.7, 172) , (0, 188, 0) , "qad_latticegeo_01");
@@ -7895,6 +9120,10 @@ oasis_edit1(){
 	CreateInvisQuicksteps((-2260, 40, 526), 30, 16, 2, (0,45,0));
 	spawnmodel((-2246, 54, 520) , (0, -225, -89) , "pb_window_arch_03");
 	spawnmodel((-2248, 54, 537) , (0, -225, -89) , "pb_window_arch_03");
+	
+	spawnmodel((-2012, -137, 508) , (0, 132, 0), "dub_lounge_sofa_02");  //NEW SOFA
+	spawncrate((-2012, -141, 514) , (0, -48, 0));
+	spawncrate((-2039, -165, 532) , (0, -48, 0));
 	
 	spawnmodel((-3132, -806, 216) , (0, -40, 0) , "qad_pool_column_01");
 	spawnmodel((-3415, -593, 216) , (0, -40, 0) , "qad_pool_column_01");
@@ -7943,13 +9172,8 @@ oasis_edit1(){
 	spawncrate((-3862, 1026.5, 500), (0, 0, 90));
 
 	spawncrate((-2604, -155, 490), (0, 135, 0));
-
-//lion shit
-	spawncrate((3042, 485, 200), (90, 180, 0));
-	spawncrate((3333, -191, 190), (0, 30, 270));
-	spawncrate((3333, -191, 240), (0, 30, 270));
 			
-//pool floor
+	//pool floor
 	spawncrate((-3045, -96, 144), (0, 0, 0));
 	spawncrate((-3045, -46, 144), (0, 0, 0));
 	spawncrate((-3045, 14, 144), (0, 0, 0));
@@ -8137,200 +9361,6 @@ oasis_edit1(){
 	spawncrate((-3845, 614, 144), (0, 0, 0));
 }
 
-blackbox_edit1() {
-	/*
-check_map_models( (-750, -1250, 1800) );
-manually_add_check_map_model("727_coach_seat01"); //0
-manually_add_check_map_model("ac_prs_bld_debris_wood_a_4"); //30
-manually_add_check_map_model("afr_bg_boulder_07"); //31
-manually_add_check_map_model("ap_airbus_seat_1"); //33
-manually_add_check_map_model("ap_table01"); //44
-manually_add_check_map_model("ap_table_square01"); //45
-manually_add_check_map_model("arc_arched_doorway_03"); //46
-manually_add_check_map_model("bc_militarytent_wood_table"); //47
-manually_add_check_map_model("cargo_belt"); //58
-manually_add_check_map_model("comunication_wire_ground_a_1_lod0"); //65
-manually_add_check_map_model("comunication_wire_ground_e_1_lod0"); //66
-manually_add_check_map_model("com_airduct_circle_dull"); //67
-manually_add_check_map_model("com_barrel_corrosive_rust"); //68
-manually_add_check_map_model("com_barrel_white"); //71
-manually_add_check_map_model("com_bomb_objective"); //75
-manually_add_check_map_model("com_bomb_objective_d"); //76
-manually_add_check_map_model("com_french_bath_showerhead"); //100
-manually_add_check_map_model("com_laptop_2_open"); //104
-manually_add_check_map_model("com_pallet"); //110
-manually_add_check_map_model("com_pallet_2"); //111
-manually_add_check_map_model("com_pallet_destroyed"); //112
-manually_add_check_map_model("com_pipe_4x128_gas"); //114
-manually_add_check_map_model("com_pipe_4x64_gas"); //115
-manually_add_check_map_model("com_pipe_4_45angle_gas"); //116
-manually_add_check_map_model("com_pipe_4_45ess_gas"); //117
-manually_add_check_map_model("com_pipe_4_90angle_gas_harbor"); //118
-manually_add_check_map_model("com_pipe_4_coupling_gas"); //119
-manually_add_check_map_model("com_plasticcase_beige_big"); //121
-manually_add_check_map_model("com_plasticcase_beige_rifle"); //122
-manually_add_check_map_model("com_plasticcase_green_big_us_dirt"); //124
-manually_add_check_map_model("com_potted_plant_large"); //126
-manually_add_check_map_model("com_potted_plant_medium"); //127
-manually_add_check_map_model("com_potted_plant_small"); //128
-manually_add_check_map_model("com_roofvent3"); //132
-manually_add_check_map_model("com_scaffold_red"); //133
-manually_add_check_map_model("com_stepladder_closed"); //137
-manually_add_check_map_model("com_stove"); //138
-manually_add_check_map_model("com_teddy_bear_sitting"); //140
-manually_add_check_map_model("com_trafficcone02"); //151
-manually_add_check_map_model("com_trashbag"); //153
-manually_add_check_map_model("com_trashcan_metal_closed"); //158
-manually_add_check_map_model("com_water_heater"); //167
-manually_add_check_map_model("com_woodlog_24_96_a"); //170
-manually_add_check_map_model("com_woodlog_24_96_b"); //171
-manually_add_check_map_model("com_woodlog_24_96_c"); //172
-manually_add_check_map_model("com_woodlog_24_96_d"); //173
-manually_add_check_map_model("construction_hardhat"); //174
-manually_add_check_map_model("construction_porter_potty_green_nolodout"); //175
-manually_add_check_map_model("ctl_foliage_pacific_bushtree01"); //180
-manually_add_check_map_model("ctl_foliage_red_pine_med"); //181
-manually_add_check_map_model("ctl_foliage_tree_birch_yellow_1"); //182
-manually_add_check_map_model("diner_stool_02"); //183
-manually_add_check_map_model("dt_toilet_roll"); //186
-manually_add_check_map_model("dub_lantern_01"); //189
-manually_add_check_map_model("dub_lounge_pillow01"); //191
-manually_add_check_map_model("dub_lounge_pillow02"); //192
-manually_add_check_map_model("dub_restaurant_roundtable_01"); //194
-manually_add_check_map_model("foliage_ctl_fallen_burning_tree_1"); //196
-manually_add_check_map_model("foliage_ctl_fallen_tree_1"); //197
-manually_add_check_map_model("foliage_dub_palmtree_tall_01"); //198
-manually_add_check_map_model("foliage_pacific_fern01"); //199
-manually_add_check_map_model("foliage_pacific_flowers01"); //200
-manually_add_check_map_model("foliage_pacific_flowers06"); //201
-manually_add_check_map_model("foliage_prk_hedge_green"); //202
-manually_add_check_map_model("foliage_prk_tree_pine_animated"); //203
-manually_add_check_map_model("foliage_tree_green_pine_lg_d"); //204
-manually_add_check_map_model("foliage_tree_grn_pine_lg_vanim"); //205
-manually_add_check_map_model("foliage_tree_oak_1_destroyed_branch1"); //206
-manually_add_check_map_model("furniture_bed1"); //219
-manually_add_check_map_model("furniture_bed3"); //220
-manually_add_check_map_model("furniture_bedcovers_set_a_dusty"); //221
-manually_add_check_map_model("furniture_bedcovers_set_b_dusty"); //222
-manually_add_check_map_model("furniture_chair4_dusty"); //223
-manually_add_check_map_model("furniture_couch2_dusty"); //224
-manually_add_check_map_model("furniture_desk_modern"); //225
-manually_add_check_map_model("furniture_drawer_dresser2"); //226
-manually_add_check_map_model("furniture_grill_big_gas"); //227
-manually_add_check_map_model("furniture_lamp_floor1_off"); //228
-manually_add_check_map_model("furniture_lamp_table1_off"); //229
-manually_add_check_map_model("furniture_lawn_chair_1_fold"); //230
-manually_add_check_map_model("furniture_lawn_chair_2_fold"); //231
-manually_add_check_map_model("furniture_patio_table"); //232
-manually_add_check_map_model("furniture_pool_table_dirty"); //233
-manually_add_check_map_model("furniture_sink_bathroom"); //234
-manually_add_check_map_model("furniture_table_nightstand"); //235
-manually_add_check_map_model("hanging_wire_01"); //284
-manually_add_check_map_model("hanging_wire_02"); //285
-manually_add_check_map_model("hanging_wire_04"); //286
-manually_add_check_map_model("hat_price_africa"); //287
-manually_add_check_map_model("hjk_crash_airplane_cabinet_door_lrg"); //305
-manually_add_check_map_model("hjk_crash_airplane_cabinet_door_med"); //306
-manually_add_check_map_model("hjk_crash_airplane_cabinet_door_sml"); //307
-manually_add_check_map_model("hjk_crash_airplane__drawer"); //308
-manually_add_check_map_model("hjk_jump_seat"); //311
-manually_add_check_map_model("hjk_plane_window_02b"); //321
-manually_add_check_map_model("hjk_plane_window_02b_dmg"); //322
-manually_add_check_map_model("hjk_tarp_3"); //324
-manually_add_check_map_model("hjk_turbine_engine_destroyed"); //325
-manually_add_check_map_model("intro_log_pile_01"); //330
-manually_add_check_map_model("intro_props_logs_dyn_04"); //331
-manually_add_check_map_model("intro_wicker_chair"); //333
-manually_add_check_map_model("machinery_baggage_container"); //344
-manually_add_check_map_model("machinery_baggage_container_blue"); //345
-manually_add_check_map_model("machinery_baggage_container_white"); //346
-manually_add_check_map_model("machinery_hose02"); //347
-manually_add_check_map_model("machinery_oxygen_tank01"); //348
-manually_add_check_map_model("ma_entertaiment_center_01"); //361
-manually_add_check_map_model("ma_flatscreen_tv_wallmount_02"); //362
-manually_add_check_map_model("ma_flatscreen_tv_wallmount_broken_02"); //363
-manually_add_check_map_model("ma_industrial_fridge_1"); //364
-manually_add_check_map_model("ma_patio_heater_on"); //367
-manually_add_check_map_model("ma_restaurant_chair"); //368
-manually_add_check_map_model("ma_vase_with_roses"); //371
-manually_add_check_map_model("md_airplane_door_frame"); //372
-manually_add_check_map_model("md_boulder_01"); //373
-manually_add_check_map_model("md_building_damage_generic_01"); //376
-manually_add_check_map_model("md_busted_wall_01"); //377
-manually_add_check_map_model("md_busted_wall_02"); //378
-manually_add_check_map_model("md_cargo_belts"); //379
-manually_add_check_map_model("md_couch01"); //380
-manually_add_check_map_model("md_crashed_plane_engine_explosion"); //383
-manually_add_check_map_model("md_dest_01"); //384
-manually_add_check_map_model("md_dest_02"); //385
-manually_add_check_map_model("md_dest_03"); //386
-manually_add_check_map_model("md_dest_03a"); //387
-manually_add_check_map_model("md_dest_03b"); //388
-manually_add_check_map_model("md_dest_04"); //389
-manually_add_check_map_model("md_detail_railing_2x4"); //391
-manually_add_check_map_model("md_dmg_rightwing_01"); //394
-manually_add_check_map_model("md_dmg_rightwing_04"); //395
-manually_add_check_map_model("md_fancy_toilet_01"); //396
-manually_add_check_map_model("md_foliage_dub_palmtree_bushy_03"); //397
-manually_add_check_map_model("md_foliage_dub_palmtree_med_01_animated"); //398
-manually_add_check_map_model("md_foliage_dub_palmtree_med_01_animated"); //398
-manually_add_check_map_model("md_foliage_pacific_bushtree01"); //401
-manually_add_check_map_model("md_foliage_red_pine_med"); //402
-manually_add_check_map_model("md_foliage_tree_oak_3_burnt"); //403
-manually_add_check_map_model("md_foliage_tree_pine_tall_c_broken_btm"); //404
-manually_add_check_map_model("md_furniture_table_coffee4"); //405
-manually_add_check_map_model("md_insulation_bent"); //408
-manually_add_check_map_model("md_insulation_straight"); //409
-manually_add_check_map_model("md_iron_gate"); //410
-manually_add_check_map_model("md_machinery_baggage_container_dmg"); //416
-manually_add_check_map_model("md_pallet_buckets"); //417
-manually_add_check_map_model("md_plane_window"); //419
-manually_add_check_map_model("md_powerpole1"); //420
-manually_add_check_map_model("md_rebar_column_01"); //421
-manually_add_check_map_model("md_round_light_01"); //422
-manually_add_check_map_model("md_rubble_03"); //425
-manually_add_check_map_model("md_sod_roll_01"); //431
-manually_add_check_map_model("md_tarp_4"); //433
-manually_add_check_map_model("md_turbine_engine_destroyed"); //437
-manually_add_check_map_model("md_vehicle_semi_truck_trailer"); //438
-manually_add_check_map_model("md_venetian_blind_dark_128x96_half"); //439
-manually_add_check_map_model("md_venetian_blind_dark_bent_128x96"); //440
-manually_add_check_map_model("md_vista_bldg_01"); //442
-manually_add_check_map_model("md_vista_bldg_02"); //443
-manually_add_check_map_model("md_wall_cover_long"); //446
-manually_add_check_map_model("md_wall_cover_tall"); //447
-manually_add_check_map_model("md_wood_stack_01"); //448
-manually_add_check_map_model("metal_hanging_strips_sml_01"); //449
-manually_add_check_map_model("me_construction_dumpster_close"); //450
-manually_add_check_map_model("me_lightfluohang_on"); //470
-manually_add_check_map_model("me_plastic_crate1"); //476
-manually_add_check_map_model("me_plastic_crate2"); //477
-manually_add_check_map_model("mil_ammo_case_2"); //479
-manually_add_check_map_model("ny_harbor_pier_rebar_01"); //509
-manually_add_check_map_model("ny_harbor_slava_cruiser"); //510
-manually_add_check_map_model("ny_manhattan_building_antenna_01"); //511
-manually_add_check_map_model("ny_manhattan_building_antenna_07"); //512
-manually_add_check_map_model("ow_vista_car_02"); //514
-manually_add_check_map_model("ow_vis_ship_01"); //515
-manually_add_check_map_model("paris_debris_burnt_wood_panels_01"); //518
-manually_add_check_map_model("paris_debris_burnt_wood_panels_02"); //519
-manually_add_check_map_model("paris_debris_burnt_wood_panels_07"); //520
-manually_add_check_map_model("payback_foliage_tree_palm_bushy_3"); //526
-manually_add_check_map_model("pb_pallet_bags"); //528
-manually_add_check_map_model("pb_pallet_boxes"); //529
-manually_add_check_map_model("pb_table_wall_02"); //533
-manually_add_check_map_model("pictureframe_painting_large_black_01"); //534
-manually_add_check_map_model("prk_boulder_01"); //545
-manually_add_check_map_model("prk_vista_tree_card_01b_noshadow"); //546
-manually_add_check_map_model("street_manhole_01"); //557
-manually_add_check_map_model("venetian_blind_dark_bent_128x96"); //607
-manually_add_check_map_model("venetian_blind_dark_bent_64x96"); //608
-manually_add_check_map_model("venetian_blind_dark_open_128x96"); //609
-manually_add_check_map_model("wine_barrel_59gal"); //614
-manually_add_check_map_model("wood_plank1"); //615
-*/
-}
-
 showdown_edit1() {
 	
 	level.meat_playable_bounds = [
@@ -8344,7 +9374,7 @@ showdown_edit1() {
 	mp_global_intermission.origin = (90, -2693, 982);
 	mp_global_intermission.angles = (12, 31, 3);
 
-	CreateDoors((436, -2241, 450) /*open*/, (436, -2241, 365) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 1 /*height*/, 30 /*hp*/, 50 /*range*/);
+	CreateDoors((436, -2241, 450) /*open*/, (436, -2241, 365) /*close*/, (90,0,0) /*angle*/, 3 /*size*/, 1 /*height*/, 40 /*hp*/, 50 /*range*/);
 	CreateDoors((-66, -2950, 340) /*open*/, (-66, -2950, 415) /*close*/, (90,0,0) /*angle*/, 4 /*size*/, 1 /*height*/, 20 /*hp*/, 60 /*range*/, 0 /*sideways*/);
 
 
@@ -8376,11 +9406,25 @@ showdown_edit1() {
 	spawncrate((1100, -2555, 410), (0, -90, 0));
 	spawncrate((1100, -2510, 290), (0, -90, 0));
 	spawncrate((1100, -2510, 350), (0, -90, 0));
-	CreateinvisWalls((970, -2450, 350),(970, -2230, 350));
-	CreateinvisWalls((970, -2450, 300),(970, -2230, 300));
-	CreateinvisWalls((1060, -2465, 350),(970, -2465, 350));
-	CreateinvisWalls((1060, -2465, 300),(970, -2465, 300));
-	CreateinvisWalls((1060, -2465, 240),(970, -2465, 240));
+	spawncrate((1100, -2510, 410), (0, -90, 0));
+
+	for(i = 0;i < 5;i++)
+	spawncrate((970, -2230, 490) + (0,-60* i,0), (90, 0, 90));
+	for(i = 0;i < 5;i++)
+	spawncrate((970, -2230, 420) + (0,-60* i,0), (90, 0, 90)); 
+	for(i = 0;i < 5;i++)
+	spawncrate((970, -2230, 350) + (0,-60* i,0), (90, 0, 90));
+	
+	
+	for(i = 0;i < 3;i++)
+	spawncrate((970, -2350, 290) + (0,-60* i,0), (90, 0, 90)); 
+	
+	for(i = 0;i < 2;i++)
+	spawncrate((1030, -2470, 290) + (60* i,0,0), (90, 0, 90)); 
+	for(i = 0;i < 2;i++)
+	spawncrate((1030, -2470, 350) + (60* i,0,0), (90, 0, 90)); 
+	for(i = 0;i < 2;i++)
+	spawncrate((1030, -2470, 420) + (60* i,0,0), (90, 0, 90)); 
 
 	spawncrate((816, -2361, 390), (0, -90, 0));
 	spawncrate((816, -2410, 390), (0, -90, 0));
@@ -8665,7 +9709,7 @@ showdown_edit1() {
 	spawnmodel((145, -4547, 436) , (0, 40, 0) , "vehicle_bulldozer");
 	spawnmodel((177, -4396, 469) , (90, -60, -190) , "me_statue");
 	spawnmodel((-62, -2745, 634) , (0, 0, 0) , "me_statue");
-	spawnmodel((366, -2595, -88) , (0, 0, 0) , "me_mosque_tower02");
+	//spawnmodel((366, -2595, -88) , (0, 0, 0) , "me_mosque_tower02");
 	spawnmodel((592, -2541, 20) , (0, 0, 0) , "foliage_tree_palm_bushy_1_static");
 	spawnmodel((-319, -2426, 0) , (0, 0, 0) , "foliage_tree_palm_med_1");
 
@@ -8691,151 +9735,17 @@ showdown_edit1() {
 	CreateDeathRegion((-1674, -2008, 167), (2191, -4910, -460));
 	CreateDeathRegion((-832, -2008, 167), (-1589, -1470, -460));
 	CreateDeathRegion((-522, -2463, -6), (-828, -2974, 546));
+	CreateDeathRegion((-29, -3079, 246), (-478, -3397, 305));
 }
-
-killhouse_edit1() {
-	/*
-	check_map_models( (-746, -2081, 933) );
-	manually_add_check_map_model("bc_cot"); //3
-manually_add_check_map_model("bc_militarytent_wood_table"); //4
-manually_add_check_map_model("bc_stretcher"); //7
-manually_add_check_map_model("bc_target_dummy_base"); //8
-manually_add_check_map_model("ch_bedframemetal_dark"); //10
-manually_add_check_map_model("ch_crate48x64"); //11
-manually_add_check_map_model("ch_fence_plank1_64"); //12
-manually_add_check_map_model("ch_fence_plank3_64"); //13
-manually_add_check_map_model("ch_furniture_couch01"); //14
-manually_add_check_map_model("ch_post_fence_128"); //18
-manually_add_check_map_model("ch_radiator01"); //19
-manually_add_check_map_model("ch_road_post"); //20
-manually_add_check_map_model("ch_snack_machine_big_russia"); //21
-manually_add_check_map_model("ch_snack_machine_small_russia"); //22
-manually_add_check_map_model("ch_wooden_fence_post_03"); //24
-// manually_add_check_map_model("codo_brazil_nut_tree"); //25
-manually_add_check_map_model("com_airduct_150x_square"); //26
-manually_add_check_map_model("com_airduct_150x_s_90"); //27
-manually_add_check_map_model("com_airduct_150x_s_short"); //28
-manually_add_check_map_model("com_airduct_c_90"); //29
-manually_add_check_map_model("com_airduct_square"); //30
-manually_add_check_map_model("com_airduct_s_90"); //31
-manually_add_check_map_model("com_barrel_biohazard_rust"); //34
-manually_add_check_map_model("com_barrel_black"); //35
-manually_add_check_map_model("com_barrel_blue_rust"); //36
-manually_add_check_map_model("com_barrel_corrosive_rust"); //37
-manually_add_check_map_model("com_barrel_green_dirt"); //38
-manually_add_check_map_model("com_barrel_white"); //39
-manually_add_check_map_model("com_basketball_goal_ripped"); //40
-manually_add_check_map_model("com_bike"); //41
-manually_add_check_map_model("com_bike_destroyed"); //42
-manually_add_check_map_model("com_cardboardbox01"); //45
-manually_add_check_map_model("com_cardboardbox04"); //46
-manually_add_check_map_model("com_cardboardboxshortclosed_1"); //47
-manually_add_check_map_model("com_chalkboard"); //48
-manually_add_check_map_model("com_clipboard_wpaper"); //49
-manually_add_check_map_model("com_coffee_machine"); //50
-manually_add_check_map_model("com_crate01"); //52
-manually_add_check_map_model("com_drop_rope"); //54
-manually_add_check_map_model("com_drop_rope_obj"); //55
-manually_add_check_map_model("com_ex_airconditioner"); //58
-manually_add_check_map_model("com_ex_airconditioner_dam"); //59
-manually_add_check_map_model("com_fire_extinguisher"); //62
-manually_add_check_map_model("com_floodlight_on"); //64
-manually_add_check_map_model("com_folding_chair"); //65
-manually_add_check_map_model("com_folding_table"); //66
-manually_add_check_map_model("com_locker_double"); //72
-manually_add_check_map_model("com_locker_single"); //73
-manually_add_check_map_model("com_mannequin1"); //74
-manually_add_check_map_model("com_mannequin3"); //75
-manually_add_check_map_model("com_pallet"); //81
-manually_add_check_map_model("com_pallet_2"); //82
-manually_add_check_map_model("com_pallet_stack"); //83
-manually_add_check_map_model("com_plasticcase_beige_big"); //85
-manually_add_check_map_model("com_plasticcase_beige_rifle"); //86
-manually_add_check_map_model("com_plasticcase_green_big"); //87
-manually_add_check_map_model("com_plasticcase_green_rifle"); //88
-manually_add_check_map_model("com_plasticcase_rifle"); //89
-manually_add_check_map_model("com_powerpole1"); //91
-manually_add_check_map_model("com_restaurantchair_2"); //96
-manually_add_check_map_model("com_restaurantsink_2comps"); //97
-manually_add_check_map_model("com_restaurantstainlessteelshelf_02"); //98
-manually_add_check_map_model("com_roofvent2_animated"); //100
-manually_add_check_map_model("com_spotlightvehicle_light_off"); //102
-manually_add_check_map_model("com_steel_ladder"); //103
-manually_add_check_map_model("com_steel_ladder_top"); //104
-manually_add_check_map_model("com_trashcan_metal_with_trash"); //109
-manually_add_check_map_model("com_tv1"); //111
-manually_add_check_map_model("com_tv1_testpattern"); //112
-manually_add_check_map_model("com_wall_fan"); //116
-manually_add_check_map_model("com_wheelbarrow"); //117
-manually_add_check_map_model("com_woodlog_16_192_a"); //118
-manually_add_check_map_model("com_woodlog_16_192_b"); //119
-manually_add_check_map_model("com_woodlog_16_192_c"); //120
-manually_add_check_map_model("com_woodlog_16_192_d"); //121
-manually_add_check_map_model("com_woodlog_24_192_a"); //122
-manually_add_check_map_model("com_woodlog_24_192_b"); //123
-manually_add_check_map_model("com_woodlog_24_192_c"); //124
-manually_add_check_map_model("com_woodlog_24_96_a"); //125
-manually_add_check_map_model("com_woodlog_24_96_b"); //126
-manually_add_check_map_model("com_woodlog_24_96_c"); //127
-manually_add_check_map_model("com_woodlog_24_96_d"); //128
-manually_add_check_map_model("foliage_banyan_sm"); //135
-manually_add_check_map_model("foliage_bush_big"); //136
-// manually_add_check_map_model("foliage_dead_pine_lg"); //137
-manually_add_check_map_model("foliage_grass_flowerplants_squareclump"); //138
-manually_add_check_map_model("foliage_grass_squareclump"); //139
-manually_add_check_map_model("foliage_grass_triangularclump"); //140
-// manually_add_check_map_model("foliage_red_pine_lg"); //145
-// manually_add_check_map_model("foliage_red_pine_med"); //146
-// manually_add_check_map_model("foliage_red_pine_sm"); //147
-// manually_add_check_map_model("foliage_red_pine_xl"); //148
-// manually_add_check_map_model("foliage_red_pine_xxl"); //149
-// manually_add_check_map_model("foliage_tree_destroyed_stump_b"); //150
-// manually_add_check_map_model("foliage_tree_grey_oak_lg_a"); //151
-// manually_add_check_map_model("foliage_tree_grey_oak_med_a"); //152
-manually_add_check_map_model("gulag_wires2"); //157
-// manually_add_check_map_model("jeepride_treefacade_lg_grp_01"); //159
-manually_add_check_map_model("me_ac_big"); //160
-manually_add_check_map_model("me_antenna"); //161
-manually_add_check_map_model("me_chainlink_fence_pole"); //170
-manually_add_check_map_model("me_chainlink_fence_pole2"); //171
-manually_add_check_map_model("me_corrugated_metal4x8"); //174
-manually_add_check_map_model("me_corrugated_metal8x8"); //175
-manually_add_check_map_model("me_dumpster"); //176
-manually_add_check_map_model("me_dumpster_close"); //177
-manually_add_check_map_model("me_electricbox2"); //179
-manually_add_check_map_model("me_electricbox4"); //181
-manually_add_check_map_model("me_woodcrateopen"); //190
-manually_add_check_map_model("mil_barbedwire2"); //194
-manually_add_check_map_model("mil_bunker_bed2"); //195
-manually_add_check_map_model("mil_razorwire_long_static"); //196
-manually_add_check_map_model("mil_razorwire_mid_static"); //197
-manually_add_check_map_model("mil_sandbag_desert_corner"); //198
-manually_add_check_map_model("mil_sandbag_desert_end_left"); //199
-manually_add_check_map_model("mil_sandbag_desert_end_right"); //200
-manually_add_check_map_model("mil_sandbag_desert_short"); //201
-manually_add_check_map_model("pipes_metal01"); //204
-manually_add_check_map_model("prop_flag_brit"); //210
-manually_add_check_map_model("prop_mortar"); //218
-manually_add_check_map_model("tvs_table_1"); //221
-manually_add_check_map_model("vehicle_blackhawk_static"); //224
-manually_add_check_map_model("vehicle_bm21_mobile_bed_static"); //225
-manually_add_check_map_model("vehicle_bm21_mobile_cover_static"); //226
-manually_add_check_map_model("vehicle_bulldozer"); //227
-manually_add_check_map_model("vehicle_delivery_truck"); //229
-manually_add_check_map_model("vehicle_hummer_static"); //230
-manually_add_check_map_model("vehicle_humvee_camo_static"); //231
-manually_add_check_map_model("vehicle_mack_truck_long"); //232
-manually_add_check_map_model("vehicle_pickup_4door_static"); //233
-manually_add_check_map_model("vehicle_semi_truck_cargo"); //234
-manually_add_check_map_model("vehicle_semi_truck_trailer"); //235
-manually_add_check_map_model("vehicle_uaz_van"); //236
-manually_add_check_map_model("wire_pipe"); //270
-*/
-}
-
 
 rust_edit1() {
 	CreateTP((1752, 1659, -129),(715, 992, 268), ( 0 , 135 , 0 ));
+
+	//spawnkill block rocks
+	spawnmodel((61, 1745, -240) , (0, 0, 0) , "afch_bigrock_01");
+	spawnmodel((-36, 1625, -124) , (0, 30, 0) , "afch_bigrock_01");
+	spawnmodel((27, 1468, -130) , (0, 162, 0) , "afch_bigrock_01");
+	spawnmodel((140, 1580, -185) , (0, 272, -60) , "afch_bigrock_01");
 	
 	//added shit(not clippy)
 	createHiddenTP((766.7, 788, 180), (1626, -210.7, -200), ((0, 135, 0)), undefined,1, 10);
@@ -8863,6 +9773,9 @@ rust_edit1() {
 	add_spawn_point((-272, 1789, -243),(0, 180, 0));
 	add_spawn_point((-318, 1715, -234),(0, 180, 0));
 	add_spawn_point((-320, 1783, -244),(0, -142, 0));
+
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "axis", "mp_tdm_spawn");
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "allies", "mp_tdm_spawn");
 	
 
 	spawnmodel((182, 1321, -234) , (0, -255, -10) , "vehicle_ch46e_damaged_front_piece");
@@ -9172,6 +10085,210 @@ rust_edit1() {
 	CreateDeathRegion((1134, 463, -500), (926, 686, 60));
 }
 
+DerRiese_edit1() {
+
+	CreateDeathRegion((-195, 400, 180),(74, 700, 350));
+	moveac130position((334, -1557, 0));
+	for(i = 0;i < 2;i++)
+	spawncrate((-82, 475, 153)+(60* i, 0, 0) , (-90, 0, 0)); //pap blocker
+	for(i = 0;i < 2;i++)
+	spawncrate((-45, -2267, 104)+(0, -80* i, 0) , (0, -90, 0));
+	CreateDoors((500, -1999, 130) /*open*/,(262, -1999, 130) /*close*/, (90,90,0) /*angle*/, 4 /*size*/, 2 /*height*/, 35 /*hp*/, 90 /*range*/, 1 /*sideways*/);
+	CreateDoors((-67, -2230, 175) /*open*/,(-67, -2091, 175) /*close*/, (90,0,0) /*angle*/, 2 /*size*/, 2 /*height*/, 25 /*hp*/, 50 /*range*/, 1 /*sideways*/);
+	spawncrate((377, -2380, 153) , (0, 0, -84) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((154, -2382, 109)+(-55* i, 0, 0) , (0, 0, -90) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((154, -2382, 148)+(-55* i, 0, 0) , (0, 0, -90) , "com_plasticcase_friendly");
+	for(i = 0;i < 2;i++)
+	spawncrate((154, -2382, 178)+(-55* i, 0, 0) , (0, 0, -90) , "com_plasticcase_friendly");
+	createhiddenTP((-145, -3096.6, 193), (-408, -2269, 156), (0,45,0), undefined,undefined,20,120);
+	
+	createTP((630, 178, 60), (508, -814, 70), (0,300,0), 1, undefined);
+	createTP((-588, -81, 63), (21.8, -969.9, 70), (0,334,0), 1, undefined);
+ }
+
+ firingrange_edit1() {
+
+	mp_global_intermission = getentarray( "mp_global_intermission", "classname" );
+	mp_global_intermission[0].origin = (-2, -84, -70);
+	mp_global_intermission[0].angles = (0, 0, 0);
+	mp_global_intermission[1].origin = (913, 1124, 21);
+	mp_global_intermission[1].angles = (0, 150, 0);
+
+	disable_spawn_array = []; 
+	disable_spawn_array[disable_spawn_array.size] = (1972, 1860, -43.2992);
+	disable_spawn_array[disable_spawn_array.size] = (-1080, 1710, -56.8623);
+	disable_spawn_array[disable_spawn_array.size] = (1093, 919, -51.875);
+	disable_spawn_array[disable_spawn_array.size] = (1224, 1196, -54.0587);
+	disable_spawn_array[disable_spawn_array.size] = (-1234, 727, -52.7257);
+	disable_spawn_array[disable_spawn_array.size] = (-1241, 1301, -58.0489);
+	disable_spawn_array[disable_spawn_array.size] = (1277, 332, -127.774);
+	disable_spawn_array[disable_spawn_array.size] = (-1312, 1086, -58.8451);
+	disable_spawn_array[disable_spawn_array.size] = (1713, 2539, -45.2866);
+	disable_spawn_array[disable_spawn_array.size] = (1933, 2316, -43.875);
+	disable_spawn_array[disable_spawn_array.size] = (-300, 1980, -7.875);
+	disable_spawn_array[disable_spawn_array.size] = (-300, 974, -48.298);
+	disable_spawn_array[disable_spawn_array.size] = (315.5, -513, -123.875);
+	disable_spawn_array[disable_spawn_array.size] = (-355, -328, -123.875);
+	disable_spawn_array[disable_spawn_array.size] = (-44, -387, -123.875);
+	disable_spawn_array[disable_spawn_array.size] = (45, 867, -56.2681);
+	disable_spawn_array[disable_spawn_array.size] = (716.3, 2665.8, -55.875);
+	disable_spawn_array[disable_spawn_array.size] = (-742, -459, -127.875);
+	disable_spawn_array[disable_spawn_array.size] = (872, 996, -43.875);
+	disable_spawn_array[disable_spawn_array.size] = (968, 702, -39.7151);
+	disable_spawn_array[disable_spawn_array.size] = (-99.6, 2638.4, -51.875);
+	disable_spawn_point(disable_spawn_array);
+	add_spawn_point((-668, -616, -126),(0, -3, 0));
+	add_spawn_point((-668, -723, -126),(0, -2, 0));
+	add_spawn_point((-668, -834, -126),(0, -2, 0));
+	add_spawn_point((-577, -854, -126),(0, 85, 0));
+	add_spawn_point((-579, -593, -126),(0, -87, 0));
+	add_spawn_point((103, -883, -126),(0, 139, 0));
+	add_spawn_point((153, -811, -126),(0, 158, 0));
+	add_spawn_point((283, -391, -126),(0, -130, 0));
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "axis", "mp_tdm_spawn");
+	maps\mp\gametypes\_spawnlogic::addSpawnPoints( "allies", "mp_tdm_spawn");
+
+	// Spawn room
+	CreateInvisWalls((-393, -65, -110),(-393, 35, -50));
+	spawnmodel((-411, 2, -80) , (0, -90, 0) , "p_glo_corrugated_metal4");
+	spawnmodel((-410, -36, -80) , (0, -90, 0) , "p_glo_corrugated_metal4");
+
+	CreateInvisWalls((-130, -419, -100),(-20, -419, -50));
+	spawnmodel((-99, -435, -66) , (0, 0, 0) , "p_glo_corrugated_metal4");
+	spawnmodel((-47, -436, -66) , (0, 0, 0) , "p_glo_corrugated_metal4");
+
+	CreateInvisWalls((295, -269, -115),(458, -269, -115));
+	CreateInvisWalls((295, -269, -55),(458, -269, -55));
+	CreateInvisWalls((295, -269, 5),(458, -269, 5));
+	CreateInvisWalls((295, -269, 65),(458, -269, 65));
+	spawnmodel((366, -257, -130) , (0, 90, 0) , "p_jun_storage_crate");
+	spawnmodel((366, -257, -61) , (0, 90, 0) , "p_jun_storage_crate");
+	spawnmodel((448, -289, -57) , (0, 0, 0) , "p_glo_corrugated_metal_002");
+
+	CreateDoors((-1039, 1197, 90),(-1039, 1197, -35),(90, -110, 0), 1, 2, 20, 140, true); //First door
+		
+	// Second room
+	spawncrate((-533, 843, -12) , (90, 0, 0));
+	spawnmodel((-549, 844, -2) , (0, -90, 0) , "p_glo_corrugated_metal4");
+
+	CreateInvisWalls((-500, 960, -35),(-500, 1285, -35));
+	CreateInvisWalls((-500, 960, 25),(-500, 1285, 25));
+	CreateInvisWalls((-500, 960, 85),(-500, 1285, 85));
+	CreateInvisWalls((-500, 960, 145),(-500, 1285, 145));
+	CreateInvisWalls((-500, 960, 205),(-500, 1285, 205));
+	spawnmodel((-485, 1033, -66) , (0, 0, 0) , "p_jun_storage_crate");
+	spawnmodel((-486, 1204, -66) , (0, 0, 0) , "p_jun_storage_crate");
+	spawnmodel((-487, 1033, 4) , (0, 0, 0) , "p_jun_storage_crate");
+	spawnmodel((-485, 1204, 3) , (0, 0, 0) , "p_jun_storage_crate");
+
+	CreateInvisWalls((-531, 1245, -35),(-862, 1245, -35));
+	CreateInvisWalls((-531, 1245, 25),(-862, 1245, 25));
+	CreateInvisWalls((-531, 1245, 85),(-862, 1245, 85));
+	CreateInvisWalls((-531, 1245, 145),(-862, 1245, 145));
+	CreateInvisGrids((-531, 1275, -35),(-862, 1275, -35), (0,0,0));
+	CreateInvisGrids((-531, 1310, -50),(-800, 1310, -50), (0,0,-25));
+	spawnmodel((-611, 1330, -38) , (30, 90, 90) , "p_glo_corrugated_metal_003_firingrange");
+	spawnmodel((-784, 1327, -38) , (30, 90, 90) , "p_glo_corrugated_metal_003_firingrange");
+	spawnmodel((-606, 1256, -92) , (0, 90, 0) , "p_jun_storage_crate");
+	spawnmodel((-785, 1256, -92) , (0, 90, 0) , "p_jun_storage_crate");
+	spawnmodel((-562, 1248, -14) , (0, -90, 0) , "p_dest_concrete_barrier03_static");
+	spawnmodel((-654, 1248, -14) , (0, -90, 0) , "p_dest_concrete_barrier03_static");
+	spawnmodel((-746, 1248, -14) , (0, -90, 0) , "p_dest_concrete_barrier03_static");
+	spawnmodel((-838, 1248, -14) , (0, -90, 0) , "p_dest_concrete_barrier03_static");
+	
+	// Bunker
+	spawncrate((-878, 1972, -20) , (0, -20, 0));
+	spawncrate((-878, 1972, 15) , (0, -20, 0));
+	spawnmodel((-899, 1976, -56) , (0, 0, 0) , "mp_firingrange_tire_wall");
+	spawnmodel((-864, 1963, -56) , (0, -180, 0) , "mp_firingrange_tire_wall");
+	spawnmodel((-775, 1623, 15) , (0, 0, 0) , "p_glo_emergency_light");
+	spawnmodel((-818, 1506, 11) , (0, 0, 0) , "p_glo_emergency_light");
+
+	CreateInvisWalls((-460, 1575, -35),(-335, 1720, -35));
+	CreateInvisWalls((-460, 1575, 25),(-335, 1720, 25));	
+	CreateInvisWalls((-460, 1575, 85),(-335, 1720, 85));
+	CreateInvisWalls((-460, 1575, 145),(-335, 1720, 145));
+	spawnmodel((-393, 1621, -52) , (0, -135, 0) , "t5_veh_ultimate_jeep_d");
+
+	// Caravan Blocker
+	spawncrate((-154, 2061, 37) , (90, 111, 0));
+	spawnmodel((-149, 2048, -8) , (0, 21, 0) , "p_dest_metal_locker01_base");
+
+	CreateDoors((1041, 2455, 75),(1041, 2455, -15),(90, 173, 0), 4, 2, 20, 140, true); //Second door
+
+	// Third Room
+	spawncrate((1375, 2470, -41) , (0, 90, 0));
+	spawncrate((1375, 2516, -41) , (0, 90, 0));
+	spawnmodel((1382, 2481, -34) , (0, 90, 0) , "p_jun_us_ammo_crate");
+
+	spawncrate((1759, 2488, -4) , (90, 180, 0));
+	spawnmodel((1744, 2518, 7) , (-90, 0, 0) , "p_rus_basement_door");
+
+	spawncrate((1865, 1927, -4) , (90, -90, 0));
+	spawnmodel((1865, 1960, -30) , (0, 0, 85) , "p_glo_table_bunker");
+	spawnmodel((1865, 1963, 2) , (0, 0, 85) , "p_glo_table_bunker");
+
+	// Crows Nest
+	spawncrate((1300, 1577, -10) , (90, 60, 0));
+	spawnmodel((1312, 1591, -5) , (0, -30, 0) , "p_glo_corrugated_metal4");
+	CreateInvisGrids((1221, 1536, 79),(1125, 1600, 79), (0,-30,0));
+	spawnmodel((1192, 1488, 97) , (0, -30, 0) , "p_jun_sandbag_roof");
+	spawncrate((1194, 1299, 133) , (90, 60, 0));
+	spawnmodel((1184, 1282, 128) , (0, -30, -90) , "p_glo_table_bunker");
+	spawnmodel((1184, 1282, 162) , (0, -30, -90) , "p_glo_table_bunker");
+	spawncrate((1048, 1495, 133) , (90, -30, 0));
+	spawnmodel((1030, 1502, 128) , (0, -120, -90) , "p_glo_table_bunker");
+	spawnmodel((1030, 1502, 162) , (0, -120, -90) , "p_glo_table_bunker");
+
+	// Road Last Stand Area
+	CreateInvisWalls((2020, 1687, -35),(2020, 1538, -35));
+	CreateInvisWalls((2020, 1687, 25),(2020, 1538, 25));
+	CreateInvisWalls((2020, 1687, 85),(2020, 1538, 85));
+	CreateInvisWalls((2020, 1687, 145),(2020, 1538, 145));
+	CreateInvisWalls((2300, 1311, -35),(2300, 1448, -35));
+	CreateInvisWalls((2300, 1311, 25),(2300, 1448, 25));
+	CreateInvisWalls((2300, 1311, 85),(2300, 1448, 85));
+	CreateInvisWalls((2300, 1311, 145),(2300, 1448, 145));
+	spawnmodel((2299, 1420, -56) , (0, -180, 0) , "p_dest_concrete_barrier03_static");
+	spawnmodel((2299, 1328, -56) , (0, -180, 0) , "p_dest_concrete_barrier03_static");
+	spawnmodel((2020, 1657, -54) , (0, -180, 0) , "p_dest_concrete_barrier03_static");
+	spawnmodel((2020, 1565, -54) , (0, -180, 0) , "p_dest_concrete_barrier03_static");
+
+	CreateInvisWalls((860, 2075, -35),(860, 1850, -35));
+	CreateInvisWalls((860, 2075, 25),(860, 1850, 25));
+	CreateInvisWalls((860, 2075, 85),(860, 1850, 85));
+	CreateInvisWalls((860, 2075, 145),(860, 1850, 145));
+	spawnmodel((849, 1996, -55) , (0, -90, 0) , "vehicle_80s_sedan1_nt_destroyed");
+
+	CreateInvisWalls((1368, 1051, -40),(1587, 925, -40));
+	CreateInvisWalls((1368, 1051, 20),(1587, 925, 20));
+	CreateInvisWalls((1368, 1051, 80),(1587, 925, 80));
+	CreateInvisWalls((1368, 1051, 140),(1587, 925, 140));
+	spawnmodel((1518, 971, -68) , (0, -30, 0) , "p_glo_barricade_wood_barb");
+	spawnmodel((1413, 1032, -63) , (4, -30, 0) , "p_glo_barricade_wood_barb");
+
+	// AntiOOM
+	Deathradius((384, -48, -88), 100 , 100);
+	Deathradius((-282, 1096, -72), 100 , 100);
+	Deathradius((-279, 1240, -72), 100 , 100);
+	Deathradius((-181, 1675, -72), 100 , 100);
+	Deathradius((-380, 1341, -74), 100 , 100);
+	Deathradius((716, 2016, -64), 100 , 100);
+	Deathradius((764, 1822, -68), 100 , 100);
+	Deathradius((1437, 852, -87), 100 , 100);
+	Deathradius((1336, 925, -73), 100 , 100);
+	CreateDeathRegion((845, 2092, -300),(17, -263, 400));
+	CreateDeathRegion((34, -420, -300),(-414, 1600, 400));
+	Deathradius((801, 1131, -100), 300 , 400);
+
+	array = getentarray("script_brushmodel","classname");
+	foreach(collision in array){
+		if(collision.origin == (1536, 1343, 270))
+			collision delete();
+	}
+}
 
 setmodel_hook(model) {
 	self setmodel(model);

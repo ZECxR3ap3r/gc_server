@@ -17,6 +17,24 @@ init() {
     //"C:/Users/Sam/AppData/Local/Plutonium/storage/iw5/server_data/muted_players.json"
     level.muted_players_path            = "C:/Servers/IW4mAdmin/Configuration/muted_players.json";
 
+    level.dirty_words = [];
+    level.dirty_words[level.dirty_words.size] = "nazi";
+    level.dirty_words[level.dirty_words.size] = "nig";
+    level.dirty_words[level.dirty_words.size] = "coon";
+    level.dirty_words[level.dirty_words.size] = "n i g";
+    level.dirty_words[level.dirty_words.size] = "n1g";
+    level.dirty_words[level.dirty_words.size] = "sieg";
+    level.dirty_words[level.dirty_words.size] = "heil";
+    level.dirty_words[level.dirty_words.size] = "hitler";
+    level.dirty_words[level.dirty_words.size] = "coomer";
+    level.dirty_words[level.dirty_words.size] = "nagger";
+    level.dirty_words[level.dirty_words.size] = "faggot";
+    level.dirty_words[level.dirty_words.size] = "fag";
+    level.dirty_words[level.dirty_words.size] = "n!g";
+    level.dirty_words[level.dirty_words.size] = "negro";
+    level.dirty_words[level.dirty_words.size] = "negero";
+    level.dirty_words[level.dirty_words.size] = "negrello";
+
     level.forcestancemodeon 					= false;
     level.leftgun 								= false;
     level.tinygun 								= false;
@@ -36,14 +54,13 @@ init() {
     add_command("/blocking", 				1, 						"^5//blocking ^2[Player] ^7: Teleport The Specified Player To Nearest Spawn");
 	add_command("/push", 					1, 						"^5//push ^2[Player] ^7: Pushes The Specified Player A little");
 	add_command("/uavall", 					1, 						"^5//uavall ^7: Turns On UAV For All");
+	add_command("/ufo", 					1, 						"^5//ufo ^7: Turns On UFO");
 	add_command("/mute", 					1, 						"^5//mute ^7: ^2[Player]");
 	add_command("/unmute", 					1, 						"^5//unmute ^7: ^2[Player]");
 	add_command("/help", 					1, 						"^5//help ^7: Shows a list of all Commands");
 	// 2 Administrator
-    add_command("/ufo", 					2, 						"^5//ufo ^7: Turns On UFO");
 	add_command("/resetname", 				2, 						"^5//resetname ^2[Player] ^7: Resets Players Name");
     add_command("/killbots", 				2, 						"");
-    add_command("/say", 					2, 						"");
 	add_command("/name",     				2, 						"^5//name ^2[Player]/[Name] - [Name] ^7: Sets Your Name Or Another Persons Name");
 	add_command("/setclantag", 				2, 						"^5//setclantag ^2[Clantag] ^7: Sets Your Clantag");
 	add_command("/tp", 						2, 						"^5//tp ^2[Player] [PlayerToTpTo] ^7: Teleports The Specified Player To Another Player");
@@ -94,7 +111,6 @@ init() {
 	add_command("/giveinf", 				2, 						"^5//giveinf ^2[WeaponName] ^7: Gives The Infected The Specified Weapon");
     add_command("/givestreak", 				2, 						"^5//givestreak ^2[Player] [Killstreak] ^7: Gives The Specified Person The Specified Killstreak");
     add_command("/fuckedvision", 			2, 						"");
-    add_command("/roll", 			        2, 						"^5//roll ^2[Roll] ^7: Gives Yourself The Specified TPJUGG Roll");
 	// Owner
 
     wait 1;
@@ -245,11 +261,6 @@ command_listener() {
                 if (isdefined(target))
                     target freezeControls( true );
             	break;
-            case "/say":
-                if(!isdefined(args[1]))
-                    continue;
-                iPrintLnBold(args[1]);
-            	break;
             case "/fuckedvision":
                 if(!isdefined(args[1]))
                     continue;
@@ -306,15 +317,6 @@ command_listener() {
                         player resetname();
                     }
                         player iprintln("You ^1Have Not Had A Name Change");
-                }
-            break;
-
-            case "/roll":
-                if(isdefined(level.roll_items) && isdefined(level.roll_items[args[1]])) {
-                    player thread [[level.roll_items[args[1]].function]]();
-                    player thread scripts\inf_tpjugg\zombie::send_hud_notification_handler(level.roll_items[args[1]].rollname, level.roll_items[args[1]].description, level.roll_items[args[1]].color);
-                } else {
-                    player iprintlnbold("Roll with " + args[1] + " Not Defined");
                 }
             break;
 
@@ -1263,8 +1265,46 @@ is_looking_at(who) {
 	return false;
 }
 
+Prestige_Logic() {
+	if(self maps\mp\gametypes\_rank::getRankXP() < maps\mp\gametypes\_rank::getRankInfoMaxXP( level.maxRank ))
+	{
+		diff = maps\mp\gametypes\_rank::getRankInfoMaxXP( level.maxRank ) - self maps\mp\gametypes\_rank::getRankXP();
+		var_2 = self scripts\_global_files\player_stats::getPlayerPrestigeLevel() + 1;
+		self iprintln("You Need ^1" + diff + "^7 More ^1XP^7 To Prestige ^1" + var_2 + "^7!");
+		self tell("You Need ^1" + diff + "^7 More ^1XP^7 To Prestige ^1" + var_2 + "^7!");
+		print(self.name + " Needs ^1" + diff + "^7 More ^1XP^7 To Prestige ^1" + var_2 + "^7!");
+	}
+	if(self maps\mp\gametypes\_rank::getRankXP() == maps\mp\gametypes\_rank::getRankInfoMaxXP( level.maxRank ) && self scripts\_global_files\player_stats::getPlayerPrestigeLevel() < level.maxPrestige)
+	{
+		var_1 = self maps\mp\gametypes\_rank::getRankForXp( 0 );
+		self.pers["rank"] = var_1;
+		self.pers["rankxp"] = 0;
+		self scripts\_global_files\player_stats::setStats( "saved_experience", 0);
+
+		var_2 = self scripts\_global_files\player_stats::getPlayerPrestigeLevel() + 1;
+		self.pers["prestige"] = var_2;
+		self scripts\_global_files\player_stats::setStats( "saved_prestige", var_2 );
+
+		self setRank( var_1, var_2 );
+
+		self iprintln("You Are Now Prestige ^1" + var_2 + "^7!");
+		self tell("You Are Now Prestige ^1" + var_2 + "^7!");
+		print(self.name + "Is Now Prestige ^1" + var_2 + "^7!");
+	}
+	else if(self maps\mp\gametypes\_rank::getRankXP() == maps\mp\gametypes\_rank::getRankInfoMaxXP( level.maxRank ) && self scripts\_global_files\player_stats::getPlayerPrestigeLevel() == level.maxPrestige)
+	{
+		self.pers["prestige"] = 100;
+		self setRank( 40, 100 );
+		self scripts\_global_files\player_stats::setStats( "saved_prestige", 100 );
+
+		self iprintln("^1Ultra^7 Prestige Unlocked!");
+		self tell("^1Ultra^7 Prestige Unlocked!");
+		print(self.name + " Has Unlocked ^1Ultra^7 Prestige!");
+	}
+}
+
 Moab_Checking(checking_user) {
-    self tell_raw("^4^7[ ^4Information^7 ] ^4" + checking_user.player_settings["called_in_moabs"] + "^7 M.O.A.Bs Called in by ^4" + checking_user.name);
+    self tell_raw("^4^7[ ^4Information^7 ] ^4" + checking_user scripts\_global_files\player_stats::getStats( "called_in_moabs") + "^7 M.O.A.Bs Called in by ^4" + checking_user.name);
 }
 
 ufo_weapons_back() {

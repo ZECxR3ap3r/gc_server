@@ -20,6 +20,12 @@ init() {
 	replacefunc(maps\mp\_events::monitorCrateJacking, ::monitorCrateJackingreplace);
 
 	replacefunc(maps\mp\gametypes\_healthoverlay::playerPainBreathingSound, ::playerPainBreathingSound_replace);
+	replacefunc(maps\mp\_equipment::trophyActive, ::trophyActive_replace);
+	replacefunc(maps\mp\_javelin::EyeTraceForward, ::EyeTraceForward_edit);
+
+	
+
+	
 
     // decoy is fucked atm
     
@@ -27,8 +33,54 @@ init() {
 
     level.mapname = getdvar("ui_mapname");
     level.curObjID = 1;
+	level.crates_placed = 1;
     level.usables = [];
     level.teleporter_ents = [];
+
+	level.original_getSpawnPoint = level.getSpawnPoint;
+	level.getSpawnPoint = ::new_getspawnpoint;
+
+	replacefunc(maps\mp\gametypes\_spawnlogic::getSpawnpointArray, ::getSpawnpointArray_replace);
+	replacefunc(maps\mp\gametypes\_spawnlogic::getTeamSpawnPoints, ::getTeamSpawnPoints_replace);
+}
+
+
+new_getspawnpoint() {
+	spawnPoint = self [[level.original_getSpawnPoint]]();
+	// if(isdefined(spawnPoint.custom))
+	// 	print("^5" + spawnPoint.origin + " = CUSTOM");
+	// else if(isdefined(spawnPoint.disabled))
+	// 	print("^4" + spawnPoint.origin + " = DISABLED");
+	// else
+	// 	print("^3" + spawnPoint.origin);
+	waittillframeend;
+	return spawnPoint;
+}
+
+getTeamSpawnPoints_replace( team )
+{
+	return getSpawnpointArray_replace();
+}
+
+getSpawnpointArray_replace( classname )
+{
+	spawnPoints = getEntArray( "mp_tdm_spawn", "classname" );
+
+	tmp = [];
+	for(i=0;i<spawnPoints.size; i++) {
+		if(!isdefined(spawnPoints[i].disabled))
+			tmp[tmp.size] = spawnPoints[i];
+	}
+
+	// print("^3yeetus");
+	if ( !isdefined( level.custom_spawnpoints ))
+		return tmp;
+
+	// print("^2yeetus");
+	for(i=0;i<level.custom_spawnpoints.size; i++) {
+		tmp[tmp.size] = level.custom_spawnpoints[i];
+	}
+		return tmp;
 }
 
 delete_remote_spawnpoints() {
@@ -40,6 +92,62 @@ delete_remote_spawnpoints() {
 	{
 		spawn delete();
 	}
+}
+
+createAirDropCrate_edit( owner, dropType, crateType, startPos )
+{
+	dropCrate = spawn( "script_model", startPos );
+	
+	dropCrate.curProgress = 0;
+	dropCrate.useTime = 0;
+	dropCrate.useRate = 0;
+	dropCrate.team = self.team;
+	
+	if ( isDefined( owner ) )
+		dropCrate.owner = owner;
+	else
+		dropCrate.owner = undefined;
+	
+	dropCrate.crateType = crateType;
+	dropCrate.dropType = dropType;
+	dropCrate.targetname = "care_package";
+	
+	dropCrate setModel( maps\mp\gametypes\_teams::getTeamCrateModel( dropCrate.team ) );
+	dropCrate thread maps\mp\killstreaks\_airdrop::crateTeamModelUpdater();	
+
+	modelName = "com_plasticcase_friendly";
+	if( crateType == "airdrop_trap" )
+	{
+		modelName = "com_plasticcase_trap_friendly";
+		dropCrate thread maps\mp\killstreaks\_airdrop::trap_createBombSquadModel();
+	}
+	dropCrate.friendlyModel = spawn( "script_model", startPos );
+	dropCrate.friendlyModel setModel( modelName );
+	dropCrate.enemyModel = spawn( "script_model", startPos );
+	dropCrate.enemyModel setModel( "com_plasticcase_enemy" );
+
+	dropCrate.friendlyModel thread maps\mp\killstreaks\_airdrop::deleteOnOwnerDeath( dropCrate );
+	if( level.teambased )
+		dropCrate.friendlyModel thread maps\mp\killstreaks\_airdrop::crateModelTeamUpdater( dropCrate.team );
+	else
+		dropCrate.friendlyModel thread maps\mp\killstreaks\_airdrop::crateModelPlayerUpdater( owner, true );
+
+	dropCrate.enemyModel thread maps\mp\killstreaks\_airdrop::deleteOnOwnerDeath( dropCrate );
+	if( level.teambased )
+		dropCrate.enemyModel thread maps\mp\killstreaks\_airdrop::crateModelTeamUpdater( level.otherTeam[dropCrate.team] );
+	else
+		dropCrate.enemyModel thread maps\mp\killstreaks\_airdrop::crateModelPlayerUpdater( owner, false );
+
+	dropCrate.inUse = false;
+	
+	dropCrate.killCamEnt = Spawn( "script_model", dropCrate.origin + (0, 0, 300) );
+	dropCrate.killCamEnt SetScriptMoverKillCam( "explosive" );
+	dropCrate.killCamEnt LinkTo( dropCrate );
+
+	level.numDropCrates++;
+	dropCrate thread maps\mp\killstreaks\_airdrop::dropCrateExistence();
+
+	return dropCrate;
 }
 
 dropTheCrate_edit( dropPoint, dropType, lbHeight, dropImmediately, crateOverride, startPos, dropImpulse, previousCrateTypes, tagName )
@@ -84,7 +192,7 @@ dropTheCrate_edit( dropPoint, dropType, lbHeight, dropImmediately, crateOverride
 	if ( !isDefined( dropImpulse ) )
 		dropImpulse = (randomInt(5),randomInt(5),randomInt(5));
 		
-	dropCrate = maps\mp\killstreaks\_airdrop::createAirDropCrate( self.owner, dropType, crateType, startPos );
+	dropCrate = createAirDropCrate_edit( self.owner, dropType, crateType, startPos );
 	
 	switch( dropType )
 	{
@@ -171,12 +279,15 @@ waitfordropcratemsg_edit(dropPoint, crate, var_1, var_2, var_3) {
         }
         else
 	        crate moveto(crate.trace["entity"].origin + (0, 0, 28), var_6);
-
+		
+		crate thread detect_no_prone();
 	} else if(isdefined(crate.trace[ "position" ]) && isdefined(crate.trace["entity"]) && isdefined(crate.trace["entity"].model) && crate.trace["entity"].model != "") {
         // print("^3system normal");
         // print("^:" + crate.trace["entity"].model);
 		
         normal_system = true;
+		crate thread detect_no_prone();
+		// crate CloneBrushmodelToScriptmodel( level.airDropCrateCollision );
 		
 		var_5 = distance(crate.origin, crate.trace[ "position" ]);
 	    var_6 = var_5 / 800;
@@ -187,6 +298,7 @@ waitfordropcratemsg_edit(dropPoint, crate, var_1, var_2, var_3) {
 	else {
         // print("^3system physics");
         physics_system  = true;
+		crate CloneBrushmodelToScriptmodel( level.airDropCrateCollision );
 		crate physicslaunchserver((0, 0, 0), var_1);
     }
 
@@ -232,14 +344,28 @@ waitfordropcratemsg_edit(dropPoint, crate, var_1, var_2, var_3) {
 	    wait var_6 / 2;
 	    crate notify("crate_reached_pos");
     }
+
 }
 
-
+detect_no_prone() {
+	self endon("death");
+	for(;;) {
+		level waittill("breach_check");
+		foreach(player in level.players) {
+			if(!isalive(player))
+				continue;
+			if(!isdefined(player.breaching) && /* player istouching(self) && */ distance(player geteye(), self.origin) < 25) {
+				player.breaching = true;
+				print("breaching");
+			}
+		}
+	}
+}
 
 enable_damage_from_owner() {
     self endon("death");
     self setcandamage(1);
-    self.actual_health = 1000;
+    self.actual_health = 500;
     self.health = 1000000;
     self.maxhealth = 1000000;
 
@@ -394,11 +520,11 @@ HiddenTpThread(enter, exit, angle, setStatus, slowed, radius, height){
     }
 }
 
-CreateTP(enter, exit, angle, slowed, radius, height, delay, noradar) {
-    thread CreateTPthread(enter, exit, angle, slowed, radius, height, delay, noradar);
+CreateTP(enter, exit, angle, slowed, radius, height, delay, noradar, nostatus) {
+    thread CreateTPthread(enter, exit, angle, slowed, radius, height, delay, noradar, nostatus);
 }
 
-CreateTPthread(enter, exit, angle, slowed, radius, height, delay, noradar) {
+CreateTPthread(enter, exit, angle, slowed, radius, height, delay, noradar, nostatus) {
     if(isdefined(delay))
         wait delay;
 
@@ -417,10 +543,10 @@ CreateTPthread(enter, exit, angle, slowed, radius, height, delay, noradar) {
 
     level.teleporter_ents[level.teleporter_ents.size] = entity2;
 
-    level thread TpThread(enter, exit, angle, slowed, radius, height);
+    level thread TpThread(enter, exit, angle, slowed, radius, height, nostatus);
 }
 
-TpThread(enter, exit, angle, slowed, radius, height){
+TpThread(enter, exit, angle, slowed, radius, height, nostatus){
     level endon("game_ended");
 
     if(!isdefined(radius))
@@ -433,15 +559,41 @@ TpThread(enter, exit, angle, slowed, radius, height){
     for(;;) {
         trigger waittill("trigger", player );
 
+		player thread protection_thread();
         player setorigin(exit);
 
-        if(isdefined(angle))
-            player setplayerangles((player getplayerangles()[0], angle[1], 0));
+        if(isdefined(angle)) {
+			if(!player UseButtonPressed() && !player SecondaryOffhandButtonPressed() && !player FragButtonPressed())
+            	player setplayerangles((player getplayerangles()[0], angle[1], 0));
+		}
         if(isdefined(slowed))
             player thread freezeontp();
 
-        player.status = "in";
+		if(!isdefined(nostatus))
+            player.status = "in";
+        else {
+            player.status = "out";
+
+            if(player.cz_elements["title"].alpha == 1) {
+            	player notify("flag_teleport");
+           		player.inoomzone = 0;
+    			player.oomAttempts = 0;
+    			player SetBlurForPlayer(0, 0);
+				
+                foreach(hud in player.cz_elements)
+    				hud.alpha = 0;
+			}
+        }
+
     }
+}
+
+protection_thread() {
+	self notify("kankermongool");
+	self endon("kankermongool");
+	self.flag_protection = true;
+	self waittill_any_timeout( 0.8, "death" );
+	self.flag_protection = undefined;
 }
 
 freezeontp() {
@@ -750,6 +902,29 @@ CreateQuickstepsthread(position, height, stepsize, distperstep, angles, delay, m
             block = spawnCrate((position + (forang * distperstep) * i) - (0,0,stepsize) * i, angles + (0,90,0));
 
         wait .05;
+    }
+}
+
+CreateMovingBlock(origin, goalpos, angle, time, wait_time, rotate_to, delay) {
+    thread CreateMovingBlockThread(origin, goalpos, angle, time, wait_time, rotate_to, delay);
+}
+
+CreateMovingBlockThread(origin, goalpos, angle, time, wait_time, rotate_to, delay) {
+    if(isdefined(delay))
+		wait delay;
+    
+    block = spawnCrate(origin, angle, "com_plasticcase_enemy");
+    for(;;) {
+        block moveto(goalpos, time);
+        if(isdefined(rotate_to))
+            block RotateTo(rotate_to, time);
+        wait time;
+        wait wait_time;
+        block moveto(origin, time);
+        if(isdefined(rotate_to))
+            block RotateTo(angle, time);
+        wait time;
+        wait wait_time;
     }
 }
 
@@ -1140,10 +1315,10 @@ check_stuck_ppl() {
 
 spawnCrate(origin, angles, model) {
     entity = spawn("script_model", origin);
-    if(isdefined(model))
-    	entity setmodel(model);
-	else if(isdefined(level.showinviscrates))
+    if(isdefined(level.showinviscrates))
 		entity setmodel("com_plasticcase_trap_bombsquad");
+    else if(isdefined(model))
+    	entity setmodel(model);
     entity.angles = angles;
     entity CloneBrushmodelToScriptmodel(level.airDropCrateCollision);
 
@@ -1152,6 +1327,8 @@ spawnCrate(origin, angles, model) {
 
 	if(origin[2] < level.lowest_crate)
 		level.lowest_crate = origin[2];
+
+	level.crates_placed++;
 
     return entity;
 }
@@ -1627,6 +1804,32 @@ clonedcollision(position, angle, cloned) {
     return thing;
 }
 
+
+upshaft(position, velocity, radius, height, add_mode) {
+    thread upshaftthread(position, velocity, radius, height, add_mode);
+}
+
+upshaftthread(position, velocity, radius, height, add_mode) {
+    trigger = spawn("trigger_radius", position, 0, radius, height);
+
+    if(isdefined(add_mode))
+        add = true;
+    else
+        add = false;
+     
+    for(;;) {
+        trigger waittill("trigger", player);
+
+        if(add) {
+            vel = player getvelocity();
+            player setvelocity((vel[0], vel[1], vel[2] + velocity));
+        } else {
+            vel = player getvelocity();
+            player setvelocity((vel[0], vel[1], velocity));
+        }
+    }
+}
+
 cannonball(position, angles, waittime, goalpos, height, delay) {
     thread cannonballthread(position, angles, waittime, goalpos, height, delay, "com_plasticcase_trap_bombsquad");
 }
@@ -1656,6 +1859,10 @@ cannonballthread(position, angles, waittime, goalpos, height, delay, model) {
 
         if(!cannonball.inuse) {
             cannonball.inuse = 1;
+            if(isdefined(model)) {
+                cannonball setmodel("com_plasticcase_trap_friendly");
+                cannonball2 setmodel("com_plasticcase_trap_friendly");
+            }
 
             if(!player isusingremote()) {
                 i = waittime;
@@ -1686,15 +1893,17 @@ cannonballthread(position, angles, waittime, goalpos, height, delay, model) {
 
             wait 1.25;
             cannonball.inuse = 0;
+            if(isdefined(model)) {
+                cannonball setmodel(model);
+                cannonball2 setmodel(model);
+            }
         }
 
-        wait 1;
+        wait .5;
     }
 }
 
 cannonball_launch(start, time, zOffset, zPeakProgress, end) {
-	//self endon("cannon_done");
-
 	end = (end[0], end[1], end[2] - 80);
 
 	startX 			= start[0];
@@ -1734,14 +1943,15 @@ cannonball_launch(start, time, zOffset, zPeakProgress, end) {
 		}
 		else {
 			ent delete();
-			//self notify("cannon_done");
+			break;
 		}
 	}
 
-	earthQuake(.6, 3, self.origin, 200);
-	self unlink();
-	ent delete();
-	//self notify("cannon_done");
+	if(isdefined(ent)) {
+		earthQuake(.6, 3, self.origin, 200);
+		self unlink();
+		ent delete();
+	}
 }
 
 linear(t, b, c, d) {
@@ -1776,7 +1986,7 @@ physicswaiter_edit(var_0, var_1, special) {
     	self thread [[ level.cratefuncs[var_0][var_1] ]]( var_0 );
     	level thread maps\mp\killstreaks\_airdrop::droptimeout( self, self.owner, var_1 );
 
-    	if(distance(self.origin, var_3) > 3500)
+    	if(distance(self.origin, var_3) > 3500 || self.owner.team != self.team)
         	self maps\mp\killstreaks\_airdrop::deletecrate();
 
 		if(isdefined(level.lowest_crate)) {
@@ -2519,7 +2729,7 @@ disable_spawn_point(remove_spawn_array, debug) {
 	foreach(item in remove_spawn_array) {
 		// found = false;
 		for(i=0;i<spawn_points.size;i++) {
-			if(distance(spawn_points[i].origin, item) < 5) {
+			if(distance(spawn_points[i].origin, item) < 15) {
 				spawn_points[i].disabled = true;
 				// print(item + " ^2Disabled");
 				// found = true;
@@ -2531,15 +2741,18 @@ disable_spawn_point(remove_spawn_array, debug) {
 }
 
 add_spawn_point(origin, angles) {
-	if(!isdefined(level.custom_added_spawnpoints))
-		level.custom_added_spawnpoints = [];
+	if(!isdefined(level.custom_spawnpoints))
+		level.custom_spawnpoints = [];
 
-	ent = spawnstruct();
+	ent = spawn("script_origin", origin);
 	ent.origin = origin;
 	ent.angles = angles;
-
-	level.custom_added_spawnpoints[level.custom_added_spawnpoints.size] = ent;
+	ent.custom = true;
+	
+	level.custom_spawnpoints[level.custom_spawnpoints.size] = ent;
 }
+
+
 
 delete_all_spawn_except(exception) {
 	all_ents = getentarray();
@@ -2603,5 +2816,237 @@ heli_health_replace()
 		}
 		
 		wait 0.05;
+	}
+}
+
+
+trophyActive_replace( owner )
+{
+	owner endon( "disconnect" );
+	self endon ( "death" );
+	
+	position = self.origin;
+	
+	for( ;; )
+	{
+		wait 0.05;
+		if ( !isDefined( level.grenades ) || ( level.grenades.size < 1 && level.missiles.size < 1 ) || isDefined( self.disabled ) )
+		{
+			continue;
+		}
+		
+		sentryTargets = combineArrays ( level.grenades, level.missiles );
+		
+		i=1;
+		foreach ( grenade in sentryTargets )
+		{
+			if(i % 10 == 0) {
+				wait( .05 );
+			}
+
+			i++;
+
+			if ( !isDefined(grenade) )
+				continue;
+			
+			if ( grenade == self )
+				continue;
+			
+			switch( grenade.model )
+			{
+			case "mp_trophy_system":
+			case "weapon_radar":
+			case "weapon_jammer":
+			case "weapon_parabolic_knife":
+				continue;
+			}
+			
+			if ( isDefined( grenade.weaponName) )
+			{
+				switch( grenade.weaponName )
+				{
+				case "claymore_mp":
+					continue;
+				}
+			}
+
+	
+			if ( !isDefined( grenade.owner ) )
+				grenade.owner = GetMissileOwner( grenade );
+			
+			//assertEx( isDefined( grenade.owner ), "grenade has no owner"  );
+			//grenades owner may have disconnected by now if they do we should just assume enemy and detonate it.
+			
+			if ( isDefined( grenade.owner ) && level.teamBased && grenade.owner.team == owner.team )
+				continue;
+			
+			//dont blow up owners grenades in FFA	
+			if ( isDefined( grenade.owner ) && grenade.owner == owner )
+				continue;
+
+			
+			grenadeDistanceSquared = DistanceSquared( grenade.origin, (self.origin + (0,0,20)) );
+			
+			if ( grenadeDistanceSquared < 147456 )
+			{
+				if ( BulletTracePassed( grenade.origin, (self.origin + (0,0,10)), false, self ) || BulletTracePassed( grenade.origin, (self.origin + (0,0,30)), false, self ))
+				{
+					playFX( level.sentry_fire, self.origin + (0,0,32) , ( grenade.origin - self.origin ), AnglesToUp( self.angles ) );
+					self playSound( "trophy_detect_projectile" );
+					
+					owner thread maps\mp\_equipment::projectileExplode( grenade, self );
+					owner maps\mp\gametypes\_missions::processChallenge( "ch_noboomforyou" );			
+
+					self.ammo--;
+					
+					if ( self.ammo <= 0 )
+						self thread maps\mp\_equipment::trophyBreak();
+				}
+			}	
+		}
+	}
+}
+
+
+EyeTraceForward_edit()
+{
+	origin = self GetEye();
+	angles = self GetPlayerAngles();
+	forward = AnglesToForward( angles );
+	endpoint = origin + forward * 30000;
+	
+	res = BulletTrace( origin, endpoint, false, undefined );
+
+	if ( res["surfacetype"] == "none" )
+		return undefined;
+	if ( res["surfacetype"] == "default" )
+		return undefined;
+
+	ent = res["entity"];
+	if ( IsDefined( ent ) )
+	{
+		if ( ent == level.ac130.planeModel )
+			return undefined;
+	}
+
+	results = [];
+	results[0] = res["position"];
+	results[1] = res["normal"];
+	return results;
+}
+
+
+show_route_arrows(array, delay) {
+    thread show_route_arrows_thread(array, delay);
+}
+
+show_route_arrows_thread(array, delay) {
+    arrindex = undefined;
+    if(!isdefined(level.arrowindex)) {
+        level.arrowindex = 0;
+        arrindex = level.arrowindex;
+    }
+    else {
+        level.arrowindex++;
+        arrindex = level.arrowindex;
+    }
+
+
+    if(isdefined(delay)){
+        level endon("kill_arrows_" + arrindex);
+        delay = delay * 60;
+        thread notify_after_time( delay , "kill_arrows_" + arrindex );
+    }
+    
+    arrow_array = [];
+    for(i=0;i<array.size - 1;i++) { 
+        arrow_array[i] = spawn("script_model", array[i]);
+        arrow_array[i] setmodel("sundirection_arrow");
+        arrow_array[i].angles = VectortoAngles(array[i] - array[i + 1]);
+        arrow_array[i].current_node = i;
+        if(isdefined(delay))
+            arrow_array[i] thread delete_after_level_notify("kill_arrows_" + arrindex );
+    }
+
+
+    for(;;) { 
+
+        for(i=0;i<arrow_array.size;i++) {
+            arrow_array[i].current_node = arrow_array[i].current_node + 1;
+            if(arrow_array[i].current_node > array.size - 1) {
+                arrow_array[i].current_node = 1;
+                arrow_array[i].origin = array[0];
+                arrow_array[i].angles = VectortoAngles(array[0] - array[arrow_array[i].current_node]);
+            }
+
+            arrow_array[i] MoveTo(array[arrow_array[i].current_node], 3);
+        }
+
+        wait 2;
+
+        for(i=0;i<arrow_array.size;i++) {
+            if(arrow_array[i].current_node < arrow_array.size)
+                arrow_array[i] RotateTo(VectortoAngles(array[arrow_array[i].current_node] - array[arrow_array[i].current_node + 1]), 1);
+        }
+
+        wait 1;
+    }
+}
+
+notify_after_time(delay, string) {
+    wait delay;
+    level notify(string);
+}
+
+delete_after_level_notify(string) {
+    level waittill(string);
+    self delete();
+}
+
+antibreach(position, range, height) {
+    if(!isdefined(level.antibreachtriggers))
+        level.antibreachtriggers = [];
+
+    level.antibreachtriggers[level.antibreachtriggers.size] = Spawn( "trigger_radius", position, 0, range, height);
+}
+
+antibreach_box(position1, position2) {
+    if(!isdefined(level.antibreachtriggers))
+        level.antibreachtriggers = [];
+
+    index = level.antibreachtriggers.size;
+    level.antibreachtriggers[index] = SpawnStruct();
+    level.antibreachtriggers[index].classname = "cube";
+    level.antibreachtriggers[index].corner1 = position1;
+    level.antibreachtriggers[index].corner2 = position2;
+}
+
+anti_breach_logic() {
+
+	for(;;) {
+		wait 0.5;
+		foreach(player in level.players) {
+			player.breaching = undefined;
+		}
+
+		if(isdefined(level.antibreachtriggers)) {
+			for(i=0;i<level.antibreachtriggers.size;i++) {
+				foreach(player in level.players) {
+					if(player.team != "allies")
+						continue;
+					
+					if(level.antibreachtriggers[i].classname == "trigger_radius") {
+						if(player istouching(level.antibreachtriggers[i]))
+							player.breaching = true;
+					}
+					else {
+						if(insideRegionZ(level.antibreachtriggers[i].corner1, level.antibreachtriggers[i].corner2, player.origin))
+							player.breaching = true;
+					}
+				}
+			}
+		}
+		
+		level notify("breach_check");
 	}
 }

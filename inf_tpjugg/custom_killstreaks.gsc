@@ -31,7 +31,6 @@ main() {
     replacefunc(maps\mp\killstreaks\_killstreaks::getKillstreakIndex, ::getKillstreakIndex_replace);
     replacefunc(maps\mp\killstreaks\_killstreaks::givekillstreak, ::givekillstreak_replace);
     replacefunc(maps\mp\killstreaks\_killstreaks::initKillstreakData, ::initKillstreakData_replace);
-
 }
 
 init() {
@@ -81,6 +80,34 @@ init() {
 // 15 - specialty_precision_airstrike_crate,
 // 16 - dpad_killstreak_precision_airstrike,
 // 17 - dpad_killstreak_precision_airstrike_inactive
+
+build_killstreak_data(arg_1, arg_2, arg_3, arg_4, arg_5, arg_6, arg_7, arg_8, arg_9, arg_10, arg_11) {
+	game["dialog"][arg_1] = arg_3;
+
+	if(isdefined(arg_2)) {
+		if(arg_2 == "Loc_String")
+			arg_2 = tablelookupistring( "mp/killstreakTable.csv", 1, arg_1, 6 );
+
+		precachestring( arg_2 );
+	}
+	
+	game["dialog"]["allies_friendly_" + arg_1 + "_inbound"] = "use_" + arg_4;
+	game["dialog"]["allies_enemy_" + arg_1 + "_inbound"] = "enemy_" + arg_4;
+	game["dialog"]["axis_friendly_" + arg_1 + "_inbound"] = "use_" + arg_5;
+	game["dialog"]["axis_enemy_" + arg_1 + "_inbound"] = "enemy_" + arg_5;
+	precacheitem( arg_6 );
+	maps\mp\gametypes\_rank::registerscoreinfo( "killstreak_" + arg_1, arg_7 );
+	precacheshader( arg_8 );
+
+	arg_8 = tablelookup( "mp/killstreakTable.csv", 1, arg_1, 14 );
+
+	if(isdefined(arg_9))
+		precacheshader( arg_9 );
+	if(isdefined(arg_10))
+		precacheshader( arg_10 );
+	if(isdefined(arg_11))
+		precacheshader( arg_11 );
+}
 
 getKillstreakInformEnemy_replace( streakName )
 {
@@ -246,56 +273,144 @@ initKillstreakData_replace()
 	game[ "dialog" ][ "axis_enemy_harrier_airstrike_inbound" ] = "enemy_achieve_airstrike";
 
 	precacheshader("death_harrier");
+	precacheheadicon("waypoint_ammo_friendly");
+	precacheheadicon("dpad_killstreak_airdrop_trap");
 
-	for ( i = 1; true; i++ )
-	{
-		retVal = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 1 );
-		if ( !IsDefined( retVal ) || retVal == "" )
-			break;
+	build_killstreak_data( "harrier_airstrike" , undefined , "achieve_airstrike" , "airstrike" , "airstrike" , "killstreak_precision_airstrike_mp" , 200 , "death_harrier" , "death_harrier" , "death_harrier" , "death_harrier" );
 
-		streakRef = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 1 );
-		assert( streakRef != "" );
+	build_killstreak_data( "uav" , "Loc_String" , "achieve_uav" , "uav" , "uav" , "killstreak_uav_mp" , 100 , "dpad_killstreak_uav_static" , "specialty_uav_crate" , "dpad_killstreak_uav" , "dpad_killstreak_uav" );
+	build_killstreak_data( "airdrop_assault" , "Loc_String" , "achieve_carepackage" , "carepackage" , "carepackage" , "airdrop_marker_mp" , 100 , "dpad_killstreak_carepackage_static" , "specialty_null" , "dpad_killstreak_carepackage" , "dpad_killstreak_carepackage" );
+	build_killstreak_data( "predator_missile" , "Loc_String" , "achieve_hellfire" , "hellfire" , "hellfire" , "killstreak_predator_missile_mp" , 150 , "dpad_killstreak_predator_missile_static" , "specialty_predator_missile_crate" , "dpad_killstreak_predator_missile" , "dpad_killstreak_predator_missile" );
+	build_killstreak_data( "ims" , "Loc_String" , "achieve_ims" , "null" , "null" , "killstreak_ims_mp" , 150 , "dpad_killstreak_ims_static" , "specialty_ims_crate" , "dpad_killstreak_ims" , "dpad_killstreak_ims" );
+	build_killstreak_data( "airdrop_sentry_minigun" , "Loc_String" , "achieve_sentrygun" , "sentrygun" , "sentrygun" , "airdrop_sentry_marker_mp" , 150 , "dpad_killstreak_sentry_gun_static" , "specialty_null" , "dpad_killstreak_sentry_gun" , "dpad_killstreak_sentry_gun" );
+	build_killstreak_data( "sentry" , "Loc_String" , "deploy_sentry" , "null" , "null" , "killstreak_sentry_mp" , 150 , "dpad_killstreak_sentry_gun_static" , "specialty_sentry_gun_crate" , "dpad_killstreak_sentry_gun" , "dpad_killstreak_sentry_gun" );
+	build_killstreak_data( "precision_airstrike" , "Loc_String" , "achieve_airstrike" , "airstrike" , "airstrike" , "killstreak_precision_airstrike_mp" , 200 , "dpad_killstreak_precision_airstrike_static" , "specialty_precision_airstrike_crate" , "dpad_killstreak_precision_airstrike" , "dpad_killstreak_precision_airstrike" );
+	build_killstreak_data( "helicopter" , "Loc_String" , "achieve_heli" , "cobra" , "hind" , "killstreak_helicopter_mp" , 200 , "dpad_killstreak_attack_helicopter_static" , "specialty_attack_helicopter_crate" , "dpad_killstreak_attack_helicopter" , "dpad_killstreak_attack_helicopter" );
+	build_killstreak_data( "littlebird_flock" , "Loc_String" , "achieve_strafe" , "strafe" , "strafe" , "killstreak_precision_airstrike_mp" , 200 , "dpad_killstreak_helicopter_flock_static" , "specialty_helicopter_flock_crate" , "dpad_killstreak_helicopter_flock" , "dpad_killstreak_helicopter_flock" );
+	build_killstreak_data( "littlebird_support" , "Loc_String" , "achieve_ah6guard" , "ah6guard" , "ah6guard" , "killstreak_helicopter_mp" , 200 , "dpad_killstreak_helicopter_guard_static" , "specialty_helicopter_guard_crate" , "dpad_killstreak_helicopter_guard" , "dpad_killstreak_helicopter_guard" );
+	build_killstreak_data( "remote_mortar" , "Loc_String" , "achieve_agm" , "agm" , "agm" , "killstreak_remote_mortar_mp" , 100 , "dpad_killstreak_reaper_static" , "specialty_reaper_crate" , "dpad_killstreak_reaper" , "dpad_killstreak_reaper" );
+	build_killstreak_data( "airdrop_remote_tank" , "Loc_String" , "achieve_assault_drone" , "null" , "null" , "airdrop_tank_marker_mp" , 150 , "dpad_killstreak_talon_static" , "specialty_null" , "dpad_killstreak_talon" , "dpad_killstreak_talon" );
+	build_killstreak_data( "remote_tank" , "Loc_String" , "achieve_assault_drone" , "assault_drone" , "assault_drone" , "killstreak_remote_tank_mp" , 350 , "dpad_killstreak_talon_static" , "specialty_talon_crate" , "dpad_killstreak_talon" , "dpad_killstreak_talon" );
+	build_killstreak_data( "helicopter_flares" , "Loc_String" , "achieve_pavelow" , "pavelow" , "pavelow" , "killstreak_helicopter_flares_mp" , 300 , "dpad_killstreak_pave_low_static" , "specialty_pave_low_crate" , "dpad_killstreak_pave_low" , "dpad_killstreak_pave_low" );
+	build_killstreak_data( "ac130" , "Loc_String" , "achieve_ac130" , "ac130" , "ac130" , "killstreak_ac130_mp" , 350 , "dpad_killstreak_ac130_static" , "specialty_ac130_crate" , "dpad_killstreak_ac130" , "dpad_killstreak_ac130" );
+	build_killstreak_data( "airdrop_juggernaut" , "Loc_String" , "achieve_juggernaut" , "juggernaut" , "juggernaut" , "airdrop_juggernaut_mp" , 150 , "dpad_killstreak_airdrop_juggernaut_static" , "specialty_juggernaut_crate" , "dpad_killstreak_airdrop_juggernaut" , "dpad_killstreak_airdrop_juggernaut" );
+	build_killstreak_data( "osprey_gunner" , "Loc_String" , "achieve_osprey_gunner" , "osprey_gunner" , "osprey_gunner" , "killstreak_helicopter_minigun_mp" , 350 , "dpad_killstreak_osprey_gunner_static" , "specialty_osprey_gunner_crate" , "dpad_killstreak_osprey_gunner" , "dpad_killstreak_osprey_gunner" );
+	// build_killstreak_data( "uav_support" , "Loc_String" , "achieve_uav" , "uav" , "uav" , "killstreak_uav_mp" , 100 , "dpad_killstreak_uav_static" , "specialty_uav_crate" , "dpad_killstreak_uav" , "dpad_killstreak_uav" );
+	// build_killstreak_data( "counter_uav" , "Loc_String" , "achieve_jamuav" , "jamuav" , "jamuav" , "killstreak_counter_uav_mp" , 100 , "dpad_killstreak_counter_uav_static" , "specialty_counter_uav_crate" , "dpad_killstreak_counter_uav" , "dpad_killstreak_counter_uav" );
+	build_killstreak_data( "deployable_vest" , "Loc_String" , "achieve_vest_dep" , "null" , "null" , "deployable_vest_marker_mp" , 200 , "dpad_killstreak_deployable_vest_static" , "specialty_deployable_vest_crate" , "dpad_killstreak_deployable_vest" , "dpad_killstreak_deployable_vest" );
+	build_killstreak_data( "airdrop_trap" , "Loc_String" , "achieve_airtrap" , "airtrap" , "airtrap" , "airdrop_trap_marker_mp" , 100 , "dpad_killstreak_airdrop_trap_static" , "specialty_null" , "dpad_killstreak_airdrop_trap" , "dpad_killstreak_airdrop_trap" );
+	// build_killstreak_data( "sam_turret" , "Loc_String" , "achieve_sam" , "sam" , "sam" , "killstreak_sentry_mp" , 150 , "dpad_killstreak_sam_turret_static" , "specialty_sam_turret_crate" , "dpad_killstreak_sam_turret" , "dpad_killstreak_sam_turret" );
+	// build_killstreak_data( "remote_uav" , "Loc_String" , "achieve_recon_drone" , "recon_drone" , "recon_drone" , "killstreak_uav_mp" , 350 , "dpad_killstreak_remote_uav_static" , "specialty_remote_uav_crate" , "dpad_killstreak_remote_uav" , "dpad_killstreak_remote_uav" );
+	// build_killstreak_data( "triple_uav" , "Loc_String" , "achieve_phantom_ray" , "advanced_uav" , "advanced_uav" , "killstreak_triple_uav_mp" , 150 , "dpad_killstreak_advanced_uav_static" , "specialty_advanced_uav_crate" , "dpad_killstreak_advanced_uav" , "dpad_killstreak_advanced_uav" );
+	build_killstreak_data( "remote_mg_turret" , "Loc_String" , "achieve_remote_sentry" , "null" , "null" , "killstreak_remote_turret_mp" , 250 , "dpad_killstreak_remote_mg_turret_static" , "specialty_remote_mg_turret_crate" , "dpad_killstreak_remote_mg_turret" , "dpad_killstreak_remote_mg_turret" );
+	build_killstreak_data( "stealth_airstrike" , "Loc_String" , "achieve_stealth" , "null" , "null" , "killstreak_stealth_airstrike_mp" , 300 , "dpad_killstreak_stealth_bomber_static" , "specialty_stealth_bomber_crate" , "dpad_killstreak_stealth_bomber" , "dpad_killstreak_stealth_bomber" );
+	// build_killstreak_data( "emp" , "Loc_String" , "achieve_emp" , "emp" , "emp" , "killstreak_emp_mp" , 500 , "dpad_killstreak_emp_static" , "specialty_emp_crate" , "dpad_killstreak_emp" , "dpad_killstreak_emp" );
+	// build_killstreak_data( "airdrop_juggernaut_recon" , "Loc_String" , "achieve_juggernaut" , "juggernaut" , "juggernaut" , "airdrop_juggernaut_mp" , 150 , "dpad_killstreak_airdrop_juggernaut_support_static" , "specialty_juggernaut_support_crate" , "dpad_killstreak_airdrop_juggernaut_support" , "dpad_killstreak_airdrop_juggernaut_support" );
+	// build_killstreak_data( "escort_airdrop" , "Loc_String" , "achieve_escort_airdrop" , "escort_airdrop" , "escort_airdrop" , "airdrop_escort_marker_mp" , 350 , "dpad_killstreak_escort_airdrop_static" , "specialty_escort_airdrop_crate" , "dpad_killstreak_escort_airdrop" , "dpad_killstreak_escort_airdrop" );
+	build_killstreak_data( "nuke" , "Loc_String" , "achieve_moab" , "moab" , "moab" , "killstreak_uav_mp" , 100 , "dpad_killstreak_nuke" , "specialty_null" , "dpad_killstreak_nuke" , "dpad_killstreak_nuke" );
+	
+	// build_killstreak_data( "specialty_longersprint_ks" , "Loc_String" , "achieve_extremeconditioning" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_longersprint" , "specialty_longersprint" , "specialty_longersprint" , "specialty_longersprint" );
+	// build_killstreak_data( "specialty_fastreload_ks" , "Loc_String" , "achieve_sleightofhand" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_fastreload" , "specialty_fastreload" , "specialty_fastreload" , "specialty_fastreload" );
+	// build_killstreak_data( "specialty_scavenger_ks" , "Loc_String" , "achieve_scavenger" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_scavenger" , "specialty_scavenger" , "specialty_scavenger" , "specialty_scavenger" );
+	// build_killstreak_data( "specialty_blindeye_ks" , "Loc_String" , "achieve_blindeye" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_blindeye" , "specialty_blindeye" , "specialty_blindeye" , "specialty_blindeye" );
+	// build_killstreak_data( "specialty_paint_ks" , "Loc_String" , "achieve_recon" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_paint" , "specialty_paint" , "specialty_paint" , "specialty_paint" );
+	// build_killstreak_data( "specialty_hardline_ks" , "Loc_String" , "achieve_hardline" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_hardline" , "specialty_hardline" , "specialty_hardline" , "specialty_hardline" );
+	// build_killstreak_data( "specialty_coldblooded_ks" , "Loc_String" , "achieve_assassin" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_coldblooded" , "specialty_coldblooded" , "specialty_coldblooded" , "specialty_coldblooded" );
+	// build_killstreak_data( "specialty_quickdraw_ks" , "Loc_String" , "achieve_quickdraw" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_quickdraw" , "specialty_quickdraw" , "specialty_quickdraw" , "specialty_quickdraw" );
+	// build_killstreak_data( "_specialty_blastshield_ks" , "Loc_String" , "achieve_blastshield" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_blastshield" , "specialty_blastshield" , "specialty_blastshield" , "specialty_blastshield" );
+	// build_killstreak_data( "specialty_detectexplosive_ks" , "Loc_String" , "achieve_sitrep" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_bombsquad" , "specialty_bombsquad" , "specialty_bombsquad" , "specialty_bombsquad" );
+	// build_killstreak_data( "specialty_autospot_ks" , "Loc_String" , "achieve_marksman" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_ironlungs" , "specialty_ironlungs" , "specialty_ironlungs" , "specialty_ironlungs" );
+	// build_killstreak_data( "specialty_bulletaccuracy_ks" , "Loc_String" , "achieve_steadyaim" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_steadyaim" , "specialty_steadyaim" , "specialty_steadyaim" , "specialty_steadyaim" );
+	// build_killstreak_data( "specialty_quieter_ks" , "Loc_String" , "achieve_deadsilence" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_quieter" , "specialty_quieter" , "specialty_quieter" , "specialty_quieter" );
+	// build_killstreak_data( "specialty_stalker_ks" , "Loc_String" , "achieve_stalker" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_stalker" , "specialty_stalker" , "specialty_stalker" , "specialty_stalker" );
+	// build_killstreak_data( "specialty_longersprint_ks_pro" , "Loc_String" , "achieve_extremeconditioning" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_longersprint_upgrade" , "specialty_longersprint_upgrade" , "specialty_longersprint_upgrade" , "specialty_longersprint_upgrade" );
+	// build_killstreak_data( "specialty_fastreload_ks_pro" , "Loc_String" , "achieve_sleightofhand" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_fastreload_upgrade" , "specialty_fastreload_upgrade" , "specialty_fastreload_upgrade" , "specialty_fastreload_upgrade" );
+	// build_killstreak_data( "specialty_scavenger_ks_pro" , "Loc_String" , "achieve_scavenger" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_scavenger_upgrade" , "specialty_scavenger_upgrade" , "specialty_scavenger_upgrade" , "specialty_scavenger_upgrade" );
+	// build_killstreak_data( "specialty_blindeye_ks_pro" , "Loc_String" , "achieve_blindeye" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_blindeye_upgrade" , "specialty_blindeye_upgrade" , "specialty_blindeye_upgrade" , "specialty_blindeye_upgrade" );
+	// build_killstreak_data( "specialty_paint_ks_pro" , "Loc_String" , "achieve_recon" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_paint_upgrade" , "specialty_paint_upgrade" , "specialty_paint_upgrade" , "specialty_paint_upgrade" );
+	// build_killstreak_data( "specialty_hardline_ks_pro" , "Loc_String" , "achieve_hardline" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_hardline_upgrade" , "specialty_hardline_upgrade" , "specialty_hardline_upgrade" , "specialty_hardline_upgrade" );
+	// build_killstreak_data( "specialty_coldblooded_ks_pro" , "Loc_String" , "achieve_assassin" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_coldblooded_upgrade" , "specialty_coldblooded_upgrade" , "specialty_coldblooded_upgrade" , "specialty_coldblooded_upgrade" );
+	// build_killstreak_data( "specialty_quickdraw_ks_pro" , "Loc_String" , "achieve_quickdraw" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_quickdraw_upgrade" , "specialty_quickdraw_upgrade" , "specialty_quickdraw_upgrade" , "specialty_quickdraw_upgrade" );
+	// build_killstreak_data( "_specialty_blastshield_ks_pro" , "Loc_String" , "achieve_blastshield" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_blastshield_upgrade" , "specialty_blastshield_upgrade" , "specialty_blastshield_upgrade" , "specialty_blastshield_upgrade" );
+	// build_killstreak_data( "specialty_detectexplosive_ks_pro" , "Loc_String" , "achieve_sitrep" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_bombsquad_upgrade" , "specialty_bombsquad_upgrade" , "specialty_bombsquad_upgrade" , "specialty_bombsquad_upgrade" );
+	// build_killstreak_data( "specialty_autospot_ks_pro" , "Loc_String" , "achieve_marksman" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_ironlungs_upgrade" , "specialty_ironlungs_upgrade" , "specialty_ironlungs_upgrade" , "specialty_ironlungs_upgrade" );
+	// build_killstreak_data( "specialty_bulletaccuracy_ks_pro" , "Loc_String" , "achieve_steadyaim" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_steadyaim_upgrade" , "specialty_steadyaim_upgrade" , "specialty_steadyaim_upgrade" , "specialty_steadyaim_upgrade" );
+	// build_killstreak_data( "specialty_quieter_ks_pro" , "Loc_String" , "achieve_deadsilence" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_quieter_upgrade" , "specialty_quieter_upgrade" , "specialty_quieter_upgrade" , "specialty_quieter_upgrade" );
+	// build_killstreak_data( "specialty_stalker_ks_pro" , "Loc_String" , "achieve_stalker" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_stalker_upgrade" , "specialty_stalker_upgrade" , "specialty_stalker_upgrade" , "specialty_stalker_upgrade" );
+	// build_killstreak_data( "all_perks_bonus" , "Loc_String" , "achieve_specialty_bonus" , "null" , "null" , "killstreak_uav_mp" , 150 , "specialty_perks_all" , "specialty_perks_all" , "specialty_perks_all" , "specialty_perks_all" );
+	
+	// for ( i = 1; true; i++ )
+	// {
+	// 	retVal = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 1 );
+	// 	if ( !IsDefined( retVal ) || retVal == "" )
+	// 		break;
 
-		streakUseHint = tableLookupIString( KILLSTREAK_STRING_TABLE, 0, i, 6 );
-		assert( streakUseHint != &"" );
-		PreCacheString( streakUseHint );
+	// 	streakRef = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 1 );
+	// 	assert( streakRef != "" );
 
-		streakEarnDialog = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 8 );
-		assert( streakEarnDialog != "" );
-		game[ "dialog" ][ streakRef ] = streakEarnDialog;
+	// 	streakUseHint = tableLookupIString( KILLSTREAK_STRING_TABLE, 0, i, 6 );
+	// 	assert( streakUseHint != &"" );
+	// 	PreCacheString( streakUseHint );
 
-		streakAlliesUseDialog = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 9 );
-		assert( streakAlliesUseDialog != "" );
-		game[ "dialog" ][ "allies_friendly_" + streakRef + "_inbound" ] = "use_" + streakAlliesUseDialog;
-		game[ "dialog" ][ "allies_enemy_" + streakRef + "_inbound" ] = "enemy_" + streakAlliesUseDialog;
+	// 	streakEarnDialog = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 8 );
+	// 	assert( streakEarnDialog != "" );
+	// 	game[ "dialog" ][ streakRef ] = streakEarnDialog;
 
-		streakAxisUseDialog = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 10 );
-		assert( streakAxisUseDialog != "" );
-		game[ "dialog" ][ "axis_friendly_" + streakRef + "_inbound" ] = "use_" + streakAxisUseDialog;
-		game[ "dialog" ][ "axis_enemy_" + streakRef + "_inbound" ] = "enemy_" + streakAxisUseDialog;
+	// 	streakAlliesUseDialog = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 9 );
+	// 	assert( streakAlliesUseDialog != "" );
+	// 	game[ "dialog" ][ "allies_friendly_" + streakRef + "_inbound" ] = "use_" + streakAlliesUseDialog;
+	// 	game[ "dialog" ][ "allies_enemy_" + streakRef + "_inbound" ] = "enemy_" + streakAlliesUseDialog;
 
-		streakWeapon = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 12 );
-		precacheItem( streakWeapon );
+	// 	streakAxisUseDialog = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 10 );
+	// 	assert( streakAxisUseDialog != "" );
+	// 	game[ "dialog" ][ "axis_friendly_" + streakRef + "_inbound" ] = "use_" + streakAxisUseDialog;
+	// 	game[ "dialog" ][ "axis_enemy_" + streakRef + "_inbound" ] = "enemy_" + streakAxisUseDialog;
 
-		streakPoints = int( tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 13 ) );
-		assert( streakPoints != 0 );
-		maps\mp\gametypes\_rank::registerScoreInfo( "killstreak_" + streakRef, streakPoints );
+	// 	streakWeapon = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 12 );
+	// 	precacheItem( streakWeapon );
 
-		streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 14 );
-		precacheShader( streakShader );
+	// 	streakPoints = int( tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 13 ) );
+	// 	assert( streakPoints != 0 );
+	// 	maps\mp\gametypes\_rank::registerScoreInfo( "killstreak_" + streakRef, streakPoints );
 
-		streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 15 );
-		if ( streakShader != "" )
-			precacheShader( streakShader );
+	// 	streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 14 );
+	// 	precacheShader( streakShader );
 
-		streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 16 );
-		if ( streakShader != "" )
-			precacheShader( streakShader );
+	// 	streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 15 );
+	// 	if ( streakShader != "" )
+	// 		precacheShader( streakShader );
 
-		streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 17 );
-		if ( streakShader != "" )
-			precacheShader( streakShader );
-	}
+	// 	streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 16 );
+	// 	if ( streakShader != "" )
+	// 		precacheShader( streakShader );
+
+	// 	streakShader = tableLookup( KILLSTREAK_STRING_TABLE, 0, i, 17 );
+	// 	if ( streakShader != "" )
+	// 		precacheShader( streakShader );
+
+	// 	arg_1 = tablelookup( "mp/killstreakTable.csv", 0, i, 1 ); // killstreak name
+	// 	arg_2 = tablelookupistring( "mp/killstreakTable.csv", 0, i, 6 ); // killstreak string
+	// 	arg_3 = tablelookup( "mp/killstreakTable.csv", 0, i, 8 ); // dialog killstreakname sound?
+	// 	arg_4 = tablelookup( "mp/killstreakTable.csv", 0, i, 9 ); // dialog killstreakname inbound sound allies?
+	// 	arg_5 = tablelookup( "mp/killstreakTable.csv", 0, i, 10 ); // dialog killstreakname inbound sound axis?
+	// 	arg_6 = tablelookup( "mp/killstreakTable.csv", 0, i, 12 ); // weapon name
+	// 	arg_7 = int( tablelookup( "mp/killstreakTable.csv", 0, i, 13 ) ); //scorestreak killstreak name int
+
+	// 	arg_8 = tablelookup( "mp/killstreakTable.csv", 0, i, 14 ); // not sure
+	// 	arg_9 = tablelookup( "mp/killstreakTable.csv", 0, i, 15 ); // not sure var_9 != ""
+	// 	arg_10 = tablelookup( "mp/killstreakTable.csv", 0, i, 16 ); // not sure var_9 != ""
+	// 	arg_11 = tablelookup( "mp/killstreakTable.csv", 0, i, 17 ); // not sure var_9 != ""
+
+	// 	if(arg_9 == "")
+	// 		arg_9 = "^1undefined^3";
+	// 	if(arg_10 == "")
+	// 		arg_10 = "^1undefined^3";
+	// 	if(arg_11 == "")
+	// 		arg_11 = "^1undefined^3";
+
+	// 	print("^3build_killstreak_data( \"" + arg_1 + "\" , \"" + "Loc_String" + "\" , \"" + arg_3 + "\" , \"" + arg_4 + "\" , \"" + arg_5 + "\" , \"" + arg_6 + "\" , \"" + arg_7 + "\" , \"" + arg_8 + "\" , \"" + arg_9 + "\" , \"" + arg_10 + "\" , \"" + arg_10 + "\" );" );
+
+	// }
 }
 ////////////////////////////////////////////////////////////////////////////////////
 

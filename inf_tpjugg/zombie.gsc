@@ -1,13 +1,21 @@
 #include maps\mp\_utility;
 #include common_scripts\utility;
 #include maps\mp\gametypes\_hud_util;
+#include scripts\inf_tpjugg\main;
 
 init() {
     initializerandomitems();
     level.throwingknifefx = loadFX( "smoke/smoke_geotrail_javelin" );
     level.throwingknifeexplosionfx = loadFX( "explosions/default_explosion" );
     level.smokelauncher_fx = loadfx( "smoke/smoke_grenade_11sec_mp" );
-    
+
+    level.kenker_sounds = [];
+    level.kenker_sounds[level.kenker_sounds.size] = "enable_activeperk";
+    level.kenker_sounds[level.kenker_sounds.size] = "physics_car_door_default";
+    level.kenker_sounds[level.kenker_sounds.size] = "mp_war_objective_taken";
+    level.kenker_sounds[level.kenker_sounds.size] = "mp_war_objective_lost";
+
+
     //attachshieldmodel powerfull jugg
 
     //replacefunc(maps\mp\_utility::givePerk, ::givePerk_replace);
@@ -27,10 +35,12 @@ init() {
     precacheshader("hud_icon_c4");
     precacheshader("equipment_emp_grenade");
     precacheshader("compassping_explosion");
+    precacheshader("objpoint_flag_opfor");
 
     setdvar("g_knockback", 700);
 
     wait 1;
+
 
     level.ac130_num_flares = 1;
 }
@@ -81,6 +91,7 @@ timeoutdelete() {
 explosiveknife() {
     self endon("disconnect");
     self endon("death");
+    self endon("force_end_exp_tk");
 
     powerup_hud = self createFontString( "default", 1.0);
 	powerup_hud setPoint( "center", "BOTTOMRIGHT", -90, -14 );
@@ -92,7 +103,7 @@ explosiveknife() {
     //powerup_hud.color = (1,0,0);
 	powerup_hud.archived = 1;
     powerup_hud thread delete_on_death(self);
-    
+
     self giveweapon("throwingknife_mp");
 
     fired = 0;
@@ -108,7 +119,7 @@ explosiveknife() {
 }
 
 delete_on_death(owner) {
-    owner waittill_any("death","disconnect","used_exp_tk");
+    owner waittill_any("death","disconnect","used_exp_tk","force_end_exp_tk");
     self destroy();
 }
 
@@ -193,6 +204,17 @@ on_player_killed(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
         }
     }
 
+    if(isdefined(attacker.name) && attacker.name != self.name) {
+        if(sMeansOfDeath == "MOD_MELEE")
+            attacker scripts\_global_files\player_stats::add_xp(150);
+        else if(sMeansOfDeath == "MOD_GRENADE_SPLASH")
+            attacker scripts\_global_files\player_stats::add_xp(125);
+        else
+            attacker scripts\_global_files\player_stats::add_xp(100);
+    }
+    else if(isdefined(attacker.owner))
+        attacker.owner scripts\_global_files\player_stats::add_xp(50);
+
    	maps\mp\gametypes\_damage::PlayerKilled_internal( eInflictor, attacker, self, iDamage, sMeansOfDeath, sWeapon, vDir, sHitLoc, psOffsetTime, deathAnimDuration, 0 );
 
     /*if(isdefined(attacker) && sWeapon == "remote_turret_mp") {
@@ -205,21 +227,24 @@ on_player_killed(eInflictor, attacker, iDamage, sMeansOfDeath, sWeapon, vDir, sH
 }
 
 on_player_damage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon, vPoint, vDir, sHitLoc, timeOffset) {
-	if(sWeapon == "m320_mp") {
-        if(isdefined(eInflictor) && isdefined(eInflictor.smoke)) {
-            return;
-        }
-    }
-    if(sWeapon == "m320_mp") {
-        if(isdefined(eInflictor) && isdefined(eInflictor.smoke)) {
+	if(sWeapon == "m320_mp" || sWeapon == "xm25_mp") {
+        if(isdefined(eInflictor) && (isdefined(eInflictor.smoke) || isdefined(eInflictor.pusher))) {
             return;
         }
     }
     
+    if(isdefined(eAttacker) && IsPlayer(eAttacker) && isdefined(eAttacker.breaching) && eInflictor == eAttacker && eAttacker.team != self.team && sMeansOfDeath != "MOD_MELEE") {
+        eAttacker iPrintLn("^3Wallbreach!");
+        eAttacker.hud_damagefeedback setShader("objpoint_flag_opfor", 24, 24);
+        eAttacker.hud_damagefeedback.alpha = 0.5;
+        eAttacker.hud_damagefeedback.color = (1, 1, 0);
+        eAttacker.hud_damagefeedback fadeOverTime(0.25);
+        eAttacker.hud_damagefeedback.alpha = 0;
+        eAttacker PlayLocalSound( level.kenker_sounds[randomint(level.kenker_sounds.size)] );
+        return;
+    }
+
     if(isdefined(eAttacker)) {
-		if(!self isonground() || !isplayer(eAttacker))
-        	iDFlags = 4;
-        
         if(isdefined(eAttacker.using_minigun))
             iDamage += 20;
 
@@ -241,8 +266,20 @@ on_player_damage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
         }
     }
 
-    if(isdefined(self.godmode) && self.godmode == 1) {
-        if(isdefined(eAttacker) && IsPlayer(eAttacker) ) {
+
+    if(isdefined(self.flag_protection)) {
+        if(isdefined(eAttacker) && IsPlayer(eAttacker) && eAttacker.team == "allies" && self.team == "axis") {
+            eAttacker iPrintLn("^3Flag Protection!");
+            eAttacker.hud_damagefeedback setShader("objpoint_flag_opfor", 24, 24);
+            eAttacker.hud_damagefeedback.alpha = 0.5;
+            eAttacker.hud_damagefeedback.color = (1, 1, 0);
+            eAttacker.hud_damagefeedback fadeOverTime(0.25);
+            eAttacker.hud_damagefeedback.alpha = 0;
+            return;
+        }
+    }
+    else if(isdefined(self.godmode) && self.godmode == 1) {
+        if(isdefined(eAttacker) /* && IsPlayer(eAttacker) */ ) {
             eAttacker iPrintLn("^3Player has Godmode!");
             eAttacker.hud_damagefeedback setShader("damage_feedback_lightarmor", 24, 48);
             eAttacker.hud_damagefeedback.alpha = 1;
@@ -256,7 +293,7 @@ on_player_damage(eInflictor, eAttacker, iDamage, iDFlags, sMeansOfDeath, sWeapon
         eAttacker.hud_damagefeedback.color = (1, 1, 1);
         return;
     }
-    
+
     if(isdefined(level.falldamagetriggers) && sMeansOfDeath == "MOD_FALLING") {
         foreach(trig in level.falldamagetriggers) {
             if(self istouching(trig)) {
@@ -338,7 +375,7 @@ delete_ifdied(owner) {
         self delete();
 }
 
-create_black_hole(origin,fx) {
+create_black_hole(origin ,fx) {
     for(i = 0;i < 50;i++) {
         foreach(player in level.players) {
         	if(player.sessionteam == "allies") {
@@ -370,7 +407,7 @@ create_black_hole(origin,fx) {
 
 initializerandomitems() {
     devprint = false;
-    
+
     //////////////////////////////////////////////////////////////////////////////////////////
     //  set the highest roll items at the bottom of the list, for now.                      //
     //  maybe in the future i organize the array. this is for small performance improvement //
@@ -380,10 +417,17 @@ initializerandomitems() {
 
     level.roll_items["nothing"]                         = SpawnStruct();
     level.roll_items["nothing"].rollname                = "^2Nothing!";
-    level.roll_items["nothing"].weight                  = 7;
+    level.roll_items["nothing"].weight                  = 2;
     level.roll_items["nothing"].function                = maps\mp\gametypes\_globallogic::blank;
     level.roll_items["nothing"].description             = "You got nothing! Better luck next time";
     level.roll_items["nothing"].color                   = (0, .5, 0);
+
+    level.roll_items["push_xm"]                         = SpawnStruct();
+    level.roll_items["push_xm"].rollname                = "^2Push Launcher";
+    level.roll_items["push_xm"].weight                  = 12;
+    level.roll_items["push_xm"].function                = ::push_xm;
+    level.roll_items["push_xm"].description             = "You have a Push Launcher, Use it Scoped or Non Scoped!";
+    level.roll_items["push_xm"].color                   = (0, .5, 0);
 
     level.roll_items["smaw"]                            = SpawnStruct();
     level.roll_items["smaw"].rollname                   = "^2SMAW";
@@ -466,26 +510,26 @@ initializerandomitems() {
     level.roll_items["jugg_power"].rollname             = "^3Powerful Juggernaut";
     level.roll_items["jugg_power"].weight               = 12;
     level.roll_items["jugg_power"].function             = ::PowerfulJuggernaut;
-    level.roll_items["jugg_power"].description          = "You're a powerful Juggernaut (500 HP).";
+    level.roll_items["jugg_power"].description          = "You're a Powerful Juggernaut (500 HP).";
     level.roll_items["jugg_power"].color                = (.5, .5, 0);
 
     level.roll_items["jugg_terminator"]                 = SpawnStruct();
     level.roll_items["jugg_terminator"].rollname        = "^1Terminator Juggernaut";
     level.roll_items["jugg_terminator"].weight          = 9;
     level.roll_items["jugg_terminator"].function        = ::TerminatorJuggernaut;
-    level.roll_items["jugg_terminator"].description     = "You're a Terminator Juggernaut (1,000 HP).";
+    level.roll_items["jugg_terminator"].description     = "You're a Terminator Juggernaut (800 HP).";
     level.roll_items["jugg_terminator"].color           = (.5, 0, 0);
 
     level.roll_items["exp_jugg"]                        = SpawnStruct();
     level.roll_items["exp_jugg"].rollname               = "^1Explosive Juggernaut";
-    level.roll_items["exp_jugg"].weight                 = 9;
+    level.roll_items["exp_jugg"].weight                 = 12;
     level.roll_items["exp_jugg"].function               = ::juggernaut_suicide;
     level.roll_items["exp_jugg"].description            = "You're a powerful & explosive, Juggernaut (500 HP).";
     level.roll_items["exp_jugg"].color                  = (.5, 0, 0);
 
     level.roll_items["god"]                             = SpawnStruct();
     level.roll_items["god"].rollname                    = "^3Godmode for 5 seconds";
-    level.roll_items["god"].weight                      = 12;
+    level.roll_items["god"].weight                      = 8;
     level.roll_items["god"].function                    = ::GodMode;
     level.roll_items["god"].description                 = "Temporarily grants invincibility for 5 seconds";
     level.roll_items["god"].color                       = (.5, .5, 0);
@@ -496,12 +540,12 @@ initializerandomitems() {
     level.roll_items["riotshield"].function             = ::Riotshield;
     level.roll_items["riotshield"].description          = "You have a Riotshield.";
     level.roll_items["riotshield"].color                = (0, .5, 0);
-	
+
     level.roll_items["black_hole"]                      = SpawnStruct();
     level.roll_items["black_hole"].rollname             = "^6Black Hole Grenade!";
     level.roll_items["black_hole"].weight               = 15;
     level.roll_items["black_hole"].function             = ::blackholegrenade;
-    level.roll_items["black_hole"].description          = "Throw a Grenade that creates a black hole, ^7Press ^:[{+actionslot 4}] ^7To Use It";
+    level.roll_items["black_hole"].description          = "Throw a Grenade that creates a Black Hole, ^7Press ^:[{+actionslot 4}] ^7To Use It";
     level.roll_items["black_hole"].color                = (.6, 0, .6);
 
     level.roll_items["c4"]                              = SpawnStruct();
@@ -529,7 +573,7 @@ initializerandomitems() {
     level.roll_items["emp"].rollname                    = "^2EMP Grenade";
     level.roll_items["emp"].weight                      = 25;
     level.roll_items["emp"].function                    = ::EmpGrenade;
-    level.roll_items["emp"].description                 = "You have a EMP Grenade, Press ^:[{+actionslot 4}] ^7To Use It!";
+    level.roll_items["emp"].description                 = "You have an EMP Grenade, Press ^:[{+actionslot 4}] ^7To Use It!";
     level.roll_items["emp"].color                       = (0, .5, 0);
 
     level.roll_items["smoke"]                           = SpawnStruct();
@@ -557,21 +601,21 @@ initializerandomitems() {
     level.roll_items["one_bullet"].rollname             = "^2One Bullet";
     level.roll_items["one_bullet"].weight               = 12;
     level.roll_items["one_bullet"].function             = ::OneBullet;
-    level.roll_items["one_bullet"].description          = "You have a Sniper with one bullet";
+    level.roll_items["one_bullet"].description          = "You have a Sniper with One Bullet";
     level.roll_items["one_bullet"].color                = (0, .5, 0);
 
     level.roll_items["unlimited_tk"]                    = SpawnStruct();
-    level.roll_items["unlimited_tk"].rollname           = "^2Limited Knifes";
+    level.roll_items["unlimited_tk"].rollname           = "^2Extra Knifes";
     level.roll_items["unlimited_tk"].weight             = 12;
     level.roll_items["unlimited_tk"].function           = ::UnlimitedKnifes;
-    level.roll_items["unlimited_tk"].description        = "Gain limited Throwingknifes.";
+    level.roll_items["unlimited_tk"].description        = "You have Additional Throwing Knifes.";
     level.roll_items["unlimited_tk"].color              = (0, .5, 0);
 
     level.roll_items["exp_tk"]                          = SpawnStruct();
     level.roll_items["exp_tk"].rollname                 = "^2Exploding Throwingknife";
     level.roll_items["exp_tk"].weight                   = 20;
     level.roll_items["exp_tk"].function                 = ::ExplosiveKnife;
-    level.roll_items["exp_tk"].description              = "You have an explosive throwing knife.";
+    level.roll_items["exp_tk"].description              = "You have an Explosive Throwing Knife.";
     level.roll_items["exp_tk"].color                    = (0, .5, 0);
 
     level.roll_items["freeze"]                          = SpawnStruct();
@@ -585,14 +629,14 @@ initializerandomitems() {
     level.roll_items["wallhack"].rollname               = "^2Wallhack for 30 seconds";
     level.roll_items["wallhack"].weight                 = 20;
     level.roll_items["wallhack"].function               = ::Wallhack;
-    level.roll_items["wallhack"].description            = "Gain temporary wallhacks.";
+    level.roll_items["wallhack"].description            = "Gain temporary Wallhack.";
     level.roll_items["wallhack"].color                  = (0, .5, 0);
 
     level.roll_items["coldblooded"]                     = SpawnStruct();
     level.roll_items["coldblooded"].rollname            = "^2Cold Blooded";
     level.roll_items["coldblooded"].weight              = 20;
     level.roll_items["coldblooded"].function            = ::givecoldblooded;
-    level.roll_items["coldblooded"].description         = "Run past enemy sentry turrets and hide from thermal";
+    level.roll_items["coldblooded"].description         = "Undetected by Air Support, Sentries & Thermal";
     level.roll_items["coldblooded"].color               = (0, .5, 0);
 
     level.roll_items["jump"]                            = SpawnStruct();
@@ -600,7 +644,7 @@ initializerandomitems() {
     level.roll_items["jump"].weight                     = 18;
     level.roll_items["jump"].function                   = ::jump_boost;
     level.roll_items["jump"].description                = "You have higher jump Height!";
-    level.roll_items["jump"].color                      = (.5, .6, .3);
+    level.roll_items["jump"].color                      = (0, .8, .8);
 
     //level.roll_items["clone"]                           = SpawnStruct();
     //level.roll_items["clone"].rollname                  = "^5Spawn Clone";
@@ -687,8 +731,8 @@ roll_random_effect() {
     foreach(player in level.players) {
         if(player.team == self.team)
             player iPrintLn("^8" + self.name + "^7 Rolled " + level.roll_items[roll].rollname);
-        else
-            player iPrintLn("^9" + self.name + "^7 Rolled " + level.roll_items[roll].rollname);
+        // else
+        //     player iPrintLn("^9" + self.name + "^7 Rolled " + level.roll_items[roll].rollname);
     }
 
     self thread send_hud_notification_handler(level.roll_items[roll].rollname, level.roll_items[roll].description, level.roll_items[roll].color);
@@ -701,7 +745,7 @@ jump_boost() {
     for(;;) {
         self waittill("jumped");
         vel = self GetVelocity();
-        self SetVelocity((vel[0], vel[1], 310));
+        self SetVelocity((vel[0], vel[1], 420));
         while(!self isonground())
             wait 0.2;
     }
@@ -947,6 +991,7 @@ SMAW() {
     self GiveWeapon("iw5_smaw_mp");
     self setweaponammoclip("iw5_smaw_mp", 1);
     self setweaponammostock("iw5_smaw_mp", 0);
+    waittillframeend;
     self SwitchToWeaponImmediate("iw5_smaw_mp");
 }
 
@@ -954,8 +999,10 @@ M_320() {
     self GiveWeapon("m320_mp");
     self setweaponammoclip("m320_mp", 1);
     self setweaponammostock("m320_mp", 0);
+    waittillframeend;
     self SwitchToWeaponImmediate("m320_mp");
 }
+
 
 M_320_smoke() {
     level endon("game_ended");
@@ -964,6 +1011,7 @@ M_320_smoke() {
     self GiveWeapon("m320_mp");
     self setweaponammoclip("m320_mp", 1);
     self setweaponammostock("m320_mp", 0);
+    waittillframeend;
     self SwitchToWeaponImmediate("m320_mp");
 
     for(;;) {
@@ -985,21 +1033,100 @@ smoke_launcher_thread() {
     PlayFX(level.smokelauncher_fx, org);
 }
 
+push_xm() {
+    level endon("game_ended");
+    self endon("death");
+
+    self Attach("ims_scorpion_explosive1", "j_helmet", true);
+
+    self GiveWeapon("xm25_mp");
+    self setweaponammoclip("xm25_mp", 2);
+    self setweaponammostock("xm25_mp", 0);
+    waittillframeend;
+    self SwitchToWeaponImmediate("xm25_mp");
+    for(;;) {
+        self waittill( "missile_fire", missile, weaponName );
+        if ( weaponName == "xm25_mp")
+        {
+            missile thread push_launcher_thread(self, self getplayerangles(), self adsbuttonpressed());
+        }
+    }
+}
+
+push_launcher_thread(owner, dir, mode) {
+    self endon("death");
+    self.pusher = true;
+    pushdir = AnglesToForward(dir);
+    up = 340;
+    side = 180;
+
+
+    if(mode) {
+        self thread push_xm_arrow();
+        self thread push_launcher_delay_delete(4);
+        self.pushlist = [];
+        for(;;) {
+            foreach(bozo in level.players) {
+                if(bozo == owner)
+                    continue;
+                
+                if(!isdefined(self.pushlist[bozo.name]) && Distance(self.origin, bozo.origin + (0,0,20)) < 100) {
+                    self.pushlist[bozo.name] = true;
+                    curvel = bozo getvelocity();
+                    bozo setvelocity((curvel[0] + pushdir[0] * side, curvel[1] + pushdir[1] * side, pushdir[2] * up));
+                }
+            }
+            wait 0.05;
+        }
+    } else {
+        foreach(bozo in level.players) {
+            if(Distance(owner.origin, bozo.origin) < 100) {
+                curvel = bozo getvelocity();
+                bozo setvelocity((curvel[0] + pushdir[0] * side, curvel[1] + pushdir[1] * side, pushdir[2] * up));
+            }
+        }
+        if(isdefined(self))
+            self delete();
+    }
+}
+
+push_xm_arrow() {
+    arrow = spawn("script_model", self.origin);
+    arrow setmodel("sundirection_arrow");
+    arrow.angles = vectortoangles(AnglesToForward(self.angles) * -1);
+    arrow linkto(self);
+    self waittill("death");
+    arrow delete();
+}
+
+push_launcher_delay_delete(time) {
+    self endon("death");
+    wait time;
+    if(isdefined(self))
+        self delete();
+}
+
 Javelin() {
     self GiveWeapon("javelin_mp");
+    waittillframeend;
     self SwitchToWeaponImmediate("javelin_mp");
 }
 
 OneBullet() {
-    weapon3 = "iw5_dragunov_mp_dragunovscope";
-    self GiveWeapon(weapon3);
-    self setweaponammoclip(weapon3, 1);
-    self setweaponammostock(weapon3, 0);
-    self SwitchToWeaponImmediate(weapon3);
-    self thread onebulletwatcher();
+    if(self isvipuser())
+        weapon = "iw5_rsass_mp_rsassscope";
+    else
+        weapon = "iw5_dragunov_mp_dragunovscope";
+
+    self GiveWeapon(weapon);
+    waittillframeend;
+    self setweaponammoclip(weapon, 1);
+    self setweaponammostock(weapon, 0);
+    self SwitchToWeaponImmediate(weapon);
+    self thread onebulletwatcher(weapon);
 }
 
-onebulletwatcher() {
+onebulletwatcher(weapon) {
     self endon("disconnect");
     self endon("death");
 
@@ -1007,9 +1134,9 @@ onebulletwatcher() {
     while(!fired) {
         self waittill( "weapon_fired", weapName);
 
-        if ( weapName == "iw5_dragunov_mp_dragunovscope" ) {
+        if ( weapName == weapon ) {
             wait 1;
-            self takeweapon("iw5_dragunov_mp_dragunovscope");
+            self takeweapon(weapon);
             self switchtoweapon("iw5_usp45_mp_tactical");
             fired = 1;
         }
@@ -1018,15 +1145,14 @@ onebulletwatcher() {
 
 Stinger() {
     self GiveWeapon("stinger_mp");
-    self SwitchToWeaponImmediate("stinger_mp");
 }
 
 Juggernaut() {
     self.maxhealth = self.Health * 3;
     self.Health = self.Health * 3;
     self.healthRegenLevel = .33;
-    self setmodel("mp_fullbody_opforce_juggernaut");
-    self setviewmodel("viewhands_juggernaut_opforce");
+    self setmodel("mp_fullbody_ally_juggernaut");
+    self setviewmodel("viewhands_juggernaut_ally");
     wait .05;
     self attachshieldmodel("weapon_riot_shield_mp", "tag_shield_back");
 
@@ -1040,8 +1166,8 @@ juggernaut_suicide() {
     self.healthRegenLevel = .33;
     wait .05;
     self thread play_tick_sound();
-    self attach("weapon_c4_bombsquad", "j_shoulder_le");
-    self attach("weapon_c4_bombsquad", "j_shoulder_ri");
+    self attach("weapon_c4_bombsquad", "j_shoulder_le", 1);
+    self attach("weapon_c4_bombsquad", "j_shoulder_ri", 1);
     self setmodel("mp_fullbody_opforce_juggernaut");
     self setviewmodel("viewhands_juggernaut_opforce");
     self.moveSpeedScaler = .8;
@@ -1077,14 +1203,25 @@ PowerfulJuggernaut() {
     self maps\mp\gametypes\_weapons::updateMoveSpeedScale();
 }
 TerminatorJuggernaut() {
-    self.maxhealth = self.Health * 10;
-    self.Health = self.Health * 10;
+	self thread play_vader_sound();
+    self.maxhealth = self.Health * 8;
+    self.Health = self.Health * 8;
     self.healthRegenLevel = .99;
     self setmodel("mp_fullbody_opforce_juggernaut");
     self setviewmodel("viewhands_juggernaut_opforce");
 
-    self.moveSpeedScaler = .70;
+    self.moveSpeedScaler = .80;
     self maps\mp\gametypes\_weapons::updateMoveSpeedScale();
+}
+
+play_vader_sound() {
+	self endon("disconnect");
+    level endon("game_ended");
+
+	while(isalive(self)) {
+		self playsound("juggernaut_breathing_sound");
+		wait 4;
+	}
 }
 
 lowhealthquick() {
@@ -1097,6 +1234,7 @@ ATW() {
     self GiveWeapon("at4_mp");
     self setweaponammoclip("at4_mp", 1);
     self setweaponammostock("at4_mp", 0);
+    waittillframeend;
     self SwitchToWeaponImmediate("at4_mp");
 }
 
@@ -1104,6 +1242,7 @@ RPG() {
     self GiveWeapon("rpg_mp");
     self setweaponammoclip("rpg_mp", 1);
     self setweaponammostock("rpg_mp", 1);
+    waittillframeend;
     self SwitchToWeaponImmediate("rpg_mp");
 }
 
@@ -1112,6 +1251,7 @@ Akimbo() {
     self TakeWeapon(self GetCurrentWeapon());
     self GiveWeapon("iw5_usp45_mp_akimbo");
     self setweaponammostock("iw5_usp45_mp_akimbo", 0);
+    waittillframeend;
     self SwitchToWeaponImmediate("iw5_usp45_mp_akimbo");
 }
 
@@ -1240,6 +1380,7 @@ Speed(scale) {
     self endon("death");
     self endon("disconnect");
     self endon("game_ended");
+	self givePerk("specialty_fastmantle", 1);
 
     for(;;) {
         if(isDefined(self) && isPlayer(self) && isAlive(self))
@@ -1377,7 +1518,7 @@ givePerk_replace( perkName, useSlot )
 	AssertEx( IsDefined( useSlot ), "givePerk useSlot not defined and should be" );
 	AssertEx( !IsSubStr( perkName, "specialty_null" ), "givePerk perkName shouldn't be specialty_null, use _clearPerks()s" );
 
-    
+
 	if ( IsSubStr( perkName, "_mp" ) )
 	{
 		switch( perkName )
@@ -1412,13 +1553,13 @@ givePerk_replace( perkName, useSlot )
 
 	self _setExtraPerks( perkName );
         //print("^2"+self.name+"^1 - ^3" + perkName + " _ " + useSlot);
-    
+
 }
 
 isKillstreakWeapon_replace( weapon )
 {
     //print("^1ERROR WEAPON: ^3" + weapon);
-    
+
 	if( !IsDefined( weapon ) )
 	{
 		AssertMsg( "isKillstreakWeapon called without a weapon name passed in" );
@@ -1427,10 +1568,10 @@ isKillstreakWeapon_replace( weapon )
 
 	if ( weapon == "none" )
 		return false;
-	
+
 	tokens = strTok( weapon, "_" );
 	foundSuffix = false;
-	
+
 	//this is necessary because of weapons potentially named "_mp(somthign)" like the mp5
 	if( weapon != "destructible_car" && weapon != "barrel_mp" )
 	{
@@ -1442,24 +1583,24 @@ isKillstreakWeapon_replace( weapon )
 				break;
 			}
 		}
-		
+
 		if ( !foundSuffix )
 		{
 			weapon += "_mp";
 		}
 	}
-	
+
 	/*UGLY HACK REMOVE THIS BEFORE SHIPPING AND PROPERLY CACHE AKIMBO WEAPONS
 	if ( isSubstr( weapon, "akimbo" ) )
 		return false;
 	*/
-	
+
 	if ( isSubStr( weapon, "destructible" ) )
 		return false;
 
 	if ( isSubStr( weapon, "killstreak" ) )
 		return true;
-	
+
 	if ( maps\mp\killstreaks\_airdrop::isAirdropMarker( weapon ) )
 		return true;
 
@@ -1469,8 +1610,8 @@ isKillstreakWeapon_replace( weapon )
     if ( weapon == "c4_mp" || weapon == "flash_mp" || weapon == "smoke_mp" || weapon == "concussion_mp" || weapon == "emp_mp")
 		return false;
 
-	if ( IsDefined( weaponInventoryType( weapon ) ) && weaponInventoryType( weapon ) == "exclusive" && ( weapon != "destructible_car" && weapon != "barrel_mp" ) )
-		return true;
-			
+	// if ( IsDefined( weaponInventoryType( weapon ) ) && weaponInventoryType( weapon ) == "exclusive" && ( weapon != "destructible_car" && weapon != "barrel_mp" ) )
+	// 	return true; // might cause issues?
+
 	return false;
 }
