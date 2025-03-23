@@ -79,7 +79,7 @@ init() {
     precacheshader("prestiges/master_prestige_24");
     precacheshader("prestiges/master_prestige_25");
     precacheshader("hud_material/xp_token");
-    precacheshader("hud_material/pumpkin");
+    //precacheshader("hud_material/pumpkin");
     precacheshader("hud_material/h1_medal_killstreak5");
     precacheshader("hud_material/h1_medal_killstreak10");
     precacheshader("hud_material/h1_medal_killstreak15");
@@ -204,7 +204,7 @@ init() {
         setExpFog(0, 10000, .5, .5, .25, 0, 0);
     }
 
-    level thread event_handler();
+    //level thread event_handler();
     if(!isdefined(level.default_map)) {
         if(randomint(100) > 25)
             level.skybox = 4;
@@ -389,9 +389,6 @@ on_spawned() {
             self thread melee_weapon_attack();
             self thread adv_afk_check();
             self thread lunge_detection();
-            self thread halloween_event_hud();
-
-            self thread scripts\_global_files\commands::wallhack();
 
             //if(self.name == "ZECxR3ap3r")
 			//    self thread forgeplacer();
@@ -403,13 +400,12 @@ on_spawned() {
         if(!isdefined(level.sniper_lobby)) {
             if(self.sessionteam == "allies") {
                 self survivor_init();
-                self attach("iw6_pumpkin_head", "j_helmet", 1);
                 self SetPerk("specialty_fastsprintrecovery", true, false);
             }
             else if(self.sessionteam == "axis") {
                 self takeallweapons();
 
-                /*sep_camos = ["none","camo01","camo02","camo03","camo04","camo05"];
+                sep_camos = ["none","camo01","camo02","camo03","camo04","camo05"];
                 camo = sep_camos[randomint(sep_camos.size)];
 
                 if(camo == "none") {
@@ -423,13 +419,7 @@ on_spawned() {
                     self setspawnweapon("iw5_usp45_mp_tactical_" + camo);
                     self setweaponammoclip("iw5_usp45_mp_tactical_" + camo, 0);
                     self setweaponammostock("iw5_usp45_mp_tactical_" + camo, 0);
-                }*/
-
-                self detachall();
-                self setmodel("mp_body_iw6_mmyers");
-                self setviewmodel("vh_iw6_mmyers");
-                self giveweapon("iw5_axe_mp");
-                self setspawnweapon("iw5_axe_mp");
+                }
 
                 self GiveWeapon("flare_mp");
                 self giveperk("specialty_tacticalinsertion", 1);
@@ -490,72 +480,6 @@ on_spawned() {
         else if(level.skybox == 4)
             self visionsetnakedforplayer("icbm_sunrise1", 0.1);
     }
-}
-
-halloween_event_hud() {
-    wait 1;
-
-    icon = newclienthudelem(self);
-    icon.horzalign = "fullscreen";
-    icon.vertalign = "fullscreen";
-    icon.alignx = "center";
-    icon.aligny = "middle";
-    icon.x = 320;
-    icon.y = 100;
-    icon.alpha = 0;
-    icon setshader("hud_material/pumpkin", 32, 32);
-
-    text = newclienthudelem(self);
-    text.horzalign = "fullscreen";
-    text.vertalign = "fullscreen";
-    text.alignx = "center";
-    text.aligny = "middle";
-    text.x = 320;
-    text.y = 125;
-    text.font = "bigfixed";
-    text.fontscale = .7;
-    text.color = (1, .4, 0);
-    text.alpha = 0;
-    text settext("Halloween Event");
-
-    desc = newclienthudelem(self);
-    desc.horzalign = "fullscreen";
-    desc.vertalign = "fullscreen";
-    desc.alignx = "center";
-    desc.aligny = "middle";
-    desc.x = 320;
-    desc.y = 140;
-    desc.fontscale = 1;
-    desc.alpha = 0;
-    desc settext("Enjoy the Double XP");
-
-    wait .5;
-
-    desc fadeovertime(.3);
-    desc.alpha = 1;
-    text fadeovertime(.3);
-    text.alpha = 1;
-    icon fadeovertime(.3);
-    icon.alpha = 1;
-
-    wait .5;
-
-    self playlocalsound("halloween_spawn");
-
-    wait 8;
-
-    desc fadeovertime(.3);
-    desc.alpha = 0;
-    text fadeovertime(.3);
-    text.alpha = 0;
-    icon fadeovertime(.3);
-    icon.alpha = 0;
-
-    wait .3;
-
-    desc destroy();
-    text destroy();
-    icon destroy();
 }
 
 melee_weapon_attack() {
