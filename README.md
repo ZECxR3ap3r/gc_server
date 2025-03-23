@@ -9,7 +9,7 @@ all scripts used on the Gillette Servers on IW5 :) mostly mine btw :)
 # Special Thanks
 - Plutonium: for banning me from their shitty wack client for leaking my own scripts
 
-# How to Install
+# How to Setup
 
 - Download _global_files, inf_classic & inf_tpjugg folder + files you will also need the mods folder (gc_tpjugg, gc_infected)
 - Place them in %localAppData%\Plutonium\storage\iw5\scripts if you dont have the scripts folder create it
