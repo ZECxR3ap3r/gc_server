@@ -1,4 +1,4 @@
-all scripts used on the Gillette Servers on IW5 :) mostly mine btw :)
+all scripts used on the Gillette Servers on IW5 :)
 
 # Credits
 - ZECxR3ap3r
