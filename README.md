@@ -4,6 +4,7 @@ all scripts used on the Gillette Servers on IW5 :) mostly mine btw :)
 - ZECxR3ap3r
 - Wiizard
 - Unveiled
+- Sully
 - Clippy
 
 # Special Thanks
